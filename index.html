@@ -1,0 +1,1158 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zoom Chat Analyzer</title>
+<meta name="description" content="Ask questions of your Zoom chat. Paste a saved chat or drop .txt / .csv / .xlsx exports, then ask things like 'who asked for refund' or 'who could not join the WhatsApp group'. Runs fully in your browser.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --canvas:#EEF1F5;
+  --surface:#FFFFFF;
+  --surface-2:#F6F8FA;
+  --ink:#16202E;
+  --ink-2:#4A5568;
+  --ink-3:#8A94A6;
+  --line:#D9DFE7;
+  --line-2:#E9EDF2;
+  --accent:#0E6B71;
+  --accent-ink:#0A4F54;
+  --accent-soft:#DDF0F1;
+  --mark:#FFE47A;
+  --danger:#B42318;
+  --radius:10px;
+  --radius-s:6px;
+  --shadow:0 1px 2px rgba(22,32,46,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,textarea,select{font:inherit;color:inherit}
+a{color:var(--accent-ink)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+mark{background:var(--mark);color:inherit;padding:0 1px;border-radius:2px}
+.sr{position:absolute;left:-9999px}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:var(--surface);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.01em}
+.brand .glyph{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
+.top .spacer{flex:1}
+.top .hint{color:var(--ink-3);font-size:13px}
+
+/* layout */
+.app{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;padding:18px 22px 40px;max-width:1500px;margin:0 auto}
+@media (max-width:960px){.app{grid-template-columns:minmax(0,1fr);padding:14px}}
+
+.side{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.panel > .ph{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line-2);font-weight:700;font-size:14px}
+.panel > .ph .sub{font-weight:500;color:var(--ink-3);font-size:12.5px}
+.panel > .pb{padding:12px 14px}
+
+/* drop zone */
+.drop{border:1.5px dashed var(--line);border-radius:var(--radius-s);padding:16px 12px;text-align:center;color:var(--ink-2);cursor:pointer;background:var(--surface-2);transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--accent-soft)}
+.drop strong{color:var(--ink)}
+.drop small{display:block;color:var(--ink-3);margin-top:4px;font-size:12px}
+.sources{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.src{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid var(--line-2);border-radius:var(--radius-s);background:var(--surface);font-size:13.5px}
+.src.off{opacity:.5}
+.src .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.src .ct{color:var(--ink-3);font-size:12px;white-space:nowrap}
+.src .warn{color:var(--danger);font-size:12px}
+.src button{border:0;background:transparent;color:var(--ink-3);cursor:pointer;padding:2px 4px;border-radius:4px;font-size:12.5px}
+.src button:hover{color:var(--ink);background:var(--line-2)}
+.src input[type=checkbox]{margin:0}
+textarea.paste{width:100%;min-height:96px;resize:vertical;border:1px solid var(--line);border-radius:var(--radius-s);padding:8px 10px;font-size:13px;line-height:1.4;font-family:inherit;background:var(--surface-2)}
+textarea.paste:focus{border-color:var(--accent);background:#fff;outline:none}
+.row{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius-s);padding:7px 12px;cursor:pointer;font-weight:600;font-size:13.5px;line-height:1.2;color:var(--ink)}
+.btn:hover{background:var(--surface-2);border-color:#C5CDD8}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:var(--accent-ink);border-color:var(--accent-ink)}
+.btn.quiet{border-color:transparent;background:transparent;color:var(--ink-2)}
+.btn.quiet:hover{background:var(--line-2);color:var(--ink)}
+.btn.sm{padding:5px 9px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* filters */
+.field{display:flex;flex-direction:column;gap:4px;margin-bottom:10px}
+.field label{font-size:13px;font-weight:600;color:var(--ink-2)}
+.field input[type=text],.field textarea,.field select{border:1px solid var(--line);border-radius:var(--radius-s);padding:7px 9px;font-size:13.5px;background:var(--surface)}
+.field input[type=text]:focus,.field textarea:focus,.field select:focus{border-color:var(--accent);outline:none}
+.check{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-2);margin:6px 0}
+.check input{margin:0}
+
+/* overview list */
+.buckets{list-style:none;margin:0;padding:0}
+.bucket{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;padding:6px 6px;border-radius:var(--radius-s);cursor:pointer;text-align:left;font-size:13.5px}
+.bucket:hover{background:var(--surface-2)}
+.bucket.on{background:var(--accent-soft)}
+.bucket .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.bucket .lb{flex:1;font-weight:600}
+.bucket .n{color:var(--ink-3);font-size:12.5px}
+.bucket .bar{height:4px;border-radius:2px;background:var(--line-2);width:64px;overflow:hidden;flex:none}
+.bucket .bar i{display:block;height:100%}
+.empty-note{color:var(--ink-3);font-size:13px;margin:0}
+
+/* main */
+.main{display:flex;flex-direction:column;gap:14px;min-width:0}
+.ask{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px 14px}
+.ask h1{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--ink-2)}
+.askrow{display:flex;gap:10px;align-items:stretch}
+.askrow .in{flex:1;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;background:var(--surface-2);transition:border-color .15s,box-shadow .15s}
+.askrow .in:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px var(--accent-soft)}
+.askrow .in .q{color:var(--accent);font-weight:800;font-size:22px;line-height:1}
+.askrow input{flex:1;border:0;background:transparent;font-size:19px;font-weight:500;padding:14px 0;min-width:0;outline:none}
+.askrow input::placeholder{color:var(--ink-3);font-weight:400}
+.askrow .go{padding:0 20px;font-size:15px;border-radius:12px}
+.reading{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;min-height:28px;font-size:13.5px;color:var(--ink-2)}
+.reading .lead{color:var(--ink-3);margin-right:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid transparent;background:var(--surface-2);color:var(--ink);line-height:1.2}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.chip.kw{background:var(--mark);border-color:#E8CD4E}
+.chip.flt{background:#EEF2FF;border-color:#D6DDF7;color:#3C4A8F}
+.chip.rm{cursor:pointer}
+.chip.rm:hover{border-color:var(--ink-3)}
+.chip .x{color:var(--ink-3);font-weight:800;margin-left:2px}
+.quick{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-2)}
+.quick .lead{font-size:12.5px;color:var(--ink-3);align-self:center;margin-right:4px}
+.qchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
+.qchip:hover{border-color:var(--ink-3);color:var(--ink)}
+.qchip .dot{width:8px;height:8px;border-radius:50%}
+
+/* results */
+.results .ph{flex-wrap:wrap;gap:8px}
+.results .ph .title{display:flex;align-items:baseline;gap:8px}
+.results .ph .title b{font-size:15px}
+.results .ph .title span{color:var(--ink-3);font-weight:500;font-size:13px}
+.tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius-s);overflow:hidden}
+.seg button{border:0;background:var(--surface);padding:5px 10px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--ink-2)}
+.seg button.on{background:var(--accent);color:#fff}
+.tools input[type=search]{border:1px solid var(--line);border-radius:var(--radius-s);padding:5px 9px;font-size:13px;width:180px}
+.tools input[type=search]:focus{border-color:var(--accent);outline:none}
+.tablewrap{overflow:auto;max-height:70vh}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-weight:700;font-size:12.5px;color:var(--ink-2);padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1;cursor:pointer;user-select:none}
+th .arr{color:var(--ink-3);font-size:11px;margin-left:4px}
+td{padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.t{white-space:nowrap;color:var(--ink-2);font-variant-numeric:tabular-nums;width:1%}
+td.n{font-weight:600;white-space:nowrap}
+td.n small{display:block;font-weight:500;color:var(--ink-3);font-size:11.5px;white-space:normal}
+td.m{white-space:pre-wrap;word-break:break-word;max-width:640px}
+td.m .rep{color:var(--ink-3);font-size:12px;display:block}
+td.c{width:1%;white-space:nowrap}
+td.s{color:var(--ink-3);font-size:12.5px;white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis}
+td.dmtag{color:var(--ink-3);font-size:12px}
+.tag{display:inline-block;padding:2px 7px;border-radius:999px;font-size:11.5px;font-weight:700;margin:1px 2px 1px 0;line-height:1.3;white-space:nowrap}
+.plist{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.plist li{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:13px}
+.plist .pt{color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.plist .pm{white-space:pre-wrap;word-break:break-word}
+.plist .pm .rep{color:var(--ink-3);font-size:12px;display:block}
+.hits{color:var(--ink-3);font-size:12px}
+.blank{padding:38px 24px;text-align:center;color:var(--ink-2)}
+.blank h2{margin:0 0 6px;font-size:18px;font-weight:700;color:var(--ink)}
+.blank p{margin:0 0 14px;color:var(--ink-2)}
+.blank .ex{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.blank .ex button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
+.blank .ex button:hover{border-color:var(--accent);color:var(--accent-ink)}
+
+/* modal */
+.modal{position:fixed;inset:0;background:rgba(22,32,46,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
+.modal.open{display:flex}
+.dlg{background:var(--surface);border-radius:14px;width:min(760px,100%);max-height:92vh;overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.dlg .dh{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line-2)}
+.dlg .dh b{font-size:16px}
+.dlg .db{padding:16px 18px}
+.dlg .df{display:flex;justify-content:flex-end;gap:8px;padding:12px 18px;border-top:1px solid var(--line-2)}
+.dlg textarea.json{width:100%;min-height:280px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.45;border:1px solid var(--line);border-radius:var(--radius-s);padding:10px;resize:vertical}
+.dlg p{margin:0 0 10px;color:var(--ink-2);font-size:13.5px}
+.dlg code{background:var(--surface-2);padding:1px 5px;border-radius:4px;font-size:12.5px}
+.err{color:var(--danger);font-size:13px;margin-top:6px;display:none}
+.err.show{display:block}
+.mapgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:600px){.mapgrid{grid-template-columns:1fr}}
+.preview{margin-top:12px;border:1px solid var(--line-2);border-radius:var(--radius-s);overflow:auto;max-height:180px;font-size:12px}
+.preview table td,.preview table th{padding:5px 8px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:960px){.side,.main{display:contents}.ask{order:2}.results{order:3}.panel.filters{order:4}.panel.overview{order:5}}
+@media (max-width:700px){.top .hint{display:none}.top{padding:10px 14px}.brand{white-space:nowrap}.askrow{flex-direction:column}.askrow .go{padding:10px}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="brand"><span class="glyph">?</span> Zoom Chat Analyzer</div>
+  <span class="hint">Everything runs in your browser. Nothing is uploaded.</span>
+  <span class="spacer"></span>
+  <button class="btn quiet sm" id="btnSample">Load sample chat</button>
+  <button class="btn quiet sm" id="btnSettings">Settings</button>
+</header>
+
+<div class="app">
+  <aside class="side">
+    <section class="panel">
+      <div class="ph">Chat sources <span class="sub" id="srcCount">none yet</span></div>
+      <div class="pb">
+        <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add chat files">
+          <strong>Drop files here</strong> or click to choose
+          <small>Zoom saved chat .txt, and .csv / .xlsx exports. Add as many as you like.</small>
+          <input type="file" id="file" class="sr" multiple accept=".txt,.csv,.tsv,.xlsx,.xls,text/plain,text/csv">
+        </div>
+        <ul class="sources" id="sources"></ul>
+        <div class="field" style="margin-top:12px">
+          <label for="paste">Or paste a saved chat</label>
+          <textarea id="paste" class="paste" placeholder="10:02:14&#9;Priya Sharma:&#9;I want refund..."></textarea>
+        </div>
+        <div class="row">
+          <button class="btn sm" id="btnPaste">Add pasted chat</button>
+          <button class="btn quiet sm" id="btnClear">Remove all</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel filters">
+      <div class="ph">Filters</div>
+      <div class="pb">
+        <div class="field">
+          <label for="staff">Hide these people (hosts, trainers, support)</label>
+          <textarea id="staff" rows="2" placeholder="Support team, trainer name"></textarea>
+        </div>
+        <label class="check"><input type="checkbox" id="optRole" checked> Hide hosts, co-hosts and panelists</label>
+        <p class="empty-note" id="hostNote" style="margin:-2px 0 8px 24px"></p>
+        <label class="check"><input type="checkbox" id="optDM"> Hide direct / private messages</label>
+        <label class="check"><input type="checkbox" id="optReact" checked> Hide reactions and deleted messages</label>
+      </div>
+    </section>
+
+    <section class="panel overview">
+      <div class="ph">What people are talking about <span class="sub" id="ovSub"></span></div>
+      <div class="pb">
+        <ul class="buckets" id="buckets"><li><p class="empty-note">Add a chat to see topic counts.</p></li></ul>
+      </div>
+    </section>
+  </aside>
+
+  <main class="main">
+    <section class="ask">
+      <h1>Ask the chat</h1>
+      <div class="askrow">
+        <div class="in">
+          <span class="q" aria-hidden="true">?</span>
+          <input id="ask" type="text" autocomplete="off" spellcheck="false" placeholder="who asked for refund" aria-label="Ask a question about the chat">
+        </div>
+        <button class="btn primary go" id="btnGo">Search</button>
+      </div>
+      <div class="reading" id="reading"></div>
+      <div class="quick" id="quick"><span class="lead">Quick asks</span></div>
+    </section>
+
+    <section class="panel results" id="results">
+      <div class="ph">
+        <div class="title"><b id="rTitle">Results</b><span id="rSub"></span></div>
+        <div class="tools">
+          <div class="seg" id="viewSeg">
+            <button data-v="person" class="on">By person</button>
+            <button data-v="message">By message</button>
+          </div>
+          <input type="search" id="rFilter" placeholder="Filter results" aria-label="Filter results">
+          <button class="btn sm" id="btnNames">Copy names</button>
+          <button class="btn sm" id="btnCopy">Copy list</button>
+          <button class="btn sm" id="btnCsv">Download CSV</button>
+        </div>
+      </div>
+      <div id="rBody">
+        <div class="blank">
+          <h2>Add a chat, then ask a question</h2>
+          <p>Try one of these once a chat is loaded.</p>
+          <div class="ex" id="examples"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- settings -->
+<div class="modal" id="mSettings" role="dialog" aria-modal="true" aria-labelledby="mSettingsT">
+  <div class="dlg">
+    <div class="dh"><b id="mSettingsT">Topic dictionary</b><button class="btn quiet sm" data-close>Close</button></div>
+    <div class="db">
+      <p>Each topic has <code>ask</code> words (what you type in the search box) and <code>match</code> patterns (what to look for inside messages). Plain words match from the start of a word, so <code>refun</code> catches refund, refunded and refunds. Wrap a pattern in slashes for a regular expression, e.g. <code>/\btest\b/</code>. Hinglish works fine, just add the spellings people actually use.</p>
+      <textarea id="dictJson" class="json" spellcheck="false"></textarea>
+      <div class="err" id="dictErr"></div>
+    </div>
+    <div class="df">
+      <button class="btn" id="dictReset">Reset to default</button>
+      <button class="btn" id="dictExport">Export JSON</button>
+      <button class="btn primary" id="dictSave">Save dictionary</button>
+    </div>
+  </div>
+</div>
+
+<!-- column mapping -->
+<div class="modal" id="mMap" role="dialog" aria-modal="true" aria-labelledby="mMapT">
+  <div class="dlg" style="width:min(640px,100%)">
+    <div class="dh"><b id="mMapT">Match columns</b><button class="btn quiet sm" data-close>Close</button></div>
+    <div class="db">
+      <p id="mapIntro">Tell the analyzer which column holds what.</p>
+      <div class="mapgrid">
+        <div class="field"><label>Name / sender</label><select id="mapFrom"></select></div>
+        <div class="field"><label>Message text</label><select id="mapText"></select></div>
+        <div class="field"><label>Time (optional)</label><select id="mapTime"></select></div>
+        <div class="field"><label>Sent to (optional)</label><select id="mapTo"></select></div>
+      </div>
+      <label class="check"><input type="checkbox" id="mapHeader" checked> First row is a header</label>
+      <div class="preview" id="mapPreview"></div>
+    </div>
+    <div class="df"><button class="btn primary" id="mapApply">Apply</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ====================================================================
+   CORE: parsing + topic engine. No DOM access here so it can be tested.
+   ==================================================================== */
+// @@core-start
+(function (root) {
+'use strict';
+
+const DEFAULT_DICT = [
+  { id:'refund', label:'Refund request', color:'#B42318',
+    ask:['refund','refunds','refunded','money back','cancel enrollment','cancel enrolment','cancellation','chargeback','paisa wapas','paise wapas'],
+    match:['refun','rifund','money back','return my money','return the money','return my fees','paisa wapas','paise wapas','wapas','cancel my','cancel the course','cancel the enrol','cancel enrol','cancellation','chargeback','dispute','want my money','my money back','not what was promised'] },
+  { id:'lms', label:'LMS / portal issue', color:'#6941C6',
+    ask:['lms','portal','dashboard','course access','learning platform','module','modules','locked'],
+    match:['lms','learning management','portal','dashboard','module','/course (is )?not (showing|visible|opening|loading)/','/(can\'?t|cannot|unable to|not able to) (see|open|access|find) (the )?(course|session|recording|module|video)/','/videos? (are |is )?not (playing|loading|showing|opening)/','content not','unlock','locked','/(session|recording|class) not (showing|visible|updated|uploaded)/'] },
+  { id:'whatsapp', label:'WhatsApp group', color:'#0E7A3F',
+    ask:['whatsapp','whats app','wa group','group','groups','community','telegram','group link'],
+    match:['whatsapp','whats app','whatsap','watsapp','wa group','group link','/join(ing|ed)? (the |in )?(whatsapp |wa )?group/','/add(ed)? (me |us )?(to|in|into) (the )?group/','/not (been )?(added|in) (the |to the )?group/','group invite','community','telegram','invite link','/link (is |has )?expired/','/group (is )?full/','/add me/','/\\bgroups?\\b/'] },
+  { id:'join', label:'Unable to join session', color:'#B54708',
+    ask:['unable to join','cant join','can\'t join','cannot join','not able to join','join issue','joining issue','zoom link','meeting link','waiting room','meeting id','passcode','kicked'],
+    match:['unable to join','/can\'?t join/','cannot join','not able to join','/couldn\'?t join/','join nahi','join nhi','waiting room','meeting id','passcode','zoom link','/link (is )?not working/','invalid link','kicked out','disconnect','removed from','/(host|meeting) (has|is) (another|not started)/','/(late|delay(ed)?) (to )?join/'] },
+  { id:'recording', label:'Recording / missed session', color:'#175CD3',
+    ask:['recording','recordings','recorded','replay','missed session','missed'],
+    match:['recording','recorded','replay','/missed (the |today\'?s |yesterday\'?s |last )?(session|class)/','watch later','/(will|can|do) (we|i) get the (video|recording)/','session video','previous session','last session','/link (of|for) (the )?(previous|last|earlier) session/'] },
+  { id:'certificate', label:'Certificate', color:'#9F5F00',
+    ask:['certificate','certificates','certification','certi'],
+    match:['certificat','certification','/\\bcerti\\b/','certif'] },
+  { id:'payment', label:'Payment / fees', color:'#C11574',
+    ask:['payment','payments','paid','transaction','invoice','receipt','emi','gst','fees','price','pricing','discount','coupon'],
+    match:['payment','/\\bpaid\\b/','/\\bpay\\b/','transaction','invoice','receipt','/\\bemi\\b/','/\\bgst\\b/','/\\bupi\\b/','debited','deducted','/\\bamount\\b/','/\\bprice\\b/','/\\bfees?\\b/','/\\bcost\\b/','charged','razorpay','discount','coupon','/\\boffer\\b/','installment','instalment'] },
+  { id:'login', label:'Login / access', color:'#444CE7',
+    ask:['login','log in','logged','password','otp','access issue','credentials','credential','sign in'],
+    match:['login','log in','logged','sign in','signin','password','/\\botp\\b/','credential','username','user id','userid','access denied','/(unable to|not able to|can\'?t|cannot) access/','/reset (link|mail|email)/'] },
+  { id:'av', label:'Audio / video / screen', color:'#0E9384',
+    ask:['audio','video','sound','screen','not audible','audible','lag','lagging','mic','voice','echo','buffering'],
+    match:['audio','voice','/\\bsound\\b/','audible','/(can\'?t|cannot|unable to|not able to) hear/','/\\bmute/','/\\bmic\\b/','/screen (is )?not (visible|sharing|showing|shared)/','/(can\'?t|cannot|not able to|unable to) see (the |your )?screen/','black screen','/\\blag/','freez','buffer','/\\becho\\b/','breaking','/video (is )?not/','volume','/not (able to )?(see|view) (the )?(ppt|slides?|presentation)/'] },
+  { id:'support', label:'Wants support / contact', color:'#7A5AF8',
+    ask:['support','contact','helpline','ticket','complaint','complaints','no response','not responding','callback','call back','escalate','escalation'],
+    match:['support','customer care','helpline','contact number','email id','mail id','/\\bticket/','complain','/no (one|body|1) (is )?(respond|repl|answer|pick)/','/not (responding|replying|answering|picking)/','/call me/','callback','call back','escalat','reach out','phone number','/(whom|who) (to|should i|do i) contact/','no reply','/no response/'] },
+  { id:'schedule', label:'Schedule / timing', color:'#5F6C7B',
+    ask:['schedule','timing','timings','next session','when','reschedule','date','dates','calendar','upcoming'],
+    match:['schedule','timing','/what time/','/when (is|will|does) (the )?(next|session|class)/','next session','next class','tomorrow','reschedul','postpone','/session (date|time)/','/how many sessions/','duration','calendar','upcoming','/(kab|kitne baje)/'] },
+  { id:'assignment', label:'Assignment / task', color:'#3E4784',
+    ask:['assignment','assignments','homework','quiz','quizzes','project','submission','task','tasks','exam','deadline'],
+    match:['assignment','homework','/\\bquiz/','/\\btest\\b/','/\\bproject/','submission','/\\bsubmit/','deadline','/\\btask/','/\\bexam/','practice','exercise'] },
+  { id:'tools', label:'Tools / subscription cost', color:'#9C5D2F',
+    ask:['paid tools','paid tool','tool cost','subscription','chatgpt plus','premium','free version','pro version','credits'],
+    match:['/paid (version|tool|plan|account)/','/free (version|tool|plan|account|trial)/','subscription','chatgpt plus','premium','/pro (version|plan|account)/','/(do|does) (we|i|one) (need|have) to (buy|pay|purchase)/','/\\bcredits?\\b/','/(is it|are they) free/','/kya .* free/'] },
+  { id:'positive', label:'Positive feedback', color:'#027A48',
+    ask:['positive','feedback','testimonial','testimonials','appreciation','appreciated','thanks','thank you','good feedback','praise','happy'],
+    match:['thank you','thanks','/\\bthnx/','/\\btysm/','/\\bty\\b/','great session','amazing','awesome','superb','excellent','wonderful','helpful','informative','loved it','/best (session|class|trainer)/','bahut accha','bahut acha','/\\bmast\\b/','/learn(t|ed) a lot/','insightful','well explained','clear explanation','/good (session|class|explanation)/','/nice (session|class|explanation)/','fantastic','brilliant'] },
+  { id:'negative', label:'Complaint / negative', color:'#7A271A',
+    ask:['negative','complaint','complaints','angry','unhappy','scam','fraud','frustrated','dissatisfied'],
+    match:['worst','pathetic','fraud','scam','/\\bcheat/','/waste of (money|time)/','useless','boring','not satisfied','disappoint','misleading','/\\bfake\\b/','bakwas','bekar','/\\bfool/','ridiculous','/poor (quality|session|audio)/','not worth','misled','/\\bli(e|ed|ar)\\b/','/not happy/','/very bad/','/\\bwtf\\b/','/time waste/'] },
+  { id:'question', label:'Asked a question', color:'#344054',
+    ask:['question','questions','doubt','doubts','queries','query'],
+    match:['/\\?/','/^(how|what|why|when|where|which|can|could|is|are|do|does|will|should|kya|kaise|kab|kaha)\\b/'] },
+  { id:'phone', label:'Shared a phone number', color:'#475467',
+    ask:['phone','phone number','mobile','number','numbers','contact number'],
+    match:['/(\\+?91[\\s-]?)?[6-9]\\d{4}[\\s-]?\\d{5}\\b/'] },
+  { id:'email', label:'Shared an email', color:'#475467',
+    ask:['email','emails','email id','mail id'],
+    match:['/[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}/'] },
+  { id:'link', label:'Shared a link', color:'#475467',
+    ask:['link','links','url','urls'],
+    match:['/https?:\\/\\/\\S+/','/\\bwww\\.\\S+/'] }
+];
+
+const STOP = new Set(('who whom whose what which is are was were the a an for to of in on and or any anyone anybody someone somebody people person persons participant participants ' +
+  'learner learners student students user users attendee attendees me my mine please pls plz show give find get list tell check has have had does do did asked ask asking asks said say says saying ' +
+  'mention mentioned mentions about with all details detail there here this that those these want wants wanted need needs needed message messages msg msgs chat chats how many much ' +
+  'i you we they it from by at be not no yes like so also if then than can could would should will one ones into their them him her his its is am been being ' +
+  'problem problems issue issues facing regarding related query queries regard trouble having got getting ' +
+  'kaun kisne kya kisko kisne hai hain ne ko ki ka ke batao dikhao wale wali jo kis kaunse kaun-kaun unka unki unke mujhe').split(/\s+/));
+
+function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+function compilePattern(p){
+  if (typeof p !== 'string' || !p.trim()) return null;
+  p = p.trim();
+  if (p.length > 2 && p[0] === '/' && p[p.length-1] === '/') {
+    try { return new RegExp(p.slice(1,-1), 'i'); } catch(e){ return null; }
+  }
+  const body = esc(p.toLowerCase()).replace(/\s+/g,'\\s+');
+  return new RegExp('(?<![a-z0-9])' + body, 'i');
+}
+
+function compileDict(dict){
+  return dict.map(c => ({
+    id:c.id, label:c.label||c.id, color:c.color||'#475467',
+    ask:(c.ask||[]).map(a => ' ' + String(a).toLowerCase().replace(/[^a-z0-9\s'?]/g,' ').replace(/\s+/g,' ').trim() + ' '),
+    res:(c.match||[]).map(compilePattern).filter(Boolean)
+  }));
+}
+
+/* ---------- Zoom saved chat (.txt) ---------- */
+const HEADER_RE = /^(\d{1,2}:\d{2}(?::\d{2})?(?:\s?[AaPp]\.?[Mm]\.?)?)\s+(?:From\s+)?(.+?)\s*:\s?(.*)$/;
+const TO_RE = /^(.*?)\s+[Tt]o\s+(.+)$/;
+const ROLE_RE = /\s*\((host|co-host|cohost|panelist|guest|me|attendee)\)\s*$/i;
+
+function splitSender(s){
+  s = s.replace(/\s+/g,' ').trim();
+  let name = s, to = '';
+  const m = s.match(TO_RE);
+  if (m) { name = m[1].trim(); to = m[2].trim(); }
+  let role = '';
+  const r = name.match(ROLE_RE);
+  if (r) { role = r[1].toLowerCase(); name = name.replace(ROLE_RE,'').trim(); }
+  return { name, to, role };
+}
+
+function parseZoomTxt(text, sourceName){
+  const lines = String(text).replace(/\r\n?/g,'\n').split('\n');
+  const msgs = [];
+  let cur = null;
+  for (const raw of lines){
+    if (!raw.trim()) { if (cur) cur.lines.push(''); continue; }
+    if (/^[\t ]/.test(raw)) {            // continuation (format B / new format)
+      if (cur) cur.lines.push(raw.replace(/^[\t ]+/,''));
+      continue;
+    }
+    const m = raw.match(HEADER_RE);
+    if (m) {
+      cur = { time:m[1].trim(), sender:m[2], lines:[m[3]] };
+      msgs.push(cur);
+    } else if (cur) {
+      cur.lines.push(raw);
+    }
+  }
+  return msgs.map((m, i) => {
+    const s = splitSender(m.sender);
+    return finishMessage({ time:m.time, name:s.name, role:s.role, to:s.to, text:m.lines.join('\n'), source:sourceName, idx:i });
+  });
+}
+
+const PUBLIC_RE = /everyone|all panelists|all attendees|hosts? (and|&) panelists|panelists (and|&) attendees|^all$/i;
+const REACT_RE = /^(Reacted to ".*?" with |Removed a .*? reaction from "|This message (has been|was) deleted)/i;
+const REPLY_RE = /^Replying to\s+"([\s\S]*?)"\s*\n?/i;
+
+function finishMessage(m){
+  let text = (m.text||'').replace(/\s+$/,'');
+  let kind = 'normal', replyTo = '';
+  if (REACT_RE.test(text.trim())) kind = 'reaction';
+  const r = text.match(REPLY_RE);
+  if (r) { replyTo = r[1].replace(/\s+/g,' '); text = text.slice(r[0].length).replace(/^\s*\n+/,''); }
+  text = text.replace(/^\n+/,'').trim();
+  const to = (m.to||'').trim();
+  const dm = /privately|direct message/i.test(to) || (!!to && !PUBLIC_RE.test(to));
+  return { time:m.time||'', secs:toSecs(m.time||''), name:(m.name||'').trim()||'(unknown)', role:m.role||'', to, dm, text, kind, replyTo, source:m.source, idx:m.idx };
+}
+
+function toSecs(t){
+  if (!t) return -1;
+  const m = String(t).trim().match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*([AaPp])?/);
+  if (!m) return -1;
+  let h = +m[1], mi = +m[2], s = +(m[3]||0);
+  if (m[4]) { const pm = m[4].toLowerCase()==='p'; if (pm && h < 12) h += 12; if (!pm && h === 12) h = 0; }
+  return h*3600 + mi*60 + s;
+}
+
+/* ---------- Zoom chat that was pasted into a spreadsheet ---------- */
+// Google Sheets / Excel copies of a saved chat come out as two columns:
+// "19:45:55 From Name to Hosts and panelists:" on one row, the message on the next.
+function looksLikeZoomSheet(rows){
+  let cells = 0, heads = 0;
+  for (const r of rows.slice(0, 300)){
+    const c = (r[0]||'').trim();
+    if (!c) continue;
+    cells++;
+    if (HEADER_RE.test(c) && /^\d{1,2}:\d{2}(:\d{2})?\s+(From\s+)?/i.test(c)) heads++;
+  }
+  return cells >= 4 && heads / cells >= 0.3;
+}
+function sheetToZoomText(rows){
+  const lines = [];
+  for (const r of rows){
+    r.forEach((cell, i) => {
+      const v = String(cell||'').replace(/\r/g,'');
+      if (!v.trim()) return;
+      if (i === 0 && HEADER_RE.test(v.trim())) lines.push(v.trim());
+      else v.split('\n').forEach(l => lines.push('\t' + l));
+    });
+  }
+  return lines.join('\n');
+}
+
+// In a webinar attendees can only write "to Hosts and panelists". Anyone who writes
+// "to Everyone" or replies "to <name>, Hosts and panelists" is on the host side.
+function detectHosts(msgs){
+  if (msgs.length < 30) return [];
+  const hp = msgs.filter(m => /hosts? (and|&) panelists/i.test(m.to)).length;
+  if (hp / msgs.length < 0.6) return [];
+  const hosts = new Set();
+  for (const m of msgs){
+    if (/^everyone$/i.test(m.to.trim()) || /,\s*hosts? (and|&) panelists/i.test(m.to)) hosts.add(m.name.toLowerCase().replace(/\s+/g,' ').trim());
+  }
+  return [...hosts];
+}
+
+/* ---------- CSV ---------- */
+function parseCSV(text, delim){
+  text = String(text).replace(/^\uFEFF/,'');
+  if (!delim) { const first = text.split('\n')[0]||''; delim = (first.split('\t').length > first.split(',').length) ? '\t' : ','; }
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++){
+    const ch = text[i];
+    if (q) {
+      if (ch === '"') { if (text[i+1] === '"') { cell += '"'; i++; } else q = false; }
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === delim) { row.push(cell); cell = ''; }
+    else if (ch === '\n') { row.push(cell); rows.push(row); row = []; cell = ''; }
+    else if (ch === '\r') { /* skip */ }
+    else cell += ch;
+  }
+  if (cell.length || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+
+function autoMap(headers){
+  const find = (cands) => { for (const re of cands){ const i = headers.findIndex(h => re.test(h.trim())); if (i >= 0) return i; } return -1; };
+  return {
+    time: find([/^time$/i,/^timestamp/i,/^sent/i,/^time /i,/^date/i,/time/i]),
+    from: find([/^from$/i,/^sender/i,/^name$/i,/user ?name/i,/asker/i,/^participant/i,/^attendee/i,/^user$/i,/^from /i,/display ?name/i,/^name /i,/name/i]),
+    to:   find([/^to$/i,/^recipient/i,/^to /i,/sent to/i]),
+    text: find([/^message$/i,/message/i,/^text$/i,/^question/i,/^chat/i,/content/i,/comment/i,/^msg/i,/body/i])
+  };
+}
+
+function looksLikeHeader(row){
+  return row.every(c => c.trim() === '' || (!/^\d{1,2}:\d{2}/.test(c.trim()) && c.trim().length < 40 && !/[.!?]\s/.test(c)));
+}
+
+function guessMapping(rows){
+  const first = rows[0] || [];
+  const header = looksLikeHeader(first) && rows.length > 1;
+  const headers = header ? first : first.map((_, i) => 'Column ' + (i+1));
+  let map = header ? autoMap(headers) : { time:-1, from:-1, to:-1, text:-1 };
+  const body = header ? rows.slice(1) : rows;
+  const cols = headers.length;
+  const avgLen = (i) => body.reduce((a, r) => a + ((r[i]||'').length), 0) / Math.max(1, body.length);
+  if (map.text < 0) { let best = -1, bl = -1; for (let i = 0; i < cols; i++){ if (i === map.from || i === map.time) continue; const l = avgLen(i); if (l > bl) { bl = l; best = i; } } map.text = best; }
+  if (map.time < 0) { for (let i = 0; i < cols; i++){ if (i === map.text) continue; const hits = body.filter(r => /^\d{1,2}:\d{2}/.test((r[i]||'').trim())).length; if (hits > body.length * 0.6) { map.time = i; break; } } }
+  if (map.from < 0) { let best = -1, bl = 1e9; for (let i = 0; i < cols; i++){ if (i === map.text || i === map.time || i === map.to) continue; const l = avgLen(i); if (l > 2 && l < bl) { bl = l; best = i; } } map.from = best; }
+  const confident = header && map.from >= 0 && map.text >= 0 && map.from !== map.text;
+  return { header, headers, map, confident };
+}
+
+function rowsToMessages(rows, mapping, header, sourceName){
+  const body = header ? rows.slice(1) : rows;
+  const out = [];
+  body.forEach((r, i) => {
+    const text = mapping.text >= 0 ? (r[mapping.text]||'') : '';
+    const name = mapping.from >= 0 ? (r[mapping.from]||'') : '';
+    if (!text.trim() && !name.trim()) return;
+    const s = splitSender(name || '(unknown)');
+    const to = mapping.to >= 0 ? (r[mapping.to]||'') : s.to;
+    out.push(finishMessage({ time: mapping.time >= 0 ? (r[mapping.time]||'') : '', name:s.name, role:s.role, to, text, source:sourceName, idx:i }));
+  });
+  return out;
+}
+
+/* ---------- Topic tagging ---------- */
+function hitsFor(text, res){
+  const hits = [];
+  for (const re of res){
+    re.lastIndex = 0;
+    const m = re.exec(text);
+    if (m) hits.push({ i:m.index, l:m[0].length, s:m[0] });
+  }
+  return hits;
+}
+
+function tagMessages(msgs, cdict){
+  for (const m of msgs){
+    m.cats = {};
+    for (const c of cdict){
+      const h = hitsFor(m.text, c.res);
+      if (h.length) m.cats[c.id] = h;
+    }
+    // "can't join the WhatsApp group" is a group problem, not a Zoom problem
+    if (m.cats.whatsapp && m.cats.join && !/\b(zoom|meeting|session|class|webinar|call)\b/i.test(m.text)) delete m.cats.join;
+  }
+  return msgs;
+}
+
+/* ---------- "problems only" narrowing ---------- */
+// When the ask says problem / unable / can't / not working, keep only messages that
+// actually describe trouble, not every mention of the topic.
+const TROUBLE = [
+  'unable','/can\'?t\\b/','/\\bcant\\b/','cannot','/can not/','/not able/','/couldn\'?t/','/\\bnot working/','/\\bnot (yet )?(added|part|in|on|there|visible|showing|opening|loading|getting|received|receiving|coming|reflecting|updated|uploaded|available|accessible)/',
+  '/(am|m|i\'?m|im|are|we\'?re) not (a )?part/','/(don\'?t|dont|do not|doesn\'?t|doesnt|didn\'?t|didnt|haven\'?t|havent|have not|never) (see|find|get|got|have|receiv|show|work|open|load|add)/',
+  '/\\bfull\\b/','only admin','no longer exist','expired','invalid','/\\berror/','/\\bissue/','/\\bproblem/','trouble','/\\bstuck/','/\\bfail/','/\\bbroken/','/\\bwrong\\b/','/not (yet )?receiv/','/\\bmissing/',
+  '/add me/','/(please|pls|plz|kindly) add/','/how (to|do i|can i) (join|be part|get|access)/','/where (is|are) the (group|link|community|recording|session)/','/access denied/','/locked/','/still waiting/','/no (link|access|group|recording|response|reply)/','/\\bhelp\\b/','/\\bwhy\\b/','/nahi (mil|aa|ho|dikh|chal|khul)/','/nhi (mil|aa|ho|dikh|chal|khul)/'
+].map(compilePattern).filter(Boolean);
+const TROUBLE_ASK_RE = /\b(unable|can'?t|cant|cannot|can not|not able|couldn'?t|not work|not working|not added|not part|not in|not get|not getting|not receiv|missing|full|expired|error|errors|problem|problems|issue|issues|trouble|facing|stuck|fail|failed|failing|broken|wrong|complain|help|denied|locked|no link|no access|no recording|didn'?t get|not opening|not loading|not showing|not visible|not available|not uploaded|not updated|not coming|not reflecting|not yet|still not|haven'?t|havent)\b/i;
+
+/* ---------- Ask interpretation ---------- */
+function interpret(cmd, cdict){
+  const out = { cats:[], keywords:[], filters:{}, all:false, raw:cmd, view:null, trouble:false };
+  let s = String(cmd||'').trim();
+  if (!s) return out;
+  s = s.replace(/"([^"]+)"|“([^”]+)”|'([^']{2,})'/g, (m, a, b, c) => { out.keywords.push((a||b||c).trim()); return ' '; });
+  const kw = s.match(/\b(?:keywords?|find|search|contains?|containing|with word|text)\s*:\s*(.+)$/i);
+  if (kw) { kw[1].split(/[,|]/).forEach(k => { k = k.trim(); if (k) out.keywords.push(k); }); s = s.slice(0, kw.index); }
+  const fr = s.match(/\b(?:from|by|name|sender|person)\s*:\s*([^,]+)/i);
+  if (fr) { out.filters.sender = fr[1].trim(); s = s.replace(fr[0],' '); }
+  const sf = s.match(/\b(?:session|file|source)\s*:\s*([^,]+)/i);
+  if (sf) { out.filters.source = sf[1].trim(); s = s.replace(sf[0],' '); }
+  const DM_RE = /\b(private|privately|direct message|direct messages|dms?)\b/ig;
+  if (DM_RE.test(s)) { out.filters.dm = true; s = s.replace(DM_RE,' '); }
+  const bt = s.match(/\bbetween\s+(\d{1,2}(?::\d{2})?(?:\s?[ap]m)?)\s*(?:and|to|-|–)\s*(\d{1,2}(?::\d{2})?(?:\s?[ap]m)?)/i);
+  if (bt) { out.filters.after = normTime(bt[1]); out.filters.before = normTime(bt[2]); s = s.replace(bt[0],' '); }
+  const af = s.match(/\b(?:after|since)\s+(\d{1,2}(?::\d{2})?(?:\s?[ap]m)?)\b/i);
+  if (af) { out.filters.after = normTime(af[1]); s = s.replace(af[0],' '); }
+  const bf = s.match(/\b(?:before|till|until|upto)\s+(\d{1,2}(?::\d{2})?(?:\s?[ap]m)?)\b/i);
+  if (bf) { out.filters.before = normTime(bf[1]); s = s.replace(bf[0],' '); }
+  const ALL_RE = /\b(all messages|everything|every message|full chat|whole chat|list all|show all|all chats?|entire chat)\b/ig;
+  if (ALL_RE.test(s)) { out.all = true; s = s.replace(ALL_RE,' '); }
+  if (/\b(by message|messages? wise|message view|what did|what are they saying|what people said)\b/i.test(s)) out.view = 'message';
+  if (/\b(by person|by name|names? only|person wise|who)\b/i.test(s)) out.view = out.view || 'person';
+
+  const low = ' ' + s.toLowerCase().replace(/[^a-z0-9\s'?]/g,' ').replace(/\s+/g,' ').trim() + ' ';
+  for (const c of cdict){
+    for (const t of c.ask){ if (t.trim() && low.includes(t)) { out.cats.push(c.id); break; } }
+  }
+  if (out.cats.includes('whatsapp') && out.cats.includes('join') && !/\b(zoom|meeting|session|class|webinar|call)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'join');
+  if (out.cats.length && TROUBLE_ASK_RE.test(s)) out.trouble = true;
+  if (out.cats.includes('phone') && out.cats.length > 1 && !/\b(phone|mobile|contact number)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'phone');
+  if (out.cats.includes('link') && out.cats.length > 1 && !/\b(url|shared (a )?link|links? shared)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'link');
+  if (out.cats.includes('question') && out.cats.length > 1) out.cats = out.cats.filter(c => c !== 'question');
+  if (out.cats.includes('support') && out.cats.length > 1 && !/\b(support|helpline|ticket|complain|escalat|callback|call back|no response|not responding|contact)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'support');
+
+  if (!out.cats.length && !out.keywords.length && !out.all){
+    const words = low.trim().split(/\s+/).filter(w => w && w.length > 2 && !STOP.has(w));
+    if (words.length) out.keywords.push(...words); else if (Object.keys(out.filters).length) out.all = true;
+  }
+  return out;
+}
+
+function normTime(t){ return toSecs(/[ap]m/i.test(t) || /:/.test(t) ? t : (t + ':00')); }
+
+/* ---------- Query ---------- */
+function runQuery(msgs, q, cdict){
+  const rows = runQueryInner(msgs, q, cdict, q.trouble);
+  if (q.trouble && !rows.length){ q.troubleFallback = true; return runQueryInner(msgs, q, cdict, false); }
+  q.troubleFallback = false;
+  return rows;
+}
+function runQueryInner(msgs, q, cdict, trouble){
+  const kwRes = q.keywords.map(k => compilePattern(k)).filter(Boolean);
+  const out = [];
+  for (const m of msgs){
+    if (q.filters.dm && !m.dm) continue;
+    if (q.filters.sender && !m.name.toLowerCase().includes(q.filters.sender.toLowerCase())) continue;
+    if (q.filters.source && !(m.source||'').toLowerCase().includes(q.filters.source.toLowerCase())) continue;
+    if (q.filters.after != null && q.filters.after >= 0 && m.secs >= 0 && m.secs < q.filters.after) continue;
+    if (q.filters.before != null && q.filters.before >= 0 && m.secs >= 0 && m.secs > q.filters.before) continue;
+    let catHit = [], hits = [];
+    if (q.cats.length){
+      for (const c of q.cats){ if (m.cats && m.cats[c]) { catHit.push(c); hits.push(...m.cats[c]); } }
+      if (!catHit.length) continue;
+    }
+    if (kwRes.length){
+      const kh = hitsFor(m.text, kwRes);
+      if (!kh.length) continue;
+      hits.push(...kh);
+    }
+    if (!q.cats.length && !kwRes.length && !q.all) continue;
+    if (trouble){
+      const th = hitsFor(m.text, TROUBLE);
+      if (!th.length) continue;
+      hits.push(...th);
+    }
+    out.push({ m, cats:catHit, hits });
+  }
+  return out;
+}
+
+function groupByPerson(rows){
+  const map = new Map();
+  for (const r of rows){
+    const key = r.m.name.toLowerCase().replace(/\s+/g,' ').trim();
+    let p = map.get(key);
+    if (!p) { p = { name:r.m.name, rows:[], cats:new Set(), sources:new Set(), first:r.m.secs, firstT:r.m.time }; map.set(key, p); }
+    p.rows.push(r); r.cats.forEach(c => p.cats.add(c)); p.sources.add(r.m.source);
+    if (r.m.secs >= 0 && (p.first < 0 || r.m.secs < p.first)) { p.first = r.m.secs; p.firstT = r.m.time; }
+  }
+  return [...map.values()];
+}
+
+root.ZCA = { DEFAULT_DICT, compileDict, parseZoomTxt, parseCSV, guessMapping, rowsToMessages, tagMessages, interpret, runQuery, groupByPerson, hitsFor, compilePattern, toSecs, looksLikeZoomSheet, sheetToZoomText, detectHosts };
+})(typeof window !== 'undefined' ? window : globalThis);
+// @@core-end
+</script>
+
+<script>
+/* ====================================================================
+   UI
+   ==================================================================== */
+(function(){
+'use strict';
+const Z = window.ZCA;
+const $ = (s) => document.querySelector(s);
+const LS = 'zca.v1';
+
+const prefs = (() => { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch(e){ return {}; } })();
+function savePrefs(){ try { localStorage.setItem(LS, JSON.stringify(prefs)); } catch(e){} }
+
+let dict = Array.isArray(prefs.dict) && prefs.dict.length ? prefs.dict : Z.DEFAULT_DICT;
+let cdict = Z.compileDict(dict);
+const catById = () => Object.fromEntries(cdict.map(c => [c.id, c]));
+
+const state = { sources:[], query:null, rows:[], view:'person', sort:{ key:'time', dir:1 }, textFilter:'', limit:300 };
+const PAGE = 300;
+let srcSeq = 0;
+
+/* ---------- helpers ---------- */
+const escH = (s) => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1800); }
+function tint(hex, a){ const n = parseInt(hex.slice(1),16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+function tag(cid){ const c = catById()[cid]; if (!c) return ''; return `<span class="tag" style="background:${tint(c.color,.12)};color:${c.color}">${escH(c.label)}</span>`; }
+function highlight(text, hits){
+  if (!hits || !hits.length) return escH(text);
+  const spans = hits.filter(h => h.l > 0).map(h => [h.i, h.i + h.l]).sort((a,b) => a[0]-b[0]);
+  const merged = [];
+  for (const s of spans){ const last = merged[merged.length-1]; if (last && s[0] <= last[1]) last[1] = Math.max(last[1], s[1]); else merged.push(s.slice()); }
+  let out = '', pos = 0;
+  for (const [a,b] of merged){ out += escH(text.slice(pos,a)) + '<mark>' + escH(text.slice(a,b)) + '</mark>'; pos = b; }
+  return out + escH(text.slice(pos));
+}
+function copyText(t){
+  if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(t).then(() => toast('Copied'));
+  const ta = document.createElement('textarea'); ta.value = t; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast('Copied'); } catch(e){ toast('Copy failed'); } ta.remove();
+}
+function download(name, content, type){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+}
+function csvCell(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }
+
+/* ---------- sources ---------- */
+function addSource(src){
+  src.id = ++srcSeq; src.on = true;
+  markHosts(src);
+  const twin = state.sources.find(o => sameChat(o, src));
+  if (twin) { src.on = false; src.dupOf = twin.name; toast(`${src.name} looks like the same chat as ${twin.name}, so it starts switched off`); }
+  state.sources.push(src);
+  retag();
+  renderSources();
+  refreshOverview();
+  if (state.query) run(state.query.raw);
+}
+function sameChat(a, b){
+  if (a.messages.length !== b.messages.length || a.messages.length < 5) return false;
+  const key = (m) => m.time + '|' + m.name + '|' + m.text.replace(/["\s]+/g,'');
+  const idx = [0, 1, 2, a.messages.length - 2, a.messages.length - 1];
+  return idx.every(i => key(a.messages[i]) === key(b.messages[i]));
+}
+function retag(){ for (const s of state.sources) Z.tagMessages(s.messages, cdict); }
+function markHosts(src){
+  src.hosts = Z.detectHosts(src.messages);
+  const set = new Set(src.hosts);
+  for (const m of src.messages) m.autoRole = set.has(m.name.toLowerCase().replace(/\s+/g,' ').trim()) ? 'host' : '';
+}
+function detectedHosts(){
+  const names = new Map();
+  for (const s of state.sources){ if (!s.on) continue; for (const m of s.messages){ if (m.autoRole || (m.role && /host|panelist/.test(m.role))) names.set(m.name.toLowerCase(), m.name); } }
+  return [...names.values()];
+}
+
+function readFile(file){
+  const name = file.name;
+  const ext = (name.split('.').pop() || '').toLowerCase();
+  if (ext === 'xlsx' || ext === 'xls') return readExcel(file);
+  return file.text().then(text => ingestText(text, name, ext));
+}
+
+function ingestText(text, name, ext){
+  const txtMsgs = Z.parseZoomTxt(text, name);
+  const csvRows = (ext === 'csv' || ext === 'tsv' || (ext !== 'txt' && text.includes(','))) ? Z.parseCSV(text) : [];
+  const csvWide = csvRows.length > 1 && csvRows[0].length >= 2 && csvRows.filter(r => r.length === csvRows[0].length).length > csvRows.length * 0.7;
+  if (csvWide && Z.looksLikeZoomSheet(csvRows)) {
+    const msgs = Z.parseZoomTxt(Z.sheetToZoomText(csvRows), name);
+    if (msgs.length) { addSource({ name, kind:'zoom', messages:msgs }); return; }
+  }
+  if (txtMsgs.length >= 2 && (!csvWide || txtMsgs.length >= csvRows.length * 0.8 || ext === 'txt')) {
+    addSource({ name, kind:'zoom', messages:txtMsgs });
+    return;
+  }
+  if (csvWide) { addCsvSource(name, csvRows); return; }
+  if (txtMsgs.length) { addSource({ name, kind:'zoom', messages:txtMsgs }); return; }
+  toast('Could not read ' + name + '. Is it a Zoom saved chat or a CSV?');
+}
+
+function addCsvSource(name, rows){
+  const g = Z.guessMapping(rows);
+  const src = { name, kind:'csv', rows, header:g.header, headers:g.headers, map:g.map, messages:[] };
+  src.messages = Z.rowsToMessages(rows, g.map, g.header, name);
+  addSource(src);
+  if (!g.confident) openMap(src, true);
+}
+
+function readExcel(file){
+  const load = window.XLSX ? Promise.resolve() : new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s);
+  });
+  return load.then(() => file.arrayBuffer()).then(buf => {
+    const wb = XLSX.read(buf, { type:'array' });
+    wb.SheetNames.forEach(sn => {
+      const csv = XLSX.utils.sheet_to_csv(wb.Sheets[sn]);
+      const rows = Z.parseCSV(csv, ',');
+      if (rows.length > 1) addCsvSource(file.name + (wb.SheetNames.length > 1 ? ' / ' + sn : ''), rows);
+    });
+  }).catch(() => toast('Could not read the Excel file. Save it as CSV and try again.'));
+}
+
+function renderSources(){
+  const ul = $('#sources'); ul.innerHTML = '';
+  $('#srcCount').textContent = state.sources.length ? state.sources.length + (state.sources.length === 1 ? ' file' : ' files') : 'none yet';
+  for (const s of state.sources){
+    const li = document.createElement('li'); li.className = 'src' + (s.on ? '' : ' off');
+    li.innerHTML = `<input type="checkbox" ${s.on ? 'checked' : ''} aria-label="Include ${escH(s.name)}">
+      <span class="nm" title="${escH(s.name)}">${escH(s.name)}</span>
+      <span class="ct" title="${s.dupOf ? 'Same chat as ' + escH(s.dupOf) : ''}${s.hosts && s.hosts.length ? ' Host side: ' + escH(s.hosts.join(', ')) : ''}">${s.messages.length} msgs${s.hosts && s.hosts.length ? ' · ' + s.hosts.length + ' host' : ''}${s.dupOf ? ' · duplicate' : ''}</span>
+      ${s.kind === 'csv' ? '<button data-map title="Choose which columns to use">Columns</button>' : ''}
+      <button data-x title="Remove">✕</button>`;
+    li.querySelector('input').onchange = (e) => { s.on = e.target.checked; li.classList.toggle('off', !s.on); refreshOverview(); if (state.query) run(state.query.raw); };
+    li.querySelector('[data-x]').onclick = () => { state.sources = state.sources.filter(x => x !== s); renderSources(); refreshOverview(); if (state.query) run(state.query.raw); };
+    const mb = li.querySelector('[data-map]'); if (mb) mb.onclick = () => openMap(s, false);
+    ul.appendChild(li);
+  }
+}
+
+/* ---------- visible message pool ---------- */
+function staffList(){ return ($('#staff').value || '').split(/[\n,;]/).map(s => s.trim().toLowerCase()).filter(Boolean); }
+function pool(){
+  const staff = staffList(), hideRole = $('#optRole').checked, hideDM = $('#optDM').checked, hideReact = $('#optReact').checked;
+  const out = [];
+  for (const s of state.sources){
+    if (!s.on) continue;
+    for (const m of s.messages){
+      if (hideReact && m.kind === 'reaction') continue;
+      if (hideReact && !m.text) continue;
+      if (hideDM && m.dm) continue;
+      if (hideRole && ((m.role && /host|panelist/.test(m.role)) || m.autoRole)) continue;
+      const ln = m.name.toLowerCase();
+      if (staff.length && staff.some(st => ln.includes(st))) continue;
+      out.push(m);
+    }
+  }
+  return out;
+}
+
+/* ---------- overview ---------- */
+const META = { question:1, phone:1, email:1, link:1 };
+function refreshOverview(){
+  const hn = detectedHosts();
+  $('#hostNote').textContent = hn.length ? `Detected from the chat: ${hn.slice(0,6).join(', ')}${hn.length > 6 ? ` and ${hn.length - 6} more` : ''}` : '';
+  const msgs = pool();
+  const ul = $('#buckets'); ul.innerHTML = '';
+  const people = new Set(msgs.map(m => m.name.toLowerCase()));
+  $('#ovSub').textContent = msgs.length ? `${msgs.length} msgs, ${people.size} people` : '';
+  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; return; }
+  const counts = cdict.map(c => {
+    const ppl = new Set(); let n = 0;
+    for (const m of msgs){ if (m.cats[c.id]) { n++; ppl.add(m.name.toLowerCase()); } }
+    return { c, n, p:ppl.size };
+  }).filter(x => x.n > 0).sort((a,b) => (META[a.c.id]||0) - (META[b.c.id]||0) || b.p - a.p || b.n - a.n);
+  const max = Math.max(1, ...counts.map(x => x.p));
+  const active = state.query && state.query.cats.length === 1 && !state.query.keywords.length ? state.query.cats[0] : null;
+  for (const x of counts){
+    const li = document.createElement('li');
+    li.innerHTML = `<button class="bucket ${active === x.c.id ? 'on' : ''}" title="${x.n} messages from ${x.p} people"><span class="dot" style="background:${x.c.color}"></span><span class="lb">${escH(x.c.label)}</span><span class="bar"><i style="width:${Math.round(100*x.p/max)}%;background:${x.c.color}"></i></span><span class="n">${x.p}</span></button>`;
+    li.querySelector('button').onclick = () => { $('#ask').value = x.c.label.toLowerCase(); run(x.c.label.toLowerCase(), [x.c.id]); };
+    ul.appendChild(li);
+  }
+}
+
+/* ---------- ask ---------- */
+function renderReading(q){
+  const el = $('#reading');
+  if (!q || !q.raw.trim()) { el.innerHTML = ''; return; }
+  const bits = [];
+  const cb = catById();
+  for (const c of q.cats){ const cat = cb[c]; if (cat) bits.push(`<span class="chip rm" data-cat="${c}" title="Remove this topic"><span class="dot" style="background:${cat.color}"></span>${escH(cat.label)}<span class="x">×</span></span>`); }
+  for (const k of q.keywords) bits.push(`<span class="chip kw" title="Messages containing this text">“${escH(k)}”</span>`);
+  if (q.filters.sender) bits.push(`<span class="chip flt">from ${escH(q.filters.sender)}</span>`);
+  if (q.filters.source) bits.push(`<span class="chip flt">in ${escH(q.filters.source)}</span>`);
+  if (q.filters.dm) bits.push(`<span class="chip flt">private messages only</span>`);
+  if (q.filters.after != null && q.filters.after >= 0) bits.push(`<span class="chip flt">after ${fmtSecs(q.filters.after)}</span>`);
+  if (q.filters.before != null && q.filters.before >= 0) bits.push(`<span class="chip flt">before ${fmtSecs(q.filters.before)}</span>`);
+  if (q.trouble && !q.troubleFallback) bits.push(`<span class="chip flt" title="Only messages that describe a problem (unable, not working, not added, expired, full...)">problems only</span>`);
+  if (q.all && !q.cats.length && !q.keywords.length) bits.push(`<span class="chip">every message</span>`);
+  let lead = 'Looking for';
+  if (q.cats.length && q.keywords.length) lead = 'Looking for these topics, and only messages containing';
+  else if (q.cats.length > 1) lead = 'Looking for any of';
+  const note = q.troubleFallback ? `<span class="lead" style="margin-left:6px">no message describes a problem, so showing every mention</span>` : '';
+  el.innerHTML = bits.length ? `<span class="lead">${lead}</span>${bits.join('')}${note}` : '<span class="lead">Type a topic, a name, or put exact text in quotes.</span>';
+  el.querySelectorAll('[data-cat]').forEach(ch => ch.onclick = () => { const cats = q.cats.filter(c => c !== ch.dataset.cat); run(q.raw, cats); });
+}
+function fmtSecs(s){ const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
+
+function run(text, forceCats){
+  const q = Z.interpret(text, cdict);
+  if (forceCats) { q.cats = forceCats; }
+  state.query = q; state.limit = PAGE;
+  if (q.view) { state.view = q.view; syncViewSeg(); }
+  const rows = Z.runQuery(pool(), q, cdict);
+  state.rows = rows;
+  renderReading(q);
+  renderResults();
+  refreshOverview();
+}
+
+/* ---------- results ---------- */
+function syncViewSeg(){ $('#viewSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === state.view)); }
+
+function filteredRows(){
+  const f = state.textFilter.trim().toLowerCase();
+  if (!f) return state.rows;
+  return state.rows.filter(r => r.m.name.toLowerCase().includes(f) || r.m.text.toLowerCase().includes(f) || (r.m.source||'').toLowerCase().includes(f));
+}
+
+function renderResults(){
+  const body = $('#rBody');
+  const q = state.query;
+  const rows = filteredRows();
+  const cb = catById();
+  const multiSrc = new Set(state.sources.filter(s => s.on).map(s => s.name)).size > 1;
+  if (!q || !q.raw.trim()){
+    $('#rTitle').textContent = 'Results'; $('#rSub').textContent = '';
+    body.innerHTML = `<div class="blank"><h2>${state.sources.length ? 'Ask a question' : 'Add a chat, then ask a question'}</h2><p>${state.sources.length ? 'Type in plain words. Names, topics and quoted text all work.' : 'Drop a Zoom saved chat or CSV on the left, or load the sample.'}</p><div class="ex" id="examples"></div></div>`;
+    fillExamples();
+    return;
+  }
+  const people = Z.groupByPerson(rows);
+  $('#rTitle').textContent = `${people.length} ${people.length === 1 ? 'person' : 'people'}`;
+  $('#rSub').textContent = `${rows.length} ${rows.length === 1 ? 'message' : 'messages'}${state.textFilter ? ' (filtered)' : ''}`;
+  if (!rows.length){
+    body.innerHTML = `<div class="blank"><h2>No matches</h2><p>${!pool().length ? 'No visible messages. Check the filters on the left.' : 'Try fewer words, a different spelling, or put exact text in quotes.'}</p></div>`;
+    return;
+  }
+  const sort = state.sort;
+  const arrow = (k) => sort.key === k ? `<span class="arr">${sort.dir > 0 ? '▲' : '▼'}</span>` : '';
+  if (state.view === 'person'){
+    const list = people.slice().sort((a,b) => {
+      if (sort.key === 'name') return a.name.localeCompare(b.name) * sort.dir;
+      if (sort.key === 'count') return (a.rows.length - b.rows.length) * sort.dir;
+      return ((a.first < 0 ? 1e9 : a.first) - (b.first < 0 ? 1e9 : b.first)) * sort.dir;
+    });
+    const shown = list.slice(0, state.limit);
+    body.innerHTML = `<div class="tablewrap"><table><thead><tr>
+      <th data-k="time">First at${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th data-k="count">Msgs${arrow('count')}</th><th>Messages</th>${q.cats.length !== 1 || q.cats.length && q.keywords.length ? '<th>Topics</th>' : ''}
+      </tr></thead><tbody>${shown.map(p => `<tr>
+        <td class="t">${escH(p.firstT || '')}</td>
+        <td class="n">${escH(p.name)}${multiSrc ? `<small>${escH([...p.sources].join(', '))}</small>` : ''}</td>
+        <td class="c">${p.rows.length}</td>
+        <td class="m"><ul class="plist">${p.rows.map(r => `<li><span class="pt">${escH(r.m.time)}${r.m.dm ? ' · private' : ''}</span><span class="pm">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</span></li>`).join('')}</ul></td>
+        ${q.cats.length !== 1 || q.cats.length && q.keywords.length ? `<td class="c">${[...p.cats].map(tag).join('')}</td>` : ''}
+      </tr>`).join('')}</tbody></table></div>${more(list.length)}`;
+  } else {
+    const list = rows.slice().sort((a,b) => {
+      if (sort.key === 'name') return a.m.name.localeCompare(b.m.name) * sort.dir;
+      return ((a.m.secs < 0 ? a.m.idx : a.m.secs) - (b.m.secs < 0 ? b.m.idx : b.m.secs)) * sort.dir;
+    });
+    const shown = list.slice(0, state.limit);
+    body.innerHTML = `<div class="tablewrap"><table><thead><tr>
+      <th data-k="time">Time${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th>Message</th>${q.cats.length !== 1 ? '<th>Topics</th>' : ''}${multiSrc ? '<th>Source</th>' : ''}
+      </tr></thead><tbody>${shown.map(r => `<tr>
+        <td class="t">${escH(r.m.time)}</td>
+        <td class="n">${escH(r.m.name)}${r.m.dm ? `<small>to ${escH(r.m.to)}</small>` : ''}</td>
+        <td class="m">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</td>
+        ${q.cats.length !== 1 ? `<td class="c">${r.cats.map(tag).join('')}</td>` : ''}
+        ${multiSrc ? `<td class="s" title="${escH(r.m.source)}">${escH(r.m.source)}</td>` : ''}
+      </tr>`).join('')}</tbody></table></div>${more(list.length)}`;
+  }
+  const mb = body.querySelector('[data-more]'); if (mb) mb.onclick = () => { state.limit += PAGE; renderResults(); };
+  const ab = body.querySelector('[data-all]'); if (ab) ab.onclick = () => { state.limit = 1e9; renderResults(); };
+  body.querySelectorAll('th[data-k]').forEach(th => th.onclick = () => { const k = th.dataset.k; if (state.sort.key === k) state.sort.dir *= -1; else state.sort = { key:k, dir:1 }; renderResults(); });
+}
+
+function more(total){
+  if (total <= state.limit) return '';
+  return `<div class="row" style="padding:10px 14px;border-top:1px solid var(--line-2)"><span class="hits">Showing ${state.limit} of ${total}. The CSV download always has everything.</span><button class="btn sm" data-more>Show ${Math.min(PAGE, total - state.limit)} more</button><button class="btn quiet sm" data-all>Show all</button></div>`;
+}
+const EXAMPLES = ['who asked for refund','who has LMS problem','who is unable to join the whatsapp group','who wants the recording','anyone unable to join the session','audio or screen issues','who asked about certificate','positive feedback','complaints','who shared phone number','"chatgpt plus"','payment after 10:30'];
+function fillExamples(){
+  const ex = $('#examples'); if (!ex) return;
+  ex.innerHTML = EXAMPLES.map(e => `<button>${escH(e)}</button>`).join('');
+  ex.querySelectorAll('button').forEach(b => b.onclick = () => { $('#ask').value = b.textContent; run(b.textContent); $('#ask').focus(); });
+}
+function fillQuick(){
+  const el = $('#quick'); el.querySelectorAll('.qchip').forEach(x => x.remove());
+  const cb = catById();
+  ['refund','lms','whatsapp','join','recording','certificate','payment','login','av','support','positive','negative'].forEach(id => {
+    const c = cb[id]; if (!c) return;
+    const b = document.createElement('button'); b.className = 'qchip'; b.innerHTML = `<span class="dot" style="background:${c.color}"></span>${escH(c.label)}`;
+    b.onclick = () => { $('#ask').value = c.label.toLowerCase(); run(c.label.toLowerCase(), [id]); };
+    el.appendChild(b);
+  });
+}
+
+/* ---------- export ---------- */
+function exportCsv(){
+  const rows = filteredRows(); if (!rows.length) { toast('Nothing to export'); return; }
+  const cb = catById(); const lab = (ids) => ids.map(i => cb[i] ? cb[i].label : i).join('; ');
+  let lines;
+  if (state.view === 'person'){
+    lines = [['Name','Messages','First at','Topics','Source','All matching messages'].map(csvCell).join(',')];
+    for (const p of Z.groupByPerson(rows)) lines.push([p.name, p.rows.length, p.firstT || '', lab([...p.cats]), [...p.sources].join('; '), p.rows.map(r => `[${r.m.time}] ${r.m.text}`).join('\n')].map(csvCell).join(','));
+  } else {
+    lines = [['Time','Name','Sent to','Message','Topics','Source'].map(csvCell).join(',')];
+    for (const r of rows) lines.push([r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.source].map(csvCell).join(','));
+  }
+  const slug = (state.query.raw || 'results').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'results';
+  download(`zoom-chat-${slug}-${state.view}.csv`, '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
+}
+function copyNames(){ const p = Z.groupByPerson(filteredRows()); if (!p.length) { toast('Nothing to copy'); return; } copyText(p.map(x => x.name).join('\n')); }
+function copyList(){
+  const p = Z.groupByPerson(filteredRows()); if (!p.length) { toast('Nothing to copy'); return; }
+  copyText(p.map(x => `${x.name}\n${x.rows.map(r => `  [${r.m.time}] ${r.m.text}`).join('\n')}`).join('\n\n'));
+}
+
+/* ---------- column mapping modal ---------- */
+let mapSrc = null;
+function openMap(src, firstTime){
+  mapSrc = src;
+  $('#mapIntro').textContent = firstTime ? `Not sure how to read "${src.name}". Pick the columns that hold the sender and the message.` : `Columns for "${src.name}".`;
+  const opts = (sel) => `<option value="-1">— none —</option>` + src.headers.map((h, i) => `<option value="${i}" ${sel === i ? 'selected' : ''}>${escH(h)}</option>`).join('');
+  $('#mapFrom').innerHTML = opts(src.map.from); $('#mapText').innerHTML = opts(src.map.text); $('#mapTime').innerHTML = opts(src.map.time); $('#mapTo').innerHTML = opts(src.map.to);
+  $('#mapHeader').checked = src.header;
+  $('#mapPreview').innerHTML = `<table><thead><tr>${src.headers.map(h => `<th>${escH(h)}</th>`).join('')}</tr></thead><tbody>${src.rows.slice(src.header ? 1 : 0, (src.header ? 1 : 0) + 4).map(r => `<tr>${src.headers.map((_, i) => `<td>${escH((r[i]||'').slice(0,60))}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  $('#mMap').classList.add('open');
+}
+$('#mapApply').onclick = () => {
+  if (!mapSrc) return;
+  mapSrc.map = { from:+$('#mapFrom').value, text:+$('#mapText').value, time:+$('#mapTime').value, to:+$('#mapTo').value };
+  mapSrc.header = $('#mapHeader').checked;
+  mapSrc.messages = Z.rowsToMessages(mapSrc.rows, mapSrc.map, mapSrc.header, mapSrc.name);
+  markHosts(mapSrc);
+  Z.tagMessages(mapSrc.messages, cdict);
+  $('#mMap').classList.remove('open');
+  renderSources(); refreshOverview(); if (state.query) run(state.query.raw);
+};
+$('#mapHeader').onchange = () => { if (mapSrc) { mapSrc.header = $('#mapHeader').checked; mapSrc.headers = mapSrc.header ? mapSrc.rows[0] : mapSrc.rows[0].map((_, i) => 'Column ' + (i+1)); openMap(mapSrc, false); } };
+
+/* ---------- settings modal ---------- */
+$('#btnSettings').onclick = () => { $('#dictJson').value = JSON.stringify(dict, null, 2); $('#dictErr').classList.remove('show'); $('#mSettings').classList.add('open'); };
+$('#dictSave').onclick = () => {
+  try {
+    const d = JSON.parse($('#dictJson').value);
+    if (!Array.isArray(d) || !d.every(c => c && typeof c.id === 'string' && Array.isArray(c.match))) throw new Error('Expected a list of topics, each with an "id", "label", "ask" list and "match" list.');
+    dict = d; cdict = Z.compileDict(dict); prefs.dict = dict; savePrefs();
+    retag(); fillQuick(); refreshOverview(); if (state.query) run(state.query.raw);
+    $('#mSettings').classList.remove('open'); toast('Dictionary saved');
+  } catch(e){ const el = $('#dictErr'); el.textContent = 'Could not save: ' + e.message; el.classList.add('show'); }
+};
+$('#dictReset').onclick = () => { $('#dictJson').value = JSON.stringify(Z.DEFAULT_DICT, null, 2); };
+$('#dictExport').onclick = () => download('zoom-chat-analyzer-dictionary.json', JSON.stringify(dict, null, 2), 'application/json');
+document.querySelectorAll('[data-close]').forEach(b => b.onclick = () => b.closest('.modal').classList.remove('open'));
+document.querySelectorAll('.modal').forEach(m => m.addEventListener('click', (e) => { if (e.target === m) m.classList.remove('open'); }));
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('#ask').focus(); $('#ask').select(); }
+});
+
+/* ---------- wiring ---------- */
+const drop = $('#drop'), fileIn = $('#file');
+drop.onclick = () => fileIn.click();
+drop.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileIn.click(); } };
+fileIn.onchange = () => { [...fileIn.files].forEach(readFile); fileIn.value = ''; };
+['dragenter','dragover'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(ev => document.addEventListener(ev, (e) => { e.preventDefault(); if (ev === 'drop' || e.target === document.documentElement) drop.classList.remove('over'); }));
+document.addEventListener('drop', (e) => { if (e.dataTransfer && e.dataTransfer.files.length) [...e.dataTransfer.files].forEach(readFile); });
+
+let pasteN = 0;
+$('#btnPaste').onclick = () => {
+  const t = $('#paste').value; if (!t.trim()) { toast('Paste a chat first'); return; }
+  ingestText(t, 'Pasted chat ' + (++pasteN), 'txt'); $('#paste').value = '';
+};
+$('#btnClear').onclick = () => { state.sources = []; state.query = null; state.rows = []; $('#ask').value = ''; renderSources(); refreshOverview(); renderReading(null); renderResults(); };
+
+$('#btnGo').onclick = () => run($('#ask').value);
+$('#ask').addEventListener('keydown', (e) => { if (e.key === 'Enter') run($('#ask').value); });
+let liveT; $('#ask').addEventListener('input', () => { clearTimeout(liveT); liveT = setTimeout(() => renderReading(Z.interpret($('#ask').value, cdict)), 120); });
+
+$('#viewSeg').querySelectorAll('button').forEach(b => b.onclick = () => { state.view = b.dataset.v; syncViewSeg(); renderResults(); });
+$('#rFilter').addEventListener('input', (e) => { state.textFilter = e.target.value; renderResults(); });
+$('#btnCsv').onclick = exportCsv; $('#btnNames').onclick = copyNames; $('#btnCopy').onclick = copyList;
+
+['#staff'].forEach(s => $(s).addEventListener('input', () => { prefs.staff = $('#staff').value; savePrefs(); refreshOverview(); if (state.query) run(state.query.raw); }));
+['#optRole','#optDM','#optReact'].forEach(s => $(s).addEventListener('change', () => { prefs.opts = { role:$('#optRole').checked, dm:$('#optDM').checked, react:$('#optReact').checked }; savePrefs(); refreshOverview(); if (state.query) run(state.query.raw); }));
+if (typeof prefs.staff === 'string') $('#staff').value = prefs.staff;
+if (prefs.opts) { $('#optRole').checked = !!prefs.opts.role; $('#optDM').checked = !!prefs.opts.dm; $('#optReact').checked = prefs.opts.react !== false; }
+
+/* ---------- sample ---------- */
+const SAMPLE = [
+'10:02:14\tPriya Sharma:\tHello everyone, good morning',
+'10:02:31\tRahul Verma:\tHi, am I audible? audio is breaking from my side',
+'10:03:05\tBe10x Support:\tWelcome all! Please drop your questions in the chat',
+'10:03:40\tNeha Gupta:\tI am not able to join the whatsapp group, the link says invite expired',
+'10:04:12\tAmit Kumar:\tSame here, whatsapp group link not working',
+'10:05:00\tSneha Iyer:\tCan I get the recording of yesterday\'s session? I missed it',
+'10:05:45\tVikram Singh:\tI want refund. I paid on 28 Aug but not able to attend the sessions',
+'10:06:10\tBe10x Support:\tReacted to "I want refund. I pa..." with 👍',
+'10:06:30\tPooja Mehta:\tLMS is showing module 2 locked, how to unlock?',
+'10:07:02\tKaran Malhotra to Be10x Support(Direct Message):\tMy lms login is not working, password reset mail not received',
+'10:07:40\tAnanya Das:\tReplying to "LMS is showing modu..."',
+'\t',
+'\tSame problem, LMS dashboard not loading on mobile',
+'10:08:15\tRohan Joshi:\twill we get certificate after this course?',
+'10:09:00\tDeepak Nair:\tplease share support email id, no one is replying on call',
+'10:09:40\tMeera Krishnan:\tGreat session so far, very informative!',
+'10:10:22\tArjun Reddy:\tpaisa wapas chahiye, this is not what was promised',
+'10:11:05\tKavya Nair:\t9876543210 please add me in whatsapp group',
+'10:12:00\tSanjay Patel:\tIs chatgpt plus required or free version works?',
+'10:12:44\tPriya Sharma:\twhen is the next session? timing?',
+'10:13:30\tRahul Verma:\tRemoved a 👍 reaction from "Great session so far..."',
+'10:14:02\tNikhil Rao:\trefund process kya hai, please tell',
+'10:14:40\tShruti Kulkarni:\tlms link not opening, showing access denied',
+'10:15:11\tTanvi Shah:\tNot added to the group yet, my number is 9123456780',
+'10:15:50\tAakash Jain:\tassignment submission deadline?',
+'10:16:20\tManish Tiwari:\tscreen is not visible, only black screen',
+'10:17:05\tSuresh Raina to Be10x Support(Direct Message):\tI want to cancel my enrollment and get refund',
+'10:17:44\tRitika Bansal:\thow to access lms? not getting the link on email',
+'10:18:30\tAnanya Das:\tThank you team, well explained 🙏',
+'10:19:10\tMohit Agarwal:\tworst session, complete waste of money. want refund',
+'10:20:00\tPriya Sharma:\tcan\'t hear anything now, is it only me?'
+].join('\n');
+$('#btnSample').onclick = () => { ingestText(SAMPLE, 'Sample session chat.txt', 'txt'); $('#ask').value = 'who asked for refund'; run('who asked for refund'); };
+
+fillQuick(); renderResults(); renderSources(); refreshOverview();
+})();
+</script>
+</body>
+</html>
