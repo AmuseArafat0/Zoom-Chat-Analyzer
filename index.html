@@ -5,30 +5,37 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Zoom Chat Analyzer</title>
 <meta name="description" content="Ask questions of your Zoom chat. Paste a saved chat or drop .txt / .csv / .xlsx exports, then ask things like 'who asked for refund' or 'who could not join the WhatsApp group'. Runs fully in your browser.">
+<meta name="theme-color" content="#5FA8D3">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 64 64%22%3E %3Crect width=%2264%22 height=%2264%22 rx=%2214%22 fill=%22%235FA8D3%22/%3E %3Cpath d=%22M13 40 C11 18 20 11 32 11 C44 11 53 18 51 40 C50 46 46 50 42 50 L22 50 C18 50 14 46 13 40 Z%22 fill=%22%232E3F5C%22/%3E %3Ccircle cx=%2232%22 cy=%2236%22 r=%2217.5%22 fill=%22%23FFDCC2%22/%3E %3Cpath d=%22M15 37 C14 20 22 15 32 15 C42 15 50 20 49 37 C46 30 42 28 40 31 C38 25 34 24 32 30 C30 24 26 25 24 31 C22 28 18 30 15 37 Z%22 fill=%22%232E3F5C%22/%3E %3Cpath d=%22M14 34 C16 20 24 16 32 16 C40 16 48 20 50 34%22 fill=%22none%22 stroke=%22%2316202E%22 stroke-width=%222.6%22 stroke-linecap=%22round%22/%3E %3Crect x=%2211%22 y=%2232%22 width=%226.5%22 height=%2210%22 rx=%223%22 fill=%22%2316202E%22/%3E%3Crect x=%2246.5%22 y=%2232%22 width=%226.5%22 height=%2210%22 rx=%223%22 fill=%22%2316202E%22/%3E %3Cellipse cx=%2225.5%22 cy=%2239%22 rx=%223.2%22 ry=%224.4%22 fill=%22%2316202E%22/%3E%3Cellipse cx=%2238.5%22 cy=%2239%22 rx=%223.2%22 ry=%224.4%22 fill=%22%2316202E%22/%3E %3Ccircle cx=%2224.4%22 cy=%2237.2%22 r=%221.2%22 fill=%22%23fff%22/%3E%3Ccircle cx=%2237.4%22 cy=%2237.2%22 r=%221.2%22 fill=%22%23fff%22/%3E %3Cpath d=%22M29 46 C30.5 48.2 33.5 48.2 35 46%22 fill=%22none%22 stroke=%22%2316202E%22 stroke-width=%221.7%22 stroke-linecap=%22round%22/%3E %3Cellipse cx=%2221%22 cy=%2244%22 rx=%222.8%22 ry=%221.5%22 fill=%22%23FF9EA8%22 opacity=%22.65%22/%3E%3Cellipse cx=%2243%22 cy=%2244%22 rx=%222.8%22 ry=%221.5%22 fill=%22%23FF9EA8%22 opacity=%22.65%22/%3E %3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
-  --canvas:#EEF1F5;
-  --surface:#FFFFFF;
-  --surface-2:#F6F8FA;
-  --ink:#16202E;
-  --ink-2:#4A5568;
-  --ink-3:#8A94A6;
-  --line:#D9DFE7;
-  --line-2:#E9EDF2;
-  --accent:#0E6B71;
-  --accent-ink:#0A4F54;
-  --accent-soft:#DDF0F1;
-  --mark:#FFE47A;
-  --danger:#B42318;
-  --radius:10px;
-  --radius-s:6px;
-  --shadow:0 1px 2px rgba(22,32,46,.06);
+  /* soft daylight palette: pale sky, blush, cream, river blue */
+  --canvas:#EEF5FB;
+  --surface:rgba(255,255,255,.86);
+  --surface-2:#F4F8FC;
+  --ink:#2F3A4F;
+  --ink-2:#5B6A82;
+  --ink-3:#93A0B4;
+  --line:#D6E3EE;
+  --line-2:#E6EEF5;
+  --accent:#4E9BD1;
+  --accent-ink:#3B7FB0;
+  --accent-soft:#DDEEF9;
+  --blush:#F4A9B8;
+  --blush-soft:#FBE6EB;
+  --mark:#FFE9A8;
+  --danger:#C24A5A;
+  --radius:14px;
+  --radius-s:9px;
+  --shadow:0 6px 24px rgba(90,130,175,.08);
 }
 *{box-sizing:border-box}
-html,body{margin:0;background:var(--canvas);color:var(--ink);font-family:"Public Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+html,body{margin:0;background:transparent;color:var(--ink);font-family:"Nunito",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
 button,input,textarea,select{font:inherit;color:inherit}
 a{color:var(--accent-ink)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
@@ -36,7 +43,7 @@ mark{background:var(--mark);color:inherit;padding:0 1px;border-radius:2px}
 .sr{position:absolute;left:-9999px}
 
 /* top bar */
-.top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:var(--surface);border-bottom:1px solid var(--line)}
+.top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(214,227,238,.9);position:sticky;top:0;z-index:5}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.01em}
 .brand .glyph{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .top .spacer{flex:1}
@@ -47,7 +54,7 @@ mark{background:var(--mark);color:inherit;padding:0 1px;border-radius:2px}
 @media (max-width:960px){.app{grid-template-columns:minmax(0,1fr);padding:14px}}
 
 .side{display:flex;flex-direction:column;gap:14px}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+.panel{background:var(--surface);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(214,227,238,.9);border-radius:var(--radius);box-shadow:var(--shadow)}
 .panel > .ph{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--line-2);font-weight:700;font-size:14px}
 .panel > .ph .sub{font-weight:500;color:var(--ink-3);font-size:12.5px}
 .panel > .pb{padding:12px 14px}
@@ -100,21 +107,22 @@ textarea.paste:focus{border-color:var(--accent);background:#fff;outline:none}
 
 /* main */
 .main{display:flex;flex-direction:column;gap:14px;min-width:0}
-.ask{background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 20px 14px}
-.ask h1{margin:0 0 10px;font-size:15px;font-weight:600;color:var(--ink-2)}
+.ask{background:var(--surface);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(214,227,238,.9);border-radius:20px;box-shadow:var(--shadow);padding:18px 20px 14px}
+.ask .ah{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:6px}
+.ask h1{margin:0 0 6px;font-size:15px;font-weight:600;color:var(--ink-2)}
 .askrow{display:flex;gap:10px;align-items:stretch}
-.askrow .in{flex:1;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:0 14px;background:var(--surface-2);transition:border-color .15s,box-shadow .15s}
+.askrow .in{flex:1;display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;background:rgba(255,255,255,.75);transition:border-color .15s,box-shadow .15s}
 .askrow .in:focus-within{border-color:var(--accent);background:#fff;box-shadow:0 0 0 4px var(--accent-soft)}
 .askrow .in .q{color:var(--accent);font-weight:800;font-size:22px;line-height:1}
 .askrow input{flex:1;border:0;background:transparent;font-size:19px;font-weight:500;padding:14px 0;min-width:0;outline:none}
 .askrow input::placeholder{color:var(--ink-3);font-weight:400}
-.askrow .go{padding:0 20px;font-size:15px;border-radius:12px}
+.askrow .go{padding:0 20px;font-size:15px;border-radius:14px}
 .reading{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px;min-height:28px;font-size:13.5px;color:var(--ink-2)}
 .reading .lead{color:var(--ink-3);margin-right:2px}
 .chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font-size:12.5px;font-weight:600;border:1px solid transparent;background:var(--surface-2);color:var(--ink);line-height:1.2}
 .chip .dot{width:8px;height:8px;border-radius:50%}
-.chip.kw{background:var(--mark);border-color:#E8CD4E}
-.chip.flt{background:#EEF2FF;border-color:#D6DDF7;color:#3C4A8F}
+.chip.kw{background:var(--mark);border-color:#F1D98A}
+.chip.flt{background:var(--blush-soft);border-color:#F3CBD5;color:#9A4A5E}
 .chip.rm{cursor:pointer}
 .chip.rm:hover{border-color:var(--ink-3)}
 .chip .x{color:var(--ink-3);font-weight:800;margin-left:2px}
@@ -133,11 +141,12 @@ textarea.paste:focus{border-color:var(--accent);background:#fff;outline:none}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:var(--radius-s);overflow:hidden}
 .seg button{border:0;background:var(--surface);padding:5px 10px;font-size:12.5px;font-weight:600;cursor:pointer;color:var(--ink-2)}
 .seg button.on{background:var(--accent);color:#fff}
+.seg{background:rgba(255,255,255,.7)}
 .tools input[type=search]{border:1px solid var(--line);border-radius:var(--radius-s);padding:5px 9px;font-size:13px;width:180px}
 .tools input[type=search]:focus{border-color:var(--accent);outline:none}
 .tablewrap{overflow:auto;max-height:70vh}
 table{border-collapse:collapse;width:100%;font-size:13.5px}
-th{position:sticky;top:0;background:var(--surface-2);text-align:left;font-weight:700;font-size:12.5px;color:var(--ink-2);padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1;cursor:pointer;user-select:none}
+th{position:sticky;top:0;background:#F3F8FC;text-align:left;font-weight:700;font-size:12.5px;color:var(--ink-2);padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1;cursor:pointer;user-select:none}
 th .arr{color:var(--ink-3);font-size:11px;margin-left:4px}
 td{padding:9px 12px;border-bottom:1px solid var(--line-2);vertical-align:top}
 tr:last-child td{border-bottom:0}
@@ -182,19 +191,171 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .preview table td,.preview table th{padding:5px 8px}
 
 /* toast */
-.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:var(--ink);color:#fff;padding:9px 14px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(10px);background:#3B4A63;color:#fff;padding:9px 14px;border-radius:8px;font-size:13.5px;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:60}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* ---------- sky, river, bridge, koi (fixed backdrop) ---------- */
+.sky{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;background:#B6DAF4}
+.sky .scene{position:absolute;inset:0;width:100%;height:100%;display:block}
+.sky .c1{animation:drift 140s linear infinite alternate}
+.sky .c2{animation:drift 180s linear infinite alternate-reverse}
+.sky .c3{animation:drift 110s linear infinite alternate}
+.sky .c4{animation:drift 160s linear infinite alternate-reverse}
+@keyframes drift{from{transform:translateX(-40px)}to{transform:translateX(60px)}}
+.sky .ripples path{animation:ripple 7s ease-in-out infinite}
+.sky .r2{animation-delay:-2s}.sky .r3{animation-delay:-4s}.sky .r4{animation-delay:-1s}.sky .r5{animation-delay:-5s}.sky .r6{animation-delay:-3s}
+@keyframes ripple{0%,100%{transform:translateX(0);opacity:.15}50%{transform:translateX(26px);opacity:.5}}
+.sky .koi{opacity:.9}
+.sky .k1{animation:swimR 75s linear infinite;animation-delay:-20s}
+.sky .k2{animation:swimL 95s linear infinite;animation-delay:-50s}
+.sky .k3{animation:swimR 110s linear infinite;animation-delay:-70s}
+.sky .k4{animation:swimL 85s linear infinite;animation-delay:-10s}
+.sky .k1{transform:translateY(770px)}.sky .k2{transform:translateY(820px)}.sky .k3{transform:translateY(860px)}.sky .k4{transform:translateY(745px)}
+.sky .k4 .fish{transform:scale(.7)}.sky .k3 .fish{transform:scale(1.15)}
+@keyframes swimR{from{transform:translate(-120px,var(--y,770px))}to{transform:translate(1720px,var(--y,770px))}}
+@keyframes swimL{from{transform:translate(1720px,var(--y,820px))}to{transform:translate(-120px,var(--y,820px))}}
+.sky .k1{--y:770px}.sky .k2{--y:820px}.sky .k3{--y:860px}.sky .k4{--y:745px}
+.sky .bob{animation:bob 4s ease-in-out infinite}
+.sky .k2 .bob{animation-delay:-1.3s}.sky .k3 .bob{animation-delay:-2.1s}.sky .k4 .bob{animation-delay:-.6s}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.sky .tail{transform-box:fill-box;transform-origin:right center;animation:tail .9s ease-in-out infinite}
+.sky .k2 .tail{animation-delay:-.3s}.sky .k3 .tail{animation-duration:1.1s}.sky .k4 .tail{animation-duration:.75s}
+@keyframes tail{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(14deg)}}
+.petal{position:absolute;top:-6%;width:15px;height:10px;border-radius:80% 0 80% 0;background:linear-gradient(135deg,#FBD0DA,#F09CAE);opacity:.85;animation:petal 22s linear infinite;box-shadow:0 0 0 .5px rgba(244,169,184,.25)}
+.petal:nth-child(2){left:9%;animation-delay:-3s;animation-duration:24s;width:11px;height:8px}
+.petal:nth-child(3){left:23%;animation-delay:-11s;animation-duration:27s}
+.petal:nth-child(4){left:41%;animation-delay:-6s;animation-duration:21s;width:10px;height:7px;opacity:.6}
+.petal:nth-child(5){left:58%;animation-delay:-15s;animation-duration:26s}
+.petal:nth-child(6){left:72%;animation-delay:-1s;animation-duration:23s;width:12px;height:8px}
+.petal:nth-child(7){left:86%;animation-delay:-9s;animation-duration:25s;opacity:.6}
+.petal:nth-child(8){left:95%;animation-delay:-18s;animation-duration:29s;width:9px;height:7px}
+@keyframes petal{0%{transform:translate(0,-30px) rotate(0deg)}25%{transform:translate(28px,25vh) rotate(160deg)}50%{transform:translate(-12px,52vh) rotate(300deg)}75%{transform:translate(30px,78vh) rotate(460deg)}100%{transform:translate(0,108vh) rotate(620deg)}}
+
+/* ---------- motion ---------- */
+.mascot{width:84px;height:84px;flex:none;margin:-14px -6px -10px 0;animation:m-pop .6s .15s cubic-bezier(.34,1.56,.64,1) both}
+.mascot svg{width:100%;height:100%;overflow:visible;display:block}
+.mascot .body{animation:m-float 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+.mascot .eyes{transform-box:fill-box;transform-origin:center;transition:transform .09s,opacity .15s}
+.mascot.blink .eyes{transform:scaleY(.08)}
+.mascot.think .eyes{transform:translateX(3px)}
+.mascot .lines{opacity:0}
+.mascot.think .lines{animation:m-whoosh .45s linear infinite}
+.mascot .glass{transform-box:fill-box;transform-origin:center}
+.mascot.think .glass{animation:m-peer .7s ease-in-out infinite}
+.mascot .happyEyes,.mascot .smile{opacity:0;transition:opacity .15s}
+.mascot.happy .eyes,.mascot.happy .mouth{opacity:0}
+.mascot.happy .happyEyes,.mascot.happy .smile{opacity:1}
+.mascot .spark{opacity:0;transform-box:fill-box;transform-origin:center}
+.mascot.happy .spark{animation:m-spark .9s ease-out both}
+.mascot.happy .body{animation:m-hop .55s cubic-bezier(.34,1.56,.64,1)}
+.mascot .sweat{opacity:0}
+.mascot.puzzled .sweat{animation:m-drip 1.4s ease-in both}
+.mascot.puzzled .body{animation:m-tilt .7s ease both}
+.mascot .mouth{transform-box:fill-box;transform-origin:center;transition:transform .2s}
+.mascot.puzzled .mouth{transform:scaleY(-.6) scaleX(1.3)}
+@keyframes m-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes m-whoosh{0%{opacity:0;transform:translateX(12px)}30%{opacity:.7}100%{opacity:0;transform:translateX(-18px)}}
+@keyframes m-peer{0%,100%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}}
+@keyframes m-spark{0%{opacity:0;transform:scale(.2) rotate(0)}40%{opacity:1;transform:scale(1.15) rotate(15deg)}100%{opacity:0;transform:scale(.6) rotate(30deg)}}
+@keyframes m-hop{0%{transform:translateY(0)}40%{transform:translateY(-10px) scale(1.04,.96)}100%{transform:translateY(0)}}
+@keyframes m-drip{0%{opacity:0;transform:translateY(-4px)}20%{opacity:1}100%{opacity:0;transform:translateY(10px)}}
+@keyframes m-tilt{0%{transform:rotate(0)}40%{transform:rotate(-6deg)}100%{transform:rotate(0)}}
+@keyframes m-pop{from{opacity:0;transform:scale(.4) translateY(10px)}to{opacity:1;transform:none}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes chipin{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.top .glyph{animation:m-pop .55s cubic-bezier(.34,1.56,.64,1) both}
+.ask{animation:rise .5s .05s ease both}
+.reading .chip{animation:chipin .22s ease both}
+.bucket .bar i{transform-origin:left;animation:grow .6s ease-out both}
+tbody tr.rv{animation:rise .32s ease both}
+.btn{transition:background .12s,border-color .12s,transform .08s}
+.btn:active{transform:translateY(1px)}
+.btn.primary.go:active{transform:scale(.97)}
+.src{animation:rise .3s ease both}
+.drop{transition:border-color .15s,background .15s,transform .15s}
+.drop.over{transform:scale(1.015)}
+@media (max-width:700px){.mascot{width:64px;height:64px;margin:-10px -4px -8px 0}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:960px){.side,.main{display:contents}.ask{order:2}.results{order:3}.panel.filters{order:4}.panel.overview{order:5}}
 @media (max-width:700px){.top .hint{display:none}.top{padding:10px 14px}.brand{white-space:nowrap}.askrow{flex-direction:column}.askrow .go{padding:10px}}
 </style>
 </head>
 <body>
 
+<div class="sky" aria-hidden="true">
+<svg class="scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#79B9EA"/><stop offset=".45" stop-color="#B6DAF4"/><stop offset=".72" stop-color="#E3F1FB"/><stop offset="1" stop-color="#F6F4F6"/></linearGradient>
+<radialGradient id="sunG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFFCEF" stop-opacity=".95"/><stop offset=".35" stop-color="#FFF6D8" stop-opacity=".55"/><stop offset="1" stop-color="#FFF6D8" stop-opacity="0"/></radialGradient>
+<linearGradient id="cloudG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9E9F6"/></linearGradient>
+<linearGradient id="riverG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFDDEF"/><stop offset=".35" stop-color="#93C3E0"/><stop offset="1" stop-color="#5E9CC8"/></linearGradient>
+<linearGradient id="hillG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CFE3D6"/><stop offset="1" stop-color="#A9CDB9"/></linearGradient>
+<clipPath id="koiA"><path d="M-40 0 C-30 -16 10 -18 34 -4 C40 0 40 0 34 4 C10 18 -30 16 -40 0 Z"/></clipPath>
+</defs>
+<rect width="1600" height="900" fill="url(#skyG)"/>
+<g class="sun"><circle cx="1330" cy="150" r="190" fill="url(#sunG)"/><circle cx="1330" cy="150" r="54" fill="#FFFBEA" opacity=".9"/><circle cx="1150" cy="300" r="30" fill="#FFF3D6" opacity=".22"/><circle cx="1060" cy="372" r="14" fill="#FFE9C9" opacity=".3"/><circle cx="930" cy="480" r="46" fill="#FFFFFF" opacity=".12"/></g>
+<g class="clouds" fill="url(#cloudG)">
+<g class="c1"><ellipse cx="260" cy="250" rx="190" ry="46"/><circle cx="190" cy="222" r="62"/><circle cx="270" cy="196" r="84"/><circle cx="360" cy="222" r="60"/></g>
+<g class="c2"><ellipse cx="780" cy="170" rx="230" ry="52"/><circle cx="690" cy="140" r="70"/><circle cx="790" cy="100" r="100"/><circle cx="900" cy="140" r="72"/></g>
+<g class="c3" opacity=".9"><ellipse cx="1210" cy="330" rx="130" ry="30"/><circle cx="1170" cy="310" r="40"/><circle cx="1225" cy="290" r="54"/><circle cx="1280" cy="312" r="38"/></g>
+<g class="c4" opacity=".7"><ellipse cx="520" cy="400" rx="150" ry="28"/><circle cx="480" cy="385" r="34"/><circle cx="540" cy="370" r="44"/><circle cx="600" cy="388" r="30"/></g>
+</g>
+<path d="M0 640 C120 610 220 600 340 618 C460 636 540 606 660 604 C780 602 860 630 980 620 C1100 610 1180 592 1300 600 C1420 608 1520 626 1600 616 L1600 700 L0 700 Z" fill="#C9DEE9" opacity=".8"/>
+<path d="M0 662 C100 646 200 640 300 650 C400 660 480 640 580 642 C700 644 780 664 900 656 C1020 648 1120 636 1240 644 C1360 652 1480 668 1600 660 L1600 720 L0 720 Z" fill="url(#hillG)" opacity=".85"/>
+<g class="trees" fill="#9FC4AE" opacity=".8"><circle cx="90" cy="654" r="16"/><circle cx="118" cy="648" r="20"/><circle cx="1240" cy="640" r="18"/><circle cx="1270" cy="646" r="14"/><circle cx="1480" cy="656" r="17"/><circle cx="1505" cy="650" r="13"/></g>
+<rect y="690" width="1600" height="210" fill="url(#riverG)"/>
+<rect y="686" width="1600" height="10" fill="#EAF4FA" opacity=".7"/>
+<g class="bridge" opacity=".55" fill="none" stroke="#3E5878" stroke-linecap="round">
+<path d="M360 700 C560 640 1040 640 1240 700" stroke-width="9"/>
+<path d="M360 672 C560 612 1040 612 1240 672" stroke-width="4"/>
+<path d="M460 682 L460 655 M560 664 L560 636 M660 655 L660 627 M760 651 L760 623 M860 651 L860 623 M960 655 L960 627 M1060 664 L1060 636 M1160 682 L1160 655" stroke-width="4"/>
+<path d="M520 706 L520 760 M760 706 L760 790 M1000 706 L1000 786" stroke-width="10" opacity=".7"/>
+</g>
+<path class="bridgeRef" d="M360 706 C560 760 1040 760 1240 706" fill="none" stroke="#3E5878" stroke-width="9" stroke-linecap="round" opacity=".12"/>
+<g class="ripples" stroke="#FFFFFF" stroke-linecap="round" fill="none">
+<path class="r1" d="M120 760 H330 M380 760 H440" stroke-width="3" opacity=".5"/>
+<path class="r2" d="M600 812 H900 M960 812 H1010" stroke-width="3" opacity=".4"/>
+<path class="r3" d="M1100 748 H1380" stroke-width="2.5" opacity=".45"/>
+<path class="r4" d="M300 868 H520 M580 868 H640" stroke-width="3" opacity=".35"/>
+<path class="r5" d="M1180 850 H1520" stroke-width="3" opacity=".35"/>
+<path class="r6" d="M40 830 H200" stroke-width="2.5" opacity=".4"/>
+</g>
+<g class="koi k1"><g class="bob"><g class="fish">
+<path class="tail" d="M-40 0 C-50 -14 -62 -18 -72 -22 C-64 -8 -64 8 -72 22 C-62 18 -50 14 -40 0 Z" fill="#F7F1E8"/>
+<path d="M-40 0 C-30 -16 10 -18 34 -4 C40 0 40 0 34 4 C10 18 -30 16 -40 0 Z" fill="#F7F1E8"/>
+<g clip-path="url(#koiA)"><ellipse cx="6" cy="-6" rx="18" ry="10" fill="#E8613C"/><ellipse cx="-22" cy="4" rx="12" ry="7" fill="#E8613C"/><ellipse cx="28" cy="2" rx="8" ry="6" fill="#E8613C" opacity=".9"/></g>
+<path d="M0 9 C6 17 12 19 18 15 C10 13 6 11 0 9 Z" fill="#F7F1E8" opacity=".9"/><path d="M0 -9 C6 -17 12 -19 18 -15 C10 -13 6 -11 0 -9 Z" fill="#F7F1E8" opacity=".9"/>
+<circle cx="26" cy="-3" r="2.2" fill="#2F3A4F"/>
+</g></g></g>
+<g class="koi k2"><g class="bob"><g transform="scale(-1 1)"><g class="fish">
+<path class="tail" d="M-40 0 C-50 -14 -62 -18 -72 -22 C-64 -8 -64 8 -72 22 C-62 18 -50 14 -40 0 Z" fill="#F4A24A"/>
+<path d="M-40 0 C-30 -16 10 -18 34 -4 C40 0 40 0 34 4 C10 18 -30 16 -40 0 Z" fill="#F4A24A"/>
+<g clip-path="url(#koiA)"><ellipse cx="-4" cy="4" rx="16" ry="8" fill="#F8C77E" opacity=".8"/></g>
+<path d="M0 9 C6 17 12 19 18 15 C10 13 6 11 0 9 Z" fill="#F4A24A" opacity=".9"/><path d="M0 -9 C6 -17 12 -19 18 -15 C10 -13 6 -11 0 -9 Z" fill="#F4A24A" opacity=".9"/>
+<circle cx="26" cy="-3" r="2.2" fill="#2F3A4F"/>
+</g></g></g></g>
+<g class="koi k3"><g class="bob"><g class="fish">
+<path class="tail" d="M-40 0 C-50 -14 -62 -18 -72 -22 C-64 -8 -64 8 -72 22 C-62 18 -50 14 -40 0 Z" fill="#F7F1E8"/>
+<path d="M-40 0 C-30 -16 10 -18 34 -4 C40 0 40 0 34 4 C10 18 -30 16 -40 0 Z" fill="#F7F1E8"/>
+<g clip-path="url(#koiA)"><ellipse cx="14" cy="-4" rx="14" ry="9" fill="#2F3A4F"/><ellipse cx="-18" cy="2" rx="12" ry="8" fill="#E8613C"/><ellipse cx="-4" cy="9" rx="7" ry="4" fill="#2F3A4F" opacity=".8"/></g>
+<path d="M0 9 C6 17 12 19 18 15 C10 13 6 11 0 9 Z" fill="#F7F1E8" opacity=".9"/><path d="M0 -9 C6 -17 12 -19 18 -15 C10 -13 6 -11 0 -9 Z" fill="#F7F1E8" opacity=".9"/>
+<circle cx="26" cy="-3" r="2.2" fill="#2F3A4F"/>
+</g></g></g>
+<g class="koi k4"><g class="bob"><g transform="scale(-1 1)"><g class="fish">
+<path class="tail" d="M-40 0 C-50 -14 -62 -18 -72 -22 C-64 -8 -64 8 -72 22 C-62 18 -50 14 -40 0 Z" fill="#F7F1E8"/>
+<path d="M-40 0 C-30 -16 10 -18 34 -4 C40 0 40 0 34 4 C10 18 -30 16 -40 0 Z" fill="#F7F1E8"/>
+<g clip-path="url(#koiA)"><ellipse cx="0" cy="0" rx="22" ry="8" fill="#E8613C"/><ellipse cx="26" cy="-6" rx="8" ry="5" fill="#F7F1E8"/></g>
+<path d="M0 9 C6 17 12 19 18 15 C10 13 6 11 0 9 Z" fill="#F7F1E8" opacity=".9"/><path d="M0 -9 C6 -17 12 -19 18 -15 C10 -13 6 -11 0 -9 Z" fill="#F7F1E8" opacity=".9"/>
+<circle cx="26" cy="-3" r="2.2" fill="#2F3A4F"/>
+</g></g></g></g>
+</svg>
+<i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i><i class="petal"></i></div>
+
 <header class="top">
   <div class="brand"><span class="glyph">?</span> Zoom Chat Analyzer</div>
   <span class="hint">Everything runs in your browser. Nothing is uploaded.</span>
   <span class="spacer"></span>
+  <button class="btn primary sm" id="btnReport" title="One Excel file: a summary sheet plus one sheet per topic (refund, LMS, WhatsApp group...) with names and messages">Download full report</button>
   <button class="btn quiet sm" id="btnSample">Load sample chat</button>
   <button class="btn quiet sm" id="btnSettings">Settings</button>
 </header>
@@ -245,7 +406,7 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 
   <main class="main">
     <section class="ask">
-      <h1>Ask the chat</h1>
+      <div class="ah"><h1>Ask the chat</h1><div class="mascot" id="mascot" title="Chibi, your chat assistant"><svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"> <!-- speed lines --> <g class="lines" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round" opacity=".6"> <line x1="2" y1="44" x2="26" y2="44"/><line x1="8" y1="58" x2="24" y2="58"/><line x1="0" y1="72" x2="20" y2="72"/> </g> <g class="body"> <!-- hair back --> <path fill="#2E3F5C" d="M31 62 C28 34 44 18 66 18 C88 18 104 34 101 62 C100 70 96 76 92 78 L40 78 C36 76 32 70 31 62 Z"/> <!-- hoodie --> <path d="M44 90 C44 82 52 78 66 78 C80 78 88 82 88 90 L90 118 C90 122 86 124 82 124 L50 124 C46 124 42 122 42 118 Z" fill="#5FA8D3"/> <path d="M56 80 L66 92 L76 80" fill="none" stroke="#3F86BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> <!-- neck --> <rect fill="#FFDCC2" x="60" y="72" width="12" height="12" rx="4"/> <!-- head --> <circle fill="#FFDCC2" cx="66" cy="54" r="29"/> <!-- bangs --> <path fill="#2E3F5C" d="M37 56 C36 30 48 22 66 22 C84 22 96 30 95 56 C90 46 84 42 80 46 C78 38 72 36 68 44 C64 34 56 36 54 46 C50 40 42 44 37 56 Z"/> <path fill="#4A6C99" d="M58 30 C62 26 70 26 74 29 C68 28 63 29 58 30 Z" opacity=".9"/> <!-- ears --> <circle fill="#FFDCC2" cx="37" cy="58" r="5"/><circle fill="#FFDCC2" cx="95" cy="58" r="5"/> <!-- headset --> <path d="M36 52 C38 32 50 24 66 24 C82 24 94 32 96 52" fill="none" stroke="#16202E" stroke-width="3.5" stroke-linecap="round"/> <rect fill="#16202E" x="31" y="50" width="9" height="14" rx="4"/><rect fill="#16202E" x="92" y="50" width="9" height="14" rx="4"/> <path d="M96 62 C98 72 90 78 80 76" fill="none" stroke="#16202E" stroke-width="2.5" stroke-linecap="round"/> <circle fill="#16202E" cx="79" cy="76" r="2.6"/> <!-- blush --> <ellipse cx="48" cy="66" rx="5" ry="2.6" fill="#FF9EA8" opacity=".55"/><ellipse cx="84" cy="66" rx="5" ry="2.6" fill="#FF9EA8" opacity=".55"/> <!-- eyes --> <g class="eyes"> <ellipse fill="#16202E" cx="55" cy="58" rx="5.2" ry="7"/><ellipse fill="#16202E" cx="77" cy="58" rx="5.2" ry="7"/> <ellipse cx="55" cy="58" rx="5.2" ry="7" fill="url(#g)"/><ellipse cx="77" cy="58" rx="5.2" ry="7" fill="url(#g)"/> <circle cx="53" cy="55" r="1.9" fill="#fff"/><circle cx="75" cy="55" r="1.9" fill="#fff"/> <circle cx="57" cy="61" r=".9" fill="#fff" opacity=".8"/><circle cx="79" cy="61" r=".9" fill="#fff" opacity=".8"/> </g> <g class="happyEyes" fill="none" stroke="#16202E" stroke-width="2.6" stroke-linecap="round" opacity="0"> <path d="M49 59 C52 53 58 53 61 59"/><path d="M71 59 C74 53 80 53 83 59"/> </g> <!-- mouth --> <path class="mouth" d="M62 69 C64 72 68 72 70 69" fill="none" stroke="#16202E" stroke-width="2" stroke-linecap="round"/> <path class="smile" d="M60 68 C63 74 69 74 72 68" fill="#16202E" opacity="0"/> <!-- arm + magnifier --> <path d="M86 96 C94 92 100 96 104 100" fill="none" stroke="#FFDCC2" stroke-width="7" stroke-linecap="round"/> <g class="glass"> <line x1="112" y1="112" x2="104" y2="104" stroke="#16202E" stroke-width="4" stroke-linecap="round"/> <circle cx="99" cy="98" r="9" fill="#DDEEF9" fill-opacity=".85" stroke="#16202E" stroke-width="3"/> <path d="M94 95 C95 93 98 92 100 93" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/> </g> <!-- sweat drop --> <path class="sweat" d="M104 40 C104 40 100 46 100 49 A4 4 0 0 0 108 49 C108 46 104 40 104 40 Z" fill="#7CC4F0" stroke="#3B8FC7" stroke-width="1"/> <!-- sparkles --> <g class="spark" fill="#FFD23F"> <path d="M112 22 L114.5 29 L121 31 L114.5 33 L112 40 L109.5 33 L103 31 L109.5 29 Z"/> <path d="M22 18 L23.6 22 L28 23.5 L23.6 25 L22 29 L20.4 25 L16 23.5 L20.4 22 Z"/> </g> </g> <defs> <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C6F86"/><stop offset="1" stop-color="#16202E" stop-opacity="0"/></linearGradient> </defs> </svg></div></div>
       <div class="askrow">
         <div class="in">
           <span class="q" aria-hidden="true">?</span>
@@ -711,7 +872,8 @@ function groupByPerson(rows){
   return [...map.values()];
 }
 
-root.ZCA = { DEFAULT_DICT, compileDict, parseZoomTxt, parseCSV, guessMapping, rowsToMessages, tagMessages, interpret, runQuery, groupByPerson, hitsFor, compilePattern, toSecs, looksLikeZoomSheet, sheetToZoomText, detectHosts };
+const hasTrouble = (text) => hitsFor(text, TROUBLE).length > 0;
+root.ZCA = { DEFAULT_DICT, compileDict, parseZoomTxt, parseCSV, guessMapping, rowsToMessages, tagMessages, interpret, runQuery, groupByPerson, hitsFor, compilePattern, toSecs, looksLikeZoomSheet, sheetToZoomText, detectHosts, hasTrouble };
 })(typeof window !== 'undefined' ? window : globalThis);
 // @@core-end
 </script>
@@ -736,6 +898,20 @@ const catById = () => Object.fromEntries(cdict.map(c => [c.id, c]));
 const state = { sources:[], query:null, rows:[], view:'person', sort:{ key:'time', dir:1 }, textFilter:'', limit:300 };
 const PAGE = 300;
 let srcSeq = 0;
+
+/* ---------- mascot ---------- */
+const mascot = $('#mascot'); let mascotT;
+function setMascot(st, hold){
+  mascot.classList.remove('think','happy','puzzled'); clearTimeout(mascotT);
+  if (st) mascot.classList.add(st);
+  if (st && hold) mascotT = setTimeout(() => mascot.classList.remove(st), hold);
+}
+function react(found, delay){
+  setMascot('think');
+  clearTimeout(mascotT);
+  mascotT = setTimeout(() => setMascot(found ? 'happy' : 'puzzled', found ? 1500 : 2200), delay || 380);
+}
+(function blink(){ setTimeout(() => { if (!mascot.classList.contains('happy')) { mascot.classList.add('blink'); setTimeout(() => mascot.classList.remove('blink'), 110); } blink(); }, 2200 + Math.random() * 3200); })();
 
 /* ---------- helpers ---------- */
 const escH = (s) => String(s).replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -770,7 +946,7 @@ function addSource(src){
   retag();
   renderSources();
   refreshOverview();
-  if (state.query) run(state.query.raw);
+  if (state.query) run(state.query.raw); else setMascot('happy', 1500);
 }
 function sameChat(a, b){
   if (a.messages.length !== b.messages.length || a.messages.length < 5) return false;
@@ -791,6 +967,7 @@ function detectedHosts(){
 }
 
 function readFile(file){
+  setMascot('think');
   const name = file.name;
   const ext = (name.split('.').pop() || '').toLowerCase();
   if (ext === 'xlsx' || ext === 'xls') return readExcel(file);
@@ -811,7 +988,7 @@ function ingestText(text, name, ext){
   }
   if (csvWide) { addCsvSource(name, csvRows); return; }
   if (txtMsgs.length) { addSource({ name, kind:'zoom', messages:txtMsgs }); return; }
-  toast('Could not read ' + name + '. Is it a Zoom saved chat or a CSV?');
+  toast('Could not read ' + name + '. Is it a Zoom saved chat or a CSV?'); setMascot('puzzled', 2200);
 }
 
 function addCsvSource(name, rows){
@@ -822,11 +999,13 @@ function addCsvSource(name, rows){
   if (!g.confident) openMap(src, true);
 }
 
-function readExcel(file){
-  const load = window.XLSX ? Promise.resolve() : new Promise((res, rej) => {
+function loadXlsx(){
+  return window.XLSX ? Promise.resolve() : new Promise((res, rej) => {
     const s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'; s.onload = res; s.onerror = rej; document.head.appendChild(s);
   });
-  return load.then(() => file.arrayBuffer()).then(buf => {
+}
+function readExcel(file){
+  return loadXlsx().then(() => file.arrayBuffer()).then(buf => {
     const wb = XLSX.read(buf, { type:'array' });
     wb.SheetNames.forEach(sn => {
       const csv = XLSX.utils.sheet_to_csv(wb.Sheets[sn]);
@@ -932,6 +1111,7 @@ function run(text, forceCats){
   renderReading(q);
   renderResults();
   refreshOverview();
+  if (q.raw.trim()) react(rows.length > 0);
 }
 
 /* ---------- results ---------- */
@@ -973,7 +1153,7 @@ function renderResults(){
     const shown = list.slice(0, state.limit);
     body.innerHTML = `<div class="tablewrap"><table><thead><tr>
       <th data-k="time">First at${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th data-k="count">Msgs${arrow('count')}</th><th>Messages</th>${q.cats.length !== 1 || q.cats.length && q.keywords.length ? '<th>Topics</th>' : ''}
-      </tr></thead><tbody>${shown.map(p => `<tr>
+      </tr></thead><tbody>${shown.map((p, i) => `<tr${i < 15 ? ` class="rv" style="animation-delay:${i * 28}ms"` : ''}>
         <td class="t">${escH(p.firstT || '')}</td>
         <td class="n">${escH(p.name)}${multiSrc ? `<small>${escH([...p.sources].join(', '))}</small>` : ''}</td>
         <td class="c">${p.rows.length}</td>
@@ -988,7 +1168,7 @@ function renderResults(){
     const shown = list.slice(0, state.limit);
     body.innerHTML = `<div class="tablewrap"><table><thead><tr>
       <th data-k="time">Time${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th>Message</th>${q.cats.length !== 1 ? '<th>Topics</th>' : ''}${multiSrc ? '<th>Source</th>' : ''}
-      </tr></thead><tbody>${shown.map(r => `<tr>
+      </tr></thead><tbody>${shown.map((r, i) => `<tr${i < 15 ? ` class="rv" style="animation-delay:${i * 28}ms"` : ''}>
         <td class="t">${escH(r.m.time)}</td>
         <td class="n">${escH(r.m.name)}${r.m.dm ? `<small>to ${escH(r.m.to)}</small>` : ''}</td>
         <td class="m">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</td>
@@ -1037,6 +1217,55 @@ function exportCsv(){
   const slug = (state.query.raw || 'results').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'results';
   download(`zoom-chat-${slug}-${state.view}.csv`, '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
 }
+/* ---------- full report: every topic, one file ---------- */
+function reportBase(){
+  const first = state.sources.find(s => s.on);
+  return 'zoom-chat-report-' + ((first ? first.name : 'chat').replace(/\.[^.]+$/,'').replace(/[^a-z0-9]+/gi,'-').replace(/^-|-$/g,'').slice(0,40) || 'chat');
+}
+function buildReport(){
+  const msgs = pool();
+  if (!msgs.length) { toast('Add a chat first'); return; }
+  const byTime = (a, b) => (a.secs < 0 ? a.idx : a.secs) - (b.secs < 0 ? b.idx : b.secs);
+  const summary = [['Topic','People','Messages','People describing a problem']];
+  const topics = [];
+  for (const c of cdict){
+    const rows = msgs.filter(m => m.cats[c.id]).sort(byTime);
+    if (!rows.length) continue;
+    const people = new Set(rows.map(r => r.name.toLowerCase()));
+    const trouble = new Set(rows.filter(r => Z.hasTrouble(r.text)).map(r => r.name.toLowerCase()));
+    summary.push([c.label, people.size, rows.length, trouble.size]);
+    topics.push({ label:c.label, rows:[['Name','Time','Message','Describes a problem','Sent to','Source'], ...rows.map(r => [r.name, r.time, r.text, Z.hasTrouble(r.text) ? 'Yes' : '', r.to || 'Everyone', r.source])] });
+  }
+  // one row per person: every topic they raised, so the support team can work name by name
+  const cb = catById();
+  const perPerson = new Map();
+  for (const m of msgs){
+    const ids = Object.keys(m.cats).filter(id => !META[id]);
+    if (!ids.length) continue;
+    const k = m.name.toLowerCase().replace(/\s+/g,' ').trim();
+    let p = perPerson.get(k); if (!p) { p = { name:m.name, topics:new Set(), msgs:[] }; perPerson.set(k, p); }
+    ids.forEach(id => p.topics.add(cb[id] ? cb[id].label : id)); p.msgs.push(`[${m.time}] ${m.text}`);
+  }
+  const people = [['Name','Topics raised','Messages','All flagged messages'], ...[...perPerson.values()].sort((a,b) => a.name.localeCompare(b.name)).map(p => [p.name, [...p.topics].join('; '), p.msgs.length, p.msgs.join('\n')])];
+  const base = reportBase();
+  loadXlsx().then(() => {
+    const wb = XLSX.utils.book_new();
+    const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(aoa); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name.replace(/[\[\]:*?\/\\]/g,'-').slice(0,31)); };
+    add('Summary', summary, [30, 10, 12, 26]);
+    add('By person', people, [28, 40, 10, 90]);
+    for (const t of topics) add(t.label, t.rows, [28, 10, 90, 18, 22, 28]);
+    XLSX.writeFile(wb, base + '.xlsx');
+    toast(`Report ready: ${topics.length} topic sheets`); setMascot('happy', 1500);
+  }).catch(() => {
+    // no network for the Excel library: one CSV with a Topic column
+    const lines = [['Topic','Name','Time','Message','Describes a problem','Sent to','Source'].map(csvCell).join(',')];
+    for (const t of topics) for (const r of t.rows.slice(1)) lines.push([t.label, ...r].map(csvCell).join(','));
+    download(base + '.csv', '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
+    toast('Excel library unavailable, downloaded as one CSV instead');
+  });
+}
+$('#btnReport').onclick = buildReport;
+
 function copyNames(){ const p = Z.groupByPerson(filteredRows()); if (!p.length) { toast('Nothing to copy'); return; } copyText(p.map(x => x.name).join('\n')); }
 function copyList(){
   const p = Z.groupByPerson(filteredRows()); if (!p.length) { toast('Nothing to copy'); return; }
