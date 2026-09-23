@@ -101,6 +101,8 @@ textarea.paste:focus{border-color:var(--accent);background:#fff;outline:none}
 .bucket .dot{width:9px;height:9px;border-radius:50%;flex:none}
 .bucket .lb{flex:1;font-weight:600}
 .bucket .n{color:var(--ink-3);font-size:12.5px}
+.bucket .ck{color:var(--accent-ink);font-weight:800;font-size:12px;width:12px;text-align:center;opacity:0;flex:none}
+.bucket.on .ck{opacity:1}
 .bucket .bar{height:4px;border-radius:2px;background:var(--line-2);width:64px;overflow:hidden;flex:none}
 .bucket .bar i{display:block;height:100%}
 .empty-note{color:var(--ink-3);font-size:13px;margin:0}
@@ -130,6 +132,7 @@ textarea.paste:focus{border-color:var(--accent);background:#fff;outline:none}
 .quick .lead{font-size:12.5px;color:var(--ink-3);align-self:center;margin-right:4px}
 .qchip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink-2)}
 .qchip:hover{border-color:var(--ink-3);color:var(--ink)}
+.qchip.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
 .qchip .dot{width:8px;height:8px;border-radius:50%}
 
 /* results */
@@ -187,6 +190,12 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .bxt{display:block;color:var(--ink);white-space:pre-wrap;word-break:break-word}
 .bopen{align-self:flex-start;padding:2px 0;font-weight:700;color:var(--bc)!important;font-size:12.5px}
 .bopen:hover{text-decoration:underline;background:transparent}
+.bpick{display:flex;align-items:center;gap:7px;cursor:pointer;font-size:14px;min-width:0}
+.bpick input{margin:0;accent-color:var(--bc);width:15px;height:15px;flex:none;cursor:pointer}
+.bpick b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bcard.sel{outline:2px solid var(--bc);outline-offset:-1px;background:#fff}
+.bonly{align-self:flex-start;padding:2px 0;font-weight:700;color:var(--bc)!important;font-size:12.5px}
+.bonly:hover{text-decoration:underline;background:transparent}
 
 /* timeline */
 .tlchart svg{width:100%;height:auto;display:block}
@@ -456,7 +465,7 @@ tbody tr.rv{animation:rise .32s ease both}
     </section>
 
     <section class="panel bkt" id="bktPanel" hidden>
-      <div class="ph"><span>Chat buckets <span class="sub" id="bktSub"></span></span></div>
+      <div class="ph"><span>Chat buckets <span class="sub" id="bktSub"></span></span><span class="tools"><span class="sub" id="bktSel"></span><button class="btn quiet sm" id="bktClear" hidden>Clear</button></span></div>
       <div class="pb"><div class="bgrid" id="bgrid"></div></div>
     </section>
 
@@ -1146,13 +1155,14 @@ function refreshOverview(){
     return { c, n, p:ppl.size };
   }).filter(x => x.n > 0).sort((a,b) => (META[a.c.id]||0) - (META[b.c.id]||0) || b.p - a.p || b.n - a.n);
   const max = Math.max(1, ...counts.map(x => x.p));
-  const active = state.query && state.query.cats.length === 1 && !state.query.keywords.length ? state.query.cats[0] : null;
+  const sel = selectedCats();
   for (const x of counts){
     const li = document.createElement('li');
-    li.innerHTML = `<button class="bucket ${active === x.c.id ? 'on' : ''}" title="${x.n} messages from ${x.p} people"><span class="dot" style="background:${x.c.color}"></span><span class="lb">${escH(x.c.label)}</span><span class="bar"><i style="width:${Math.round(100*x.p/max)}%;background:${x.c.color}"></i></span><span class="n">${x.p}</span></button>`;
-    li.querySelector('button').onclick = () => { $('#ask').value = x.c.label.toLowerCase(); run(x.c.label.toLowerCase(), [x.c.id]); };
+    li.innerHTML = `<button class="bucket ${sel.has(x.c.id) ? 'on' : ''}" title="${x.n} messages from ${x.p} people. Tap to combine with other buckets."><span class="dot" style="background:${x.c.color}"></span><span class="lb">${escH(x.c.label)}</span><span class="bar"><i style="width:${Math.round(100*x.p/max)}%;background:${x.c.color}"></i></span><span class="n">${x.p}</span><span class="ck">✓</span></button>`;
+    li.querySelector('button').onclick = () => toggleCat(x.c.id);
     ul.appendChild(li);
   }
+  syncQuick();
   renderBuckets(msgs);
   renderTimeline(msgs);
 }
@@ -1169,6 +1179,7 @@ function bucketExamples(cid, msgs, limit){
 }
 function renderBuckets(msgs){
   const panel = $('#bktPanel'), grid = $('#bgrid');
+  const sel = selectedCats();
   const items = cdict.filter(c => !META[c.id]).map(c => {
     const rows = msgs.filter(m => m.cats[c.id]);
     return { c, n:rows.length, p:new Set(rows.map(m => m.name.toLowerCase())).size };
@@ -1176,16 +1187,21 @@ function renderBuckets(msgs){
   if (!items.length){ panel.hidden = true; return; }
   panel.hidden = false;
   $('#bktSub').textContent = `${items.length} in this chat`;
+  const nSel = [...sel].filter(id => catById()[id] && !META[id]).length;
+  $('#bktSel').textContent = nSel ? `${nSel} selected` : 'tick any to combine';
+  $('#bktClear').hidden = !nSel;
   grid.innerHTML = items.map(x => {
     const ex = bucketExamples(x.c.id, msgs, 3);
-    return `<article class="bcard" style="--bc:${x.c.color}">
-      <header><span class="bdot"></span><b>${escH(x.c.label)}</b></header>
+    const on = sel.has(x.c.id);
+    return `<article class="bcard ${on?'sel':''}" style="--bc:${x.c.color}">
+      <header><label class="bpick"><input type="checkbox" data-cat="${x.c.id}" ${on?'checked':''} aria-label="Include ${escH(x.c.label)}"><span class="bdot"></span><b>${escH(x.c.label)}</b></label></header>
       <div class="bstat"><span class="bp">${x.p}</span> ${x.p===1?'person':'people'} · ${x.n} ${x.n===1?'msg':'msgs'}</div>
       <ul class="bex">${ex.map(m => `<li><span class="bxn">${escH(m.name)}${m.time?` · ${escH(m.time)}`:''}${m.dm?' · private':''}</span><span class="bxt">${escH(clip(m.text,180))}</span></li>`).join('')}</ul>
-      <button class="btn quiet sm bopen" data-cat="${x.c.id}" data-lb="${escH(x.c.label)}">See all ${x.n} →</button>
+      <button class="btn quiet sm bonly" data-cat="${x.c.id}">Only this ${x.n} →</button>
     </article>`;
   }).join('');
-  grid.querySelectorAll('.bopen').forEach(b => b.onclick = () => { $('#ask').value = b.dataset.lb.toLowerCase(); run(b.dataset.lb.toLowerCase(), [b.dataset.cat]); $('#results').scrollIntoView({ behavior:'smooth', block:'start' }); });
+  grid.querySelectorAll('input[data-cat]').forEach(cb => cb.onchange = () => toggleCat(cb.dataset.cat));
+  grid.querySelectorAll('.bonly').forEach(b => b.onclick = () => { onlyCat(b.dataset.cat); $('#results').scrollIntoView({ behavior:'smooth', block:'start' }); });
 }
 
 /* ---------- sentiment timeline ---------- */
@@ -1273,7 +1289,7 @@ function renderReading(q){
   else if (q.cats.length > 1) lead = 'Looking for any of';
   const note = q.troubleFallback ? `<span class="lead" style="margin-left:6px">no message describes a problem, so showing every mention</span>` : '';
   el.innerHTML = bits.length ? `<span class="lead">${lead}</span>${bits.join('')}${note}` : '<span class="lead">Type a topic, a name, or put exact text in quotes.</span>';
-  el.querySelectorAll('[data-cat]').forEach(ch => ch.onclick = () => { const cats = q.cats.filter(c => c !== ch.dataset.cat); run(q.raw, cats); });
+  el.querySelectorAll('[data-cat]').forEach(ch => ch.onclick = () => toggleCat(ch.dataset.cat));
 }
 function fmtSecs(s){ const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
 
@@ -1289,6 +1305,40 @@ function run(text, forceCats){
   refreshOverview();
   if (q.raw.trim()) react(rows.length > 0);
 }
+
+/* ---------- multi-select across buckets (union of topics) ---------- */
+function selectedCats(){ return new Set(state.query ? state.query.cats : []); }
+function catLabel(id){ return (catById()[id] || {}).label || id; }
+function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
+function execQuery(q){
+  state.query = q; state.limit = PAGE;
+  if (q.view) { state.view = q.view; syncViewSeg(); }
+  const rows = Z.runQuery(pool(), q, cdict);
+  state.rows = rows;
+  $('#ask').value = (q.raw || '').toLowerCase();
+  renderReading(q); renderResults(); refreshOverview();
+  react(rows.length > 0);
+}
+function clearCats(){ state.query = null; state.rows = []; $('#ask').value = ''; renderReading(null); renderResults(); refreshOverview(); }
+function toggleCat(id){
+  const base = state.query || Z.interpret('', cdict);
+  const set = new Set(base.cats);
+  set.has(id) ? set.delete(id) : set.add(id);
+  const q = { ...base, cats:[...set] };
+  q.raw = buildRaw(q);
+  if (!q.cats.length && !(q.keywords||[]).length && !q.all && !Object.keys(q.filters||{}).length) { clearCats(); return; }
+  execQuery(q);
+}
+function onlyCat(id){
+  const q = Z.interpret('', cdict);
+  q.cats = [id]; q.raw = catLabel(id);
+  execQuery(q);
+}
+function syncQuick(){
+  const sel = selectedCats();
+  document.querySelectorAll('#quick .qchip').forEach(b => b.classList.toggle('on', sel.has(b.dataset.id)));
+}
+$('#bktClear').onclick = clearCats;
 
 /* ---------- results ---------- */
 function syncViewSeg(){ $('#viewSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === state.view)); }
@@ -1372,10 +1422,11 @@ function fillQuick(){
   const cb = catById();
   ['refund','lms','whatsapp','join','recording','certificate','payment','login','av','support','positive','negative'].forEach(id => {
     const c = cb[id]; if (!c) return;
-    const b = document.createElement('button'); b.className = 'qchip'; b.innerHTML = `<span class="dot" style="background:${c.color}"></span>${escH(c.label)}`;
-    b.onclick = () => { $('#ask').value = c.label.toLowerCase(); run(c.label.toLowerCase(), [id]); };
+    const b = document.createElement('button'); b.className = 'qchip'; b.dataset.id = id; b.innerHTML = `<span class="dot" style="background:${c.color}"></span>${escH(c.label)}`;
+    b.onclick = () => toggleCat(id);
     el.appendChild(b);
   });
+  syncQuick();
 }
 
 /* ---------- export ---------- */
