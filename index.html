@@ -172,6 +172,43 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .blank .ex button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;cursor:pointer;color:var(--ink)}
 .blank .ex button:hover{border-color:var(--accent);color:var(--accent-ink)}
 
+/* bucket cards */
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px}
+.bcard{border:1px solid var(--line-2);border-left:4px solid var(--bc,#888);border-radius:var(--radius-s);background:var(--surface-2);padding:11px 12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.bcard header{display:flex;align-items:center;gap:7px;font-size:14px}
+.bcard header b{font-weight:800;letter-spacing:-.01em}
+.bcard .bdot{width:9px;height:9px;border-radius:50%;background:var(--bc);flex:none}
+.bstat{font-size:12.5px;color:var(--ink-2)}
+.bstat .bp{font-weight:800;color:var(--bc);font-size:15px}
+.bex{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px}
+.bex li{font-size:12.5px;line-height:1.35;border-top:1px dashed var(--line);padding-top:6px}
+.bex li:first-child{border-top:0;padding-top:0}
+.bxn{display:block;font-weight:700;color:var(--ink-2);font-size:11px}
+.bxt{display:block;color:var(--ink);white-space:pre-wrap;word-break:break-word}
+.bopen{align-self:flex-start;padding:2px 0;font-weight:700;color:var(--bc)!important;font-size:12.5px}
+.bopen:hover{text-decoration:underline;background:transparent}
+
+/* timeline */
+.tlchart svg{width:100%;height:auto;display:block}
+.tllegend{display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--ink-2);flex-wrap:wrap;align-items:center}
+.tllegend span{display:inline-flex;align-items:center;gap:6px}
+.tllegend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.tllegend .tlnote{color:var(--ink-3);font-size:11.5px}
+.tlphases{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.tlphase{flex:1 1 130px;border:1px solid var(--line-2);border-top:3px solid var(--pc,#ccc);border-radius:var(--radius-s);background:var(--surface-2);padding:7px 9px;min-width:0}
+.tlphase b{display:block;font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tlphase .pc{display:flex;gap:9px;font-size:12px;font-variant-numeric:tabular-nums}
+.tlphase .pc i{font-style:normal;font-weight:700}
+.tlspikes{margin-top:14px;display:flex;flex-direction:column;gap:7px}
+.tlspikes h4{margin:0 0 1px;font-size:12.5px;color:var(--ink-2);font-weight:700}
+.spike{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;border:1px solid var(--line-2);border-radius:var(--radius-s);padding:7px 9px;background:var(--surface-2)}
+.spike .sk{font-weight:800;white-space:nowrap;padding:1px 7px;border-radius:999px;font-size:11px;line-height:1.6;flex:none}
+.spike .sk.neg{background:rgba(214,86,76,.14);color:#B23B32}
+.spike .sk.pos{background:rgba(46,158,107,.16);color:#1F7A50}
+.spike .sb{min-width:0}
+.spike .sb b{color:var(--ink)}
+.spike q{color:var(--ink-2);display:block;margin-top:2px;font-style:italic}
+
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(22,32,46,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
 .modal.open{display:flex}
@@ -418,6 +455,21 @@ tbody tr.rv{animation:rise .32s ease both}
       <div class="quick" id="quick"><span class="lead">Quick asks</span></div>
     </section>
 
+    <section class="panel bkt" id="bktPanel" hidden>
+      <div class="ph"><span>Chat buckets <span class="sub" id="bktSub"></span></span></div>
+      <div class="pb"><div class="bgrid" id="bgrid"></div></div>
+    </section>
+
+    <section class="panel tl" id="tlPanel" hidden>
+      <div class="ph"><span>Sentiment timeline <span class="sub" id="tlSub"></span></span></div>
+      <div class="pb">
+        <div class="tlchart" id="tlchart"></div>
+        <div class="tllegend"><span><i style="background:#2E9E6B"></i>Positive</span><span><i style="background:#C3D0DE"></i>Neutral</span><span><i style="background:#D6564C"></i>Negative</span><span class="tlnote">Phases are auto-estimated from the session length.</span></div>
+        <div class="tlphases" id="tlphases"></div>
+        <div class="tlspikes" id="tlspikes"></div>
+      </div>
+    </section>
+
     <section class="panel results" id="results">
       <div class="ph">
         <div class="title"><b id="rTitle">Results</b><span id="rSub"></span></div>
@@ -535,6 +587,24 @@ const DEFAULT_DICT = [
   { id:'negative', label:'Complaint / negative', color:'#7A271A',
     ask:['negative','complaint','complaints','angry','unhappy','scam','fraud','frustrated','dissatisfied'],
     match:['worst','pathetic','fraud','scam','/\\bcheat/','/waste of (money|time)/','useless','boring','not satisfied','disappoint','misleading','/\\bfake\\b/','bakwas','bekar','/\\bfool/','ridiculous','/poor (quality|session|audio)/','not worth','misled','/\\bli(e|ed|ar)\\b/','/not happy/','/very bad/','/\\bwtf\\b/','/time waste/'] },
+  { id:'trust', label:'Trust / is it genuine', color:'#92400E',
+    ask:['trust','genuine','legit','legitimate','real or fake','scam or not','is this real','safe to pay','can i trust','doubt'],
+    match:['/(is this|is it|this is|kya ye|kya yeh).{0,25}(genuine|scam|legit|real|fake|trustworthy|safe)/','genuine hai','legit hai','/can (i|we) trust/','trustworthy','/is it safe to (pay|join|enroll|invest)/','/will (i|we) (really|actually) get/','/sach me/','sacchi','asli hai','fake to nahi','scam to nahi','/paisa safe/','koi scam','not sure if genuine','/genuine (hai )?(ya|or) not/','bharosa'] },
+  { id:'stream_quality', label:'Stream quality', color:'#0891B2',
+    ask:['stream quality','streaming','buffering','lag','lagging','freezing','hanging','poor quality','low quality','choppy'],
+    match:['buffer','/\\blag/','lagging','/stream(ing)? (is )?(poor|bad|slow|stuck|breaking)/','/video (is )?(stuck|freez|buffer|lag|breaking|blur)/','freez','/\\bhang/','/audio (is )?(breaking|cutting|robotic)/','/keeps (stopping|buffering|freezing|hanging)/','/poor (connection|quality|network)/','low quality','choppy','/voice (is )?(breaking|cutting)/','network issue','/screen (is )?(stuck|frozen)/'] },
+  { id:'pace', label:'Pace / speed', color:'#6D28D9',
+    ask:['pace','speed','too fast','too slow','slow down','rushing','going fast','keep up'],
+    match:['too fast','too slow','/going (too |very )?fast/','/going (too |very )?slow/','slow down','bit fast','very fast','little slow','fast ja rahe','/speed (is )?(fast|slow|high)/','rushing','/please (slow|repeat)/','/can you (slow|repeat)/','not able to keep up','/keep up/','dheere','jaldi ja rahe','thoda slow','thoda dheere','/repeat (that|it|the)/'] },
+  { id:'materials', label:'Slides / materials', color:'#1D4ED8',
+    ask:['slides','ppt','presentation','notes','material','materials','resources','pdf','deck','share the'],
+    match:['/\\bslides?\\b/','/\\bppt\\b/','presentation deck','/\\bpdf\\b/','/\\bnotes?\\b/','study material','/material(s)?\\b/','resource','/share (the )?(slides?|ppt|deck|notes?|material|pdf|doc|file)/','/where (are|is) the (slides?|notes?|material|ppt|pdf)/','/(can|will) (we|i|you) (get|share|send) (the )?(slides?|notes?|ppt|deck|material|pdf)/','cheat sheet','/\\bdeck\\b/','workbook'] },
+  { id:'tool_questions', label:'Tool how-to / access', color:'#C2410C',
+    ask:['which tool','how to use','tool access','how to access','how do i use','which ai tool','chatgpt','gemini','claude','canva','midjourney'],
+    match:['/how (to|do i|can i|does one) use/','/which (ai )?tool/','/where (to|do i) (get|find|use|access)/','/how to (open|run|install|sign ?up|access)/','chatgpt','/\\bgemini\\b/','/\\bclaude\\b/','copilot','midjourney','/\\bcanva\\b/','/\\bsora\\b/','/\\bn8n\\b/','elevenlabs','/tool (is )?not (working|opening|responding)/','api key','/how .* prompt/','prompt kaise','prompt kaha'] },
+  { id:'curriculum_fit', label:'Curriculum fit / eligibility', color:'#4338CA',
+    ask:['is this for me','beginner','non technical','no coding','eligibility','eligible','prerequisite','prerequisites','will this help','suitable','right for me'],
+    match:['/is (this|it) (for|suitable|right|useful|relevant|good) for/','/(for|suitable for) (beginners?|freshers?|non ?technical|non ?coders?|students?|working professional)/','no coding','without coding','/do i need (to know )?(coding|programming|python)/','beginner friendly','am i eligible','eligibility','prerequisite','/will (this|it) help (me|my)/','/right for me/','/my (background|domain|field|profile)/','career change','/fit for my/','/i am (a |from )?(fresher|student|non ?technical|beginner)/'] },
   { id:'question', label:'Asked a question', color:'#344054',
     ask:['question','questions','doubt','doubts','queries','query'],
     match:['/\\?/','/^(how|what|why|when|where|which|can|could|is|are|do|does|will|should|kya|kaise|kab|kaha)\\b/'] },
@@ -891,7 +961,15 @@ const LS = 'zca.v1';
 const prefs = (() => { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch(e){ return {}; } })();
 function savePrefs(){ try { localStorage.setItem(LS, JSON.stringify(prefs)); } catch(e){} }
 
-let dict = Array.isArray(prefs.dict) && prefs.dict.length ? prefs.dict : Z.DEFAULT_DICT;
+function mergeDict(base){
+  const have = new Set(base.map(c => c && c.id));
+  const merged = base.slice();
+  let added = false;
+  for (const d of Z.DEFAULT_DICT){ if (!have.has(d.id)) { merged.push(d); added = true; } }
+  if (added && Array.isArray(prefs.dict) && prefs.dict.length) { prefs.dict = merged; savePrefs(); }
+  return merged;
+}
+let dict = mergeDict(Array.isArray(prefs.dict) && prefs.dict.length ? prefs.dict : Z.DEFAULT_DICT);
 let cdict = Z.compileDict(dict);
 const catById = () => Object.fromEntries(cdict.map(c => [c.id, c]));
 
@@ -1061,7 +1139,7 @@ function refreshOverview(){
   const ul = $('#buckets'); ul.innerHTML = '';
   const people = new Set(msgs.map(m => m.name.toLowerCase()));
   $('#ovSub').textContent = msgs.length ? `${msgs.length} msgs, ${people.size} people` : '';
-  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; return; }
+  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; return; }
   const counts = cdict.map(c => {
     const ppl = new Set(); let n = 0;
     for (const m of msgs){ if (m.cats[c.id]) { n++; ppl.add(m.name.toLowerCase()); } }
@@ -1075,6 +1153,104 @@ function refreshOverview(){
     li.querySelector('button').onclick = () => { $('#ask').value = x.c.label.toLowerCase(); run(x.c.label.toLowerCase(), [x.c.id]); };
     ul.appendChild(li);
   }
+  renderBuckets(msgs);
+  renderTimeline(msgs);
+}
+
+/* ---------- bucket breakdown (cards with verbatim examples) ---------- */
+function clip(s, n){ s = String(s).replace(/\s+/g,' ').trim(); return s.length > n ? s.slice(0, n-1) + '…' : s; }
+function bucketExamples(cid, msgs, limit){
+  const cand = msgs.filter(m => m.cats[cid] && m.text.trim().length > 1)
+                   .sort((a,b) => (a.secs<0?a.idx:a.secs) - (b.secs<0?b.idx:b.secs));
+  const seen = new Set(), ex = [];
+  for (const m of cand){ const k = m.name.toLowerCase(); if (seen.has(k)) continue; seen.add(k); ex.push(m); if (ex.length>=limit) break; }
+  if (ex.length < limit) for (const m of cand){ if (ex.includes(m)) continue; ex.push(m); if (ex.length>=limit) break; }
+  return ex;
+}
+function renderBuckets(msgs){
+  const panel = $('#bktPanel'), grid = $('#bgrid');
+  const items = cdict.filter(c => !META[c.id]).map(c => {
+    const rows = msgs.filter(m => m.cats[c.id]);
+    return { c, n:rows.length, p:new Set(rows.map(m => m.name.toLowerCase())).size };
+  }).filter(x => x.n > 0).sort((a,b) => b.p - a.p || b.n - a.n);
+  if (!items.length){ panel.hidden = true; return; }
+  panel.hidden = false;
+  $('#bktSub').textContent = `${items.length} in this chat`;
+  grid.innerHTML = items.map(x => {
+    const ex = bucketExamples(x.c.id, msgs, 3);
+    return `<article class="bcard" style="--bc:${x.c.color}">
+      <header><span class="bdot"></span><b>${escH(x.c.label)}</b></header>
+      <div class="bstat"><span class="bp">${x.p}</span> ${x.p===1?'person':'people'} · ${x.n} ${x.n===1?'msg':'msgs'}</div>
+      <ul class="bex">${ex.map(m => `<li><span class="bxn">${escH(m.name)}${m.time?` · ${escH(m.time)}`:''}${m.dm?' · private':''}</span><span class="bxt">${escH(clip(m.text,180))}</span></li>`).join('')}</ul>
+      <button class="btn quiet sm bopen" data-cat="${x.c.id}" data-lb="${escH(x.c.label)}">See all ${x.n} →</button>
+    </article>`;
+  }).join('');
+  grid.querySelectorAll('.bopen').forEach(b => b.onclick = () => { $('#ask').value = b.dataset.lb.toLowerCase(); run(b.dataset.lb.toLowerCase(), [b.dataset.cat]); $('#results').scrollIntoView({ behavior:'smooth', block:'start' }); });
+}
+
+/* ---------- sentiment timeline ---------- */
+function sentOf(m){ const c = m.cats||{}; if (c.negative || c.refund) return 'neg'; if (c.positive) return 'pos'; return 'neu'; }
+const PHASES = [[0,.12,'Opening & join','#5FA8D3'],[.12,.32,'Warm-up','#7A5AF8'],[.32,.64,'Core teaching','#0E9384'],[.64,.86,'Q&A / peak','#9F5F00'],[.86,1,'Offer & close','#C11574']];
+function renderTimeline(msgs){
+  const panel = $('#tlPanel');
+  const withT = msgs.filter(m => m.secs >= 0);
+  const useTime = withT.length >= Math.max(6, msgs.length * 0.5);
+  const seq = (useTime ? withT : msgs).filter(m => m.text.trim().length > 0);
+  if (seq.length < 6){ panel.hidden = true; return; }
+  panel.hidden = false;
+  const xOf = (m) => useTime ? m.secs : m.idx;
+  let lo = Math.min(...seq.map(xOf)), hi = Math.max(...seq.map(xOf));
+  if (hi <= lo) hi = lo + 1;
+  const span = hi - lo;
+  const N = Math.min(24, Math.max(8, Math.round(useTime ? span/120 : seq.length/12)));
+  const bins = Array.from({length:N}, (_,i) => ({ pos:0, neu:0, neg:0, msgs:[], i }));
+  for (const m of seq){ const b = bins[Math.min(N-1, Math.floor((xOf(m)-lo)/span*N))]; b[sentOf(m)]++; b.msgs.push(m); }
+
+  const totP = seq.filter(m => sentOf(m)==='pos').length, totNg = seq.filter(m => sentOf(m)==='neg').length;
+  $('#tlSub').textContent = `${seq.length} msgs · ${totP} positive · ${totNg} negative`;
+
+  // geometry
+  const W=1000, H=210, padX=26, padT=24, padB=20, iw=W-2*padX, top=padT, bot=H-padB, ph=bot-top;
+  const slot=iw/N, bw=slot*0.8, maxT=Math.max(1,...bins.map(b=>b.pos+b.neu+b.neg)), sc=ph/maxT;
+  const xpix=(p)=>padX+p*iw, bx=(i)=>padX+i*slot+(slot-bw)/2;
+  let svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Sentiment over the session">`;
+  // phase bands + labels
+  PHASES.forEach((ph2,k)=>{ const x0=xpix(ph2[0]), w=(ph2[1]-ph2[0])*iw; svg+=`<rect x="${x0.toFixed(1)}" y="${top}" width="${w.toFixed(1)}" height="${ph}" fill="${ph2[3]}" opacity="${k%2?0.05:0.09}"/><text x="${(x0+w/2).toFixed(1)}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#5B6A82">${ph2[2]}</text>`; });
+  svg+=`<line x1="${padX}" y1="${bot}" x2="${W-padX}" y2="${bot}" stroke="#D6E3EE" stroke-width="1"/>`;
+  // stacked bars: neg (bottom), neu, pos
+  bins.forEach(b=>{ const x=bx(b.i); let y=bot;
+    const seg=(v,col)=>{ if(v<=0) return; const h=v*sc; y-=h; svg+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${col}" rx="1.5"/>`; };
+    seg(b.neg,'#D6564C'); seg(b.neu,'#C3D0DE'); seg(b.pos,'#2E9E6B');
+  });
+  // spike markers
+  const negs=bins.map(b=>b.neg), poss=bins.map(b=>b.pos), avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
+  const find=(arr,base)=>{ const th=Math.max(2,Math.ceil(base*1.8)),o=[]; for(let i=0;i<arr.length;i++){ if(arr[i]>=th && arr[i]>=(arr[i-1]||0) && arr[i]>=(arr[i+1]||0)) o.push(i); } return o; };
+  const negSp=find(negs,avg(negs)), posSp=find(poss,avg(poss));
+  const mark=(i,col)=>{ const cx=bx(i)+bw/2, tot=bins[i].pos+bins[i].neu+bins[i].neg, y=bot-tot*sc-5; svg+=`<path d="M${(cx-4).toFixed(1)} ${(y-6).toFixed(1)} L${(cx+4).toFixed(1)} ${(y-6).toFixed(1)} L${cx.toFixed(1)} ${y.toFixed(1)} Z" fill="${col}"/>`; };
+  negSp.forEach(i=>mark(i,'#B23B32')); posSp.forEach(i=>mark(i,'#1F7A50'));
+  // x labels (~5)
+  const midLabel=(i)=>{ const mid=lo+(i+0.5)/N*span; return useTime?fmtSecs(mid):('#'+Math.round(mid)); };
+  [0,Math.floor(N/4),Math.floor(N/2),Math.floor(3*N/4),N-1].filter((v,i,a)=>a.indexOf(v)===i).forEach(i=>{ svg+=`<text x="${(bx(i)+bw/2).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="10" fill="#93A0B4">${midLabel(i)}</text>`; });
+  svg+=`</svg>`;
+  $('#tlchart').innerHTML = svg;
+
+  // phase aggregates
+  $('#tlphases').innerHTML = PHASES.map(([a,c,name,col])=>{ const x0=lo+a*span, x1=lo+c*span; let p=0,nu=0,ng=0;
+    for(const m of seq){ const x=xOf(m); if(x>=x0 && (x<x1 || (c===1 && x<=x1))){ const s=sentOf(m); if(s==='pos')p++; else if(s==='neg')ng++; else nu++; } }
+    return `<div class="tlphase" style="--pc:${col}"><b>${escH(name)}</b><div class="pc"><i style="color:#1F7A50">${p}+</i><i style="color:#7C8AA0">${nu}</i><i style="color:#B23B32">${ng}−</i></div></div>`;
+  }).join('');
+
+  // spikes explained
+  const explain=(i,kind)=>{ const b=bins[i], cnt={};
+    for(const m of b.msgs) for(const id in m.cats){ if(META[id]) continue; cnt[id]=(cnt[id]||0)+1; }
+    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([id])=>(catById()[id]||{}).label||id);
+    const ex=b.msgs.filter(m=>sentOf(m)===kind && m.text.trim().length>3).sort((a,b)=>a.text.length-b.text.length)[0];
+    return { i, kind, n:kind==='neg'?b.neg:b.pos, at:midLabel(i), top, ex };
+  };
+  let sp=[...negSp.map(i=>explain(i,'neg')), ...posSp.map(i=>explain(i,'pos'))].sort((a,b)=>b.n-a.n).slice(0,5).sort((a,b)=>a.i-b.i);
+  const box=$('#tlspikes');
+  if(!sp.length){ box.innerHTML=`<h4>Spikes</h4><div class="spike"><span class="sb">No sharp spikes. Sentiment stayed fairly even across the session.</span></div>`; return; }
+  box.innerHTML=`<h4>Spikes explained</h4>`+sp.map(s=>`<div class="spike"><span class="sk ${s.kind}">${s.kind==='neg'?'Negative':'Positive'} · ${escH(s.at)}</span><span class="sb"><b>${s.n} ${s.kind==='neg'?'negative':'positive'} msgs</b>${s.top.length?`, mostly ${escH(s.top.join(' + '))}`:''}.${s.ex?`<q>${escH(clip(s.ex.text,150))} — ${escH(s.ex.name)}</q>`:''}</span></div>`).join('');
 }
 
 /* ---------- ask ---------- */
