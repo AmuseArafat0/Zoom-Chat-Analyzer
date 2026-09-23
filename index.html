@@ -433,7 +433,7 @@ tbody tr.rv{animation:rise .32s ease both}
   <span class="hint">Everything runs in your browser. Nothing is uploaded.</span>
   <span class="spacer"></span>
   <button class="btn primary sm" id="btnReport" title="One Excel file: a summary sheet plus one sheet per topic (refund, LMS, WhatsApp group...) with names and messages">Download full report</button>
-  <button class="btn sm" id="btnOneSheet" title="One sheet: every message with its date and the auto-detected issue beside it, grouped under each dated chat">Issues by chat</button>
+  <button class="btn sm" id="btnOneSheet" title="One sheet: the whole chat (every message), with its date and the auto-detected issue beside any message that has one, grouped under each dated chat">Whole chat + issues</button>
   <button class="btn quiet sm" id="btnSample">Load sample chat</button>
   <button class="btn quiet sm" id="btnSettings">Settings</button>
 </header>
@@ -1668,7 +1668,7 @@ function buildIssuesByChat(){
   let any = false;
   for (const s of ordered){
     const dl = s.dateLabel || 'No date';
-    const rows = srcVisible(s).sort(byTime);
+    const rows = s.messages.filter(m => m.text && m.kind !== 'reaction').sort(byTime);
     aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '']);
     for (const m of rows){
       const issues = Object.keys(m.cats).filter(id => !META[id]).map(id => (cb[id]||{}).label || id).join('; ');
