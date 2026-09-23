@@ -433,6 +433,7 @@ tbody tr.rv{animation:rise .32s ease both}
   <span class="hint">Everything runs in your browser. Nothing is uploaded.</span>
   <span class="spacer"></span>
   <button class="btn primary sm" id="btnReport" title="One Excel file: a summary sheet plus one sheet per topic (refund, LMS, WhatsApp group...) with names and messages">Download full report</button>
+  <button class="btn sm" id="btnOneSheet" title="One sheet: every flagged message with its issue beside it, grouped under each dated chat">Issues by chat</button>
   <button class="btn quiet sm" id="btnSample">Load sample chat</button>
   <button class="btn quiet sm" id="btnSettings">Settings</button>
 </header>
@@ -699,7 +700,7 @@ function compileDict(dict){
 }
 
 /* ---------- Zoom saved chat (.txt) ---------- */
-const HEADER_RE = /^(\d{1,2}:\d{2}(?::\d{2})?(?:\s?[AaPp]\.?[Mm]\.?)?)\s+(?:From\s+)?(.+?)\s*:\s?(.*)$/;
+const HEADER_RE = /^(?:(\d{4}[-\/.]\d{1,2}[-\/.]\d{1,2})\s+)?(\d{1,2}:\d{2}(?::\d{2})?(?:\s?[AaPp]\.?[Mm]\.?)?)\s+(?:From\s+)?(.+?)\s*:\s?(.*)$/;
 const TO_RE = /^(.*?)\s+[Tt]o\s+(.+)$/;
 const ROLE_RE = /\s*\((host|co-host|cohost|panelist|guest|me|attendee)\)\s*$/i;
 
@@ -726,7 +727,7 @@ function parseZoomTxt(text, sourceName){
     }
     const m = raw.match(HEADER_RE);
     if (m) {
-      cur = { time:m[1].trim(), sender:m[2], lines:[m[3]] };
+      cur = { date:(m[1]||'').trim(), time:m[2].trim(), sender:m[3], lines:[m[4]] };
       msgs.push(cur);
     } else if (cur) {
       cur.lines.push(raw);
@@ -734,7 +735,7 @@ function parseZoomTxt(text, sourceName){
   }
   return msgs.map((m, i) => {
     const s = splitSender(m.sender);
-    return finishMessage({ time:m.time, name:s.name, role:s.role, to:s.to, text:m.lines.join('\n'), source:sourceName, idx:i });
+    return finishMessage({ time:m.time, date:m.date, name:s.name, role:s.role, to:s.to, text:m.lines.join('\n'), source:sourceName, idx:i });
   });
 }
 
@@ -751,7 +752,7 @@ function finishMessage(m){
   text = text.replace(/^\n+/,'').trim();
   const to = (m.to||'').trim();
   const dm = /privately|direct message/i.test(to) || (!!to && !PUBLIC_RE.test(to));
-  return { time:m.time||'', secs:toSecs(m.time||''), name:(m.name||'').trim()||'(unknown)', role:m.role||'', to, dm, text, kind, replyTo, source:m.source, idx:m.idx };
+  return { time:m.time||'', date:(m.date||'').trim(), secs:toSecs(m.time||''), name:(m.name||'').trim()||'(unknown)', role:m.role||'', to, dm, text, kind, replyTo, source:m.source, idx:m.idx };
 }
 
 function toSecs(t){
@@ -1085,6 +1086,14 @@ function detectDate(name){
   if ((m = s.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*[-_ ]?\s*(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(20\d{2})?/i))) { const r = mkDate(m[3]||new Date().getFullYear(), MONTHS[m[1].toLowerCase().slice(0,3)], m[2]); if (r) return r; }
   return null;
 }
+function normDateStr(s){ const m = String(s).match(/(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/); if (!m) return null; const r = mkDate(m[1],m[2],m[3]); return r ? r.key : null; }
+function commonMsgDate(msgs){
+  const cnt = new Map();
+  for (const m of msgs){ if (m.date){ const k = normDateStr(m.date); if (k) cnt.set(k, (cnt.get(k)||0)+1); } }
+  if (!cnt.size) return null;
+  let best = null, bn = -1; for (const [k,n] of cnt){ if (n > bn){ bn = n; best = k; } }
+  const p = best.split('-').map(Number); return mkDate(p[0],p[1],p[2]);
+}
 function stampSource(src){ for (const m of src.messages) { m.srcDate = src.date || ''; m.srcDateLabel = src.dateLabel || ''; } }
 function setSourceDate(src, val){
   if (val) { const p = val.split('-').map(Number); const r = mkDate(p[0],p[1],p[2]); src.date = r ? r.key : val; src.dateLabel = r ? r.label : val; }
@@ -1111,7 +1120,7 @@ function fillDateFilter(){
 function addSource(src){
   src.id = ++srcSeq; src.on = true;
   markHosts(src);
-  if (src.date === undefined) { const d = detectDate(src.name); src.date = d ? d.key : ''; src.dateLabel = d ? d.label : ''; }
+  if (src.date === undefined) { const d = detectDate(src.name) || commonMsgDate(src.messages); src.date = d ? d.key : ''; src.dateLabel = d ? d.label : ''; }
   stampSource(src);
   const twin = state.sources.find(o => sameChat(o, src));
   if (twin) { src.on = false; src.dupOf = twin.name; toast(`${src.name} looks like the same chat as ${twin.name}, so it starts switched off`); }
@@ -1647,6 +1656,48 @@ function buildReport(){
   });
 }
 $('#btnReport').onclick = buildReport;
+
+/* ---------- one sheet: every dated chat with its issues beside each message ---------- */
+function buildIssuesByChat(){
+  const cb = catById();
+  const srcs = state.sources.filter(s => s.on);
+  if (!srcs.length){ toast('Add a chat first'); return; }
+  const ordered = srcs.slice().sort((a,b) => (a.date||'zzzz').localeCompare(b.date||'zzzz') || a.name.localeCompare(b.name));
+  const byTime = (a,b) => (a.secs<0?a.idx:a.secs) - (b.secs<0?b.idx:b.secs);
+  const aoa = [['Date','Time','Name','Message','Issue(s)']];
+  const sections = [];   // row indices of section headers, for styling in the .xlsx path if available
+  let any = false;
+  for (const s of ordered){
+    const dl = s.dateLabel || 'No date';
+    const flagged = srcVisible(s)
+      .filter(m => Object.keys(m.cats).some(id => !META[id]))
+      .sort(byTime);
+    sections.push(aoa.length);
+    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${flagged.length} flagged`, '', '', '', '']);
+    for (const m of flagged){
+      const issues = Object.keys(m.cats).filter(id => !META[id]).map(id => (cb[id]||{}).label || id).join('; ');
+      aoa.push([dl, m.time, m.name, m.text, issues]);
+      any = true;
+    }
+    aoa.push(['', '', '', '', '']);
+  }
+  if (!any){ toast('No issues detected in these chats'); return; }
+  const base = reportBase().replace('report','issues-by-chat');
+  loadXlsx().then(() => {
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws['!cols'] = [16,10,24,90,34].map(w => ({ wch:w }));
+    ws['!freeze'] = { xSplit:0, ySplit:1 };
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Issues by chat');
+    XLSX.writeFile(wb, base + '.xlsx');
+    toast('Issues-by-chat sheet ready'); setMascot('happy', 1500);
+  }).catch(() => {
+    const lines = aoa.map(r => r.map(csvCell).join(','));
+    download(base + '.csv', '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
+    toast('Excel library unavailable, downloaded as CSV instead');
+  });
+}
+$('#btnOneSheet').onclick = buildIssuesByChat;
 
 function copyNames(){ const p = Z.groupByPerson(filteredRows()); if (!p.length) { toast('Nothing to copy'); return; } copyText(p.map(x => x.name).join('\n')); }
 function copyList(){
