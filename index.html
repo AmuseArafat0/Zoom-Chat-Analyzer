@@ -627,7 +627,7 @@ const DEFAULT_DICT = [
     match:['support','customer care','helpline','contact number','email id','mail id','/\\bticket/','complain','/no (one|body|1) (is )?(respond|repl|answer|pick)/','/not (responding|replying|answering|picking)/','/call me/','callback','call back','escalat','reach out','phone number','/(whom|who) (to|should i|do i) contact/','no reply','/no response/'] },
   { id:'schedule', label:'Schedule / timing', color:'#5F6C7B',
     ask:['schedule','timing','timings','next session','when','reschedule','date','dates','calendar','upcoming'],
-    match:['schedule','timing','/what time/','/when (is|will|does) (the )?(next|session|class)/','next session','next class','tomorrow','reschedul','postpone','/session (date|time)/','/how many sessions/','duration','calendar','upcoming','/(kab|kitne baje)/'] },
+    match:['schedule','timing','/what time/','/when (is|will|does) (the )?(next|session|class)/','next session','next class','tomorrow','reschedul','postpone','/session (date|time)/','/how many sessions/','duration','calendar','upcoming','/(kab|kitne baje)/','/how long (is|will|does)/','/class (duration|length|time)/','/how much time/','/kitni der/','/kitne (ghante|minute)/','/(when|what time) (does|will|is) (it|this|the )?(class|session)? ?(end|finish|over|get over)/','/end (time|by what)/'] },
   { id:'assignment', label:'Assignment / task', color:'#3E4784',
     ask:['assignment','assignments','homework','quiz','quizzes','project','submission','task','tasks','exam','deadline'],
     match:['assignment','homework','/\\bquiz/','/\\btest\\b/','/\\bproject/','submission','/\\bsubmit/','deadline','/\\btask/','/\\bexam/','practice','exercise'] },
@@ -645,19 +645,28 @@ const DEFAULT_DICT = [
     match:['/(is this|is it|this is|kya ye|kya yeh).{0,25}(genuine|scam|legit|real|fake|trustworthy|safe)/','genuine hai','legit hai','/can (i|we) trust/','trustworthy','/is it safe to (pay|join|enroll|invest)/','/will (i|we) (really|actually) get/','/sach me/','sacchi','asli hai','fake to nahi','scam to nahi','/paisa safe/','koi scam','not sure if genuine','/genuine (hai )?(ya|or) not/','bharosa'] },
   { id:'stream_quality', label:'Stream quality', color:'#0891B2',
     ask:['stream quality','streaming','buffering','lag','lagging','freezing','hanging','poor quality','low quality','choppy'],
-    match:['buffer','/\\blag/','lagging','/stream(ing)? (is )?(poor|bad|slow|stuck|breaking)/','/video (is )?(stuck|freez|buffer|lag|breaking|blur)/','freez','/\\bhang/','/audio (is )?(breaking|cutting|robotic)/','/keeps (stopping|buffering|freezing|hanging)/','/poor (connection|quality|network)/','low quality','choppy','/voice (is )?(breaking|cutting)/','network issue','/screen (is )?(stuck|frozen)/'] },
+    match:['buffer','/\\blag/','lagging','/stream(ing)? (is )?(poor|bad|slow|stuck|breaking)/','/video (is )?(stuck|freez|buffer|lag|breaking|blur)/','freez','/\\bhang/','/audio (is )?(breaking|cutting|robotic)/','/keeps (stopping|buffering|freezing|hanging)/','/poor (connection|quality|network)/','low quality','choppy','/voice (is )?(breaking|cutting)/','network issue','/screen (is )?(stuck|frozen)/','video quality','/quality (is )?(very )?(poor|bad|low)/','/(poor|bad|blurry?) video/','/\\bblur/','pixelated','/video .*(poor|blur|bad quality|not clear)/'] },
   { id:'pace', label:'Pace / speed', color:'#6D28D9',
     ask:['pace','speed','too fast','too slow','slow down','rushing','going fast','keep up'],
-    match:['too fast','too slow','/going (too |very )?fast/','/going (too |very )?slow/','slow down','bit fast','very fast','little slow','fast ja rahe','/speed (is )?(fast|slow|high)/','rushing','/please (slow|repeat)/','/can you (slow|repeat)/','not able to keep up','/keep up/','dheere','jaldi ja rahe','thoda slow','thoda dheere','/repeat (that|it|the)/'] },
+    match:['too fast','too slow','/going (too |very )?fast/','/going (too |very )?slow/','slow down','bit fast','very fast','little slow','fast ja rahe','/speed (is )?(fast|slow|high)/','rushing','/please (slow|repeat)/','/can you (slow|repeat)/','not able to keep up','/keep up/','dheere','jaldi ja rahe','thoda slow','thoda dheere','/repeat (that|it|the)/','/\\brevise/','/quickly revise/','/repeat (again|once|please|it|that|the)/','/again please/','/one more time/','/explain again/','/come again/','/missed (that|it|the)/','/could(n.t|nt)? (catch|hear|get|follow)/','/thoda repeat/','/phir se/','/dobara (bata|dikha|samjha|repeat)/'] },
   { id:'materials', label:'Slides / materials', color:'#1D4ED8',
     ask:['slides','ppt','presentation','notes','material','materials','resources','pdf','deck','share the'],
-    match:['/\\bslides?\\b/','/\\bppt\\b/','presentation deck','/\\bpdf\\b/','/\\bnotes?\\b/','study material','/material(s)?\\b/','resource','/share (the )?(slides?|ppt|deck|notes?|material|pdf|doc|file)/','/where (are|is) the (slides?|notes?|material|ppt|pdf)/','/(can|will) (we|i|you) (get|share|send) (the )?(slides?|notes?|ppt|deck|material|pdf)/','cheat sheet','/\\bdeck\\b/','workbook'] },
+    match:['/\\bslides?\\b/','/\\bppt\\b/','presentation deck','/\\bpdf\\b/','/\\bnotes?\\b/','study material','/material(s)?\\b/','resource','/share (the )?(slides?|ppt|deck|notes?|material|pdf|doc|file)/','/where (are|is) the (slides?|notes?|material|ppt|pdf)/','/(can|will) (we|i|you) (get|share|send) (the )?(slides?|notes?|ppt|deck|material|pdf)/','cheat sheet','/\\bdeck\\b/','workbook','/google doc/','/\\bdocs?\\b/','document link','/(share|send|show|where).{0,18}(link|doc|document|sheet|file)/','/link (of|for|to) (the )?(doc|document|sheet|slides?|material)/','empty document','/notebook ?lm/','/where (is|are) the (link|document|sheet)/'] },
   { id:'tool_questions', label:'Tool how-to / access', color:'#C2410C',
     ask:['which tool','how to use','tool access','how to access','how do i use','which ai tool','chatgpt','gemini','claude','canva','midjourney'],
     match:['/how (to|do i|can i|does one) use/','/which (ai )?tool/','/where (to|do i) (get|find|use|access)/','/how to (open|run|install|sign ?up|access)/','chatgpt','/\\bgemini\\b/','/\\bclaude\\b/','copilot','midjourney','/\\bcanva\\b/','/\\bsora\\b/','/\\bn8n\\b/','elevenlabs','/tool (is )?not (working|opening|responding)/','api key','/how .* prompt/','prompt kaise','prompt kaha'] },
   { id:'curriculum_fit', label:'Curriculum fit / eligibility', color:'#4338CA',
     ask:['is this for me','beginner','non technical','no coding','eligibility','eligible','prerequisite','prerequisites','will this help','suitable','right for me'],
-    match:['/is (this|it) (for|suitable|right|useful|relevant|good) for/','/(for|suitable for) (beginners?|freshers?|non ?technical|non ?coders?|students?|working professional)/','no coding','without coding','/do i need (to know )?(coding|programming|python)/','beginner friendly','am i eligible','eligibility','prerequisite','/will (this|it) help (me|my)/','/right for me/','/my (background|domain|field|profile)/','career change','/fit for my/','/i am (a |from )?(fresher|student|non ?technical|beginner)/'] },
+    match:['/is (this|it) (for|suitable|right|useful|relevant|good) for/','/(for|suitable for) (beginners?|freshers?|non ?technical|non ?coders?|students?|working professional)/','no coding','without coding','/do i need (to know )?(coding|programming|python)/','beginner friendly','am i eligible','eligibility','prerequisite','/will (this|it) help (me|my)/','/right for me/','/my (background|domain|field|profile)/','career change','/fit for my/','/i am (a |from )?(fresher|student|non ?technical|beginner)/','/non ?tech\\b/','/from (a )?non ?tech/','house ?wife','home ?maker','/i am (from |a )?(commerce|arts|mechanic|civil|non ?it|housewife)/','/(career|job|year|study) gap/','/gap of \\d/'] },
+  { id:'job_career', label:'Job / placement', color:'#9A3412',
+    ask:['job','placement','career','salary','hiring','job guarantee','internship','package'],
+    match:['/\\bjob\\b/','placement','/\\bcareer/','/\\bsalary/','hiring','/recruit/','/get (a )?job/','job guarantee','/will (i|we) get (a )?(job|placement)/','internship','/\\bpackage\\b/','/job (assistance|ready|support|opportunit)/','/after (this|the) course.*(job|placement|career)/','/switch (my )?career/'] },
+  { id:'getting_started', label:'How to start / begin', color:'#155E75',
+    ask:['how to start','getting started','where to begin','how to begin','from where'],
+    match:['/how (to|do i|can i|should i) (start|begin|proceed|go)/','getting started','/where (to|do i|should i) (start|begin)/','/from where (to|do i|should i)/','/kaha se (start|shuru)/','shuru kaise','/how (do i|to) (join|attend|access) (the )?(next|upcoming|other)/'] },
+  { id:'query', label:'Query / question', color:'#334155',
+    ask:['query','queries'],
+    match:['/\\?\\s*$/','/^(how|what|why|when|where|which|can|could|would|should|is|are|do|does|did|will|whom|whose|kya|kaise|kab|kaha|kitna|kitne|kitni|konsa|kaun)\\b/'] },
   { id:'question', label:'Asked a question', color:'#344054',
     ask:['question','questions','doubt','doubts','queries','query'],
     match:['/\\?/','/^(how|what|why|when|where|which|can|could|is|are|do|does|will|should|kya|kaise|kab|kaha)\\b/'] },
@@ -741,10 +750,10 @@ function parseZoomTxt(text, sourceName){
 
 const PUBLIC_RE = /everyone|all panelists|all attendees|hosts? (and|&) panelists|panelists (and|&) attendees|^all$/i;
 const REACT_RE = /^(Reacted to ".*?" with |Removed a .*? reaction from "|This message (has been|was) deleted)/i;
-const REPLY_RE = /^Replying to\s+"([\s\S]*?)"\s*\n?/i;
+const REPLY_RE = /^Replying to\s+"([\s\S]*?)"\s*:?\s*\n?/i;
 
 function finishMessage(m){
-  let text = (m.text||'').replace(/\s+$/,'');
+  let text = (m.text||'').trim();
   let kind = 'normal', replyTo = '';
   if (REACT_RE.test(text.trim())) kind = 'reaction';
   const r = text.match(REPLY_RE);
@@ -1658,35 +1667,40 @@ function buildReport(){
 $('#btnReport').onclick = buildReport;
 
 /* ---------- one sheet: every dated chat with its issues beside each message ---------- */
+const PRIMARY_ORDER = ['refund','payment','certificate','lms','login','join','recording','whatsapp','av','stream_quality','trust','negative','support','tools','tool_questions','job_career','curriculum_fit','materials','pace','schedule','assignment','getting_started','positive','query'];
+function primaryCat(ids){ for (const id of PRIMARY_ORDER){ if (ids.includes(id)) return id; } return ids[0] || ''; }
 function buildIssuesByChat(){
   const cb = catById();
   const srcs = state.sources.filter(s => s.on);
   if (!srcs.length){ toast('Add a chat first'); return; }
   const ordered = srcs.slice().sort((a,b) => (a.date||'zzzz').localeCompare(b.date||'zzzz') || a.name.localeCompare(b.name));
   const byTime = (a,b) => (a.secs<0?a.idx:a.secs) - (b.secs<0?b.idx:b.secs);
-  const aoa = [['Date','Time','Name','Message','Issue(s)']];
+  const aoa = [['Date','Time','Name','Message','Issue(s)','Category']];
   let any = false;
   for (const s of ordered){
     const dl = s.dateLabel || 'No date';
     const rows = s.messages.filter(m => m.text && m.kind !== 'reaction').sort(byTime);
-    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '']);
+    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '', '']);
     for (const m of rows){
-      const issues = Object.keys(m.cats).filter(id => !META[id]).map(id => (cb[id]||{}).label || id).join('; ');
-      aoa.push([dl, m.time, m.name, m.text, issues]);
+      const ids = Object.keys(m.cats).filter(id => !META[id]);
+      const issues = ids.map(id => (cb[id]||{}).label || id).join('; ');
+      const primId = primaryCat(ids);
+      const category = primId ? ((cb[primId]||{}).label || primId) : '';
+      aoa.push([dl, m.time, m.name, m.text, issues, category]);
       any = true;
     }
-    aoa.push(['', '', '', '', '']);
+    aoa.push(['', '', '', '', '', '']);
   }
   if (!any){ toast('No messages in these chats'); return; }
   const base = reportBase().replace('report','issues-by-chat');
   loadXlsx().then(() => {
     const ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [16,10,24,90,34].map(w => ({ wch:w }));
+    ws['!cols'] = [16,10,24,74,34,22].map(w => ({ wch:w }));
     ws['!freeze'] = { xSplit:0, ySplit:1 };
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Issues by chat');
+    XLSX.utils.book_append_sheet(wb, ws, 'Whole chat');
     XLSX.writeFile(wb, base + '.xlsx');
-    toast('Issues-by-chat sheet ready'); setMascot('happy', 1500);
+    toast('Whole-chat sheet ready'); setMascot('happy', 1500);
   }).catch(() => {
     const lines = aoa.map(r => r.map(csvCell).join(','));
     download(base + '.csv', '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
