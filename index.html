@@ -218,6 +218,37 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .spike .sb b{color:var(--ink)}
 .spike q{color:var(--ink-2);display:block;margin-top:2px;font-style:italic}
 
+/* per-chat date */
+.src{flex-direction:column;align-items:stretch;gap:7px}
+.srcmain{display:flex;align-items:center;gap:8px;min-width:0}
+.srcmain .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+.srcdate{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--ink-3)}
+.srcdate label{font-weight:600;color:var(--ink-2)}
+.srcdate input[type=date]{border:1px solid var(--line);border-radius:6px;padding:3px 6px;font-size:12px;background:var(--surface);color:var(--ink)}
+.srcdate input[type=date]:focus{border-color:var(--accent);outline:none}
+.srcdate .dl{margin-left:auto;white-space:nowrap}
+td.s{white-space:normal;max-width:150px}
+td.s b{color:var(--ink-2);font-size:11.5px}
+
+/* session issue matrix */
+.matwrap{overflow:auto;max-height:62vh;border:1px solid var(--line-2);border-radius:var(--radius-s)}
+table.mat{border-collapse:separate;border-spacing:0;font-size:12.5px;min-width:100%}
+table.mat th,table.mat td{padding:7px 9px;border-bottom:1px solid var(--line-2);border-right:1px solid var(--line-2);white-space:nowrap}
+table.mat thead th{position:sticky;top:0;background:#F3F8FC;z-index:2;font-weight:700;color:var(--ink-2);text-align:center;vertical-align:bottom}
+table.mat th.mr{position:sticky;left:0;background:#F7FAFD;z-index:1;text-align:left;min-width:150px;max-width:230px;white-space:normal}
+table.mat thead th.mr{z-index:3}
+table.mat th.mr .mrd{font-weight:800;color:var(--ink);display:block}
+table.mat th.mr small{color:var(--ink-3);font-weight:500;font-size:11px;display:block;overflow:hidden;text-overflow:ellipsis}
+table.mat th.mi .midot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle}
+td.mt{text-align:center;font-weight:700;color:var(--ink-2);font-variant-numeric:tabular-nums;background:var(--surface-2)}
+td.mc{text-align:center;font-variant-numeric:tabular-nums;cursor:pointer;color:var(--ink)}
+td.mc b{font-weight:700}
+td.mc.z{color:#C9D6E2;cursor:default;background:#fff}
+td.mc:hover:not(.z){outline:2px solid var(--accent);outline-offset:-2px}
+tr.mfoot th,tr.mfoot td{position:sticky;bottom:0;background:#EAF2FA;font-weight:800;border-top:2px solid var(--line)}
+td.mc.mtot b{color:var(--ink-2)}
+.matnote{font-size:11.5px;color:var(--ink-3);margin:8px 0 0}
+
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(22,32,46,.42);display:none;align-items:center;justify-content:center;padding:18px;z-index:50}
 .modal.open{display:flex}
@@ -431,6 +462,10 @@ tbody tr.rv{animation:rise .32s ease both}
     <section class="panel filters">
       <div class="ph">Filters</div>
       <div class="pb">
+        <div class="field" id="dateField" hidden>
+          <label for="dateSel">Session date</label>
+          <select id="dateSel"><option value="">All dates</option></select>
+        </div>
         <div class="field">
           <label for="staff">Hide these people (hosts, trainers, support)</label>
           <textarea id="staff" rows="2" placeholder="Support team, trainer name"></textarea>
@@ -464,6 +499,14 @@ tbody tr.rv{animation:rise .32s ease both}
       <div class="quick" id="quick"><span class="lead">Quick asks</span></div>
     </section>
 
+    <section class="panel mat" id="matPanel" hidden>
+      <div class="ph"><span>Session issue matrix <span class="sub" id="matSub"></span></span><span class="tools"><button class="btn quiet sm" id="matCsv">Download matrix</button></span></div>
+      <div class="pb">
+        <div class="matwrap" id="matWrap"></div>
+        <p class="matnote">Each number is how many people raised that issue in that session. Darker means more. Click a cell to open those messages.</p>
+      </div>
+    </section>
+
     <section class="panel bkt" id="bktPanel" hidden>
       <div class="ph"><span>Chat buckets <span class="sub" id="bktSub"></span></span><span class="tools"><span class="sub" id="bktSel"></span><button class="btn quiet sm" id="bktClear" hidden>Clear</button></span></div>
       <div class="pb"><div class="bgrid" id="bgrid"></div></div>
@@ -473,7 +516,7 @@ tbody tr.rv{animation:rise .32s ease both}
       <div class="ph"><span>Sentiment timeline <span class="sub" id="tlSub"></span></span></div>
       <div class="pb">
         <div class="tlchart" id="tlchart"></div>
-        <div class="tllegend"><span><i style="background:#2E9E6B"></i>Positive</span><span><i style="background:#C3D0DE"></i>Neutral</span><span><i style="background:#D6564C"></i>Negative</span><span class="tlnote">Phases are auto-estimated from the session length.</span></div>
+        <div class="tllegend"><span><i style="background:#2E9E6B"></i>Positive</span><span><i style="background:#C3D0DE"></i>Neutral</span><span><i style="background:#D6564C"></i>Negative</span><span class="tlnote" id="tlnote">Phases are auto-estimated from the session length.</span></div>
         <div class="tlphases" id="tlphases"></div>
         <div class="tlspikes" id="tlspikes"></div>
       </div>
@@ -982,7 +1025,7 @@ let dict = mergeDict(Array.isArray(prefs.dict) && prefs.dict.length ? prefs.dict
 let cdict = Z.compileDict(dict);
 const catById = () => Object.fromEntries(cdict.map(c => [c.id, c]));
 
-const state = { sources:[], query:null, rows:[], view:'person', sort:{ key:'time', dir:1 }, textFilter:'', limit:300 };
+const state = { sources:[], query:null, rows:[], view:'person', sort:{ key:'time', dir:1 }, textFilter:'', limit:300, dateFilter:'' };
 const PAGE = 300;
 let srcSeq = 0;
 
@@ -1023,10 +1066,53 @@ function download(name, content, type){
 }
 function csvCell(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }
 
+/* ---------- per-chat date ---------- */
+const MONTHS = { jan:1,feb:2,mar:3,apr:4,may:5,jun:6,jul:7,aug:8,sep:9,sept:9,oct:10,nov:11,dec:12 };
+const MON_ABBR = ['','Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function pad2(n){ return String(n).padStart(2,'0'); }
+function mkDate(y,m,d){
+  y=+y; m=+m; d=+d; if (y<100) y+=2000;
+  if (!(m>=1&&m<=12&&d>=1&&d<=31&&y>=2000&&y<=2100)) return null;
+  return { key:`${y}-${pad2(m)}-${pad2(d)}`, label:`${d} ${MON_ABBR[m]} ${y}`, y, m, d };
+}
+function detectDate(name){
+  const s = String(name); let m;
+  if ((m = s.match(/GMT(20\d{2})(\d{2})(\d{2})/i))) { const r = mkDate(m[1],m[2],m[3]); if (r) return r; }
+  if ((m = s.match(/(20\d{2})[-_.\/](\d{1,2})[-_.\/](\d{1,2})/))) { const r = mkDate(m[1],m[2],m[3]); if (r) return r; }
+  if ((m = s.match(/(\d{1,2})[-_.\/](\d{1,2})[-_.\/](20\d{2})/))) { const r = mkDate(m[3],m[2],m[1]); if (r) return r; }
+  if ((m = s.match(/(?<!\d)(20\d{2})(\d{2})(\d{2})(?!\d)/))) { const r = mkDate(m[1],m[2],m[3]); if (r) return r; }
+  if ((m = s.match(/(\d{1,2})\s*[-_ ]?\s*(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*[-_ ,]?\s*(20\d{2})?/i))) { const r = mkDate(m[3]||new Date().getFullYear(), MONTHS[m[2].toLowerCase().slice(0,3)], m[1]); if (r) return r; }
+  if ((m = s.match(/(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec)[a-z]*\.?\s*[-_ ]?\s*(\d{1,2})(?:st|nd|rd|th)?\s*,?\s*(20\d{2})?/i))) { const r = mkDate(m[3]||new Date().getFullYear(), MONTHS[m[1].toLowerCase().slice(0,3)], m[2]); if (r) return r; }
+  return null;
+}
+function stampSource(src){ for (const m of src.messages) { m.srcDate = src.date || ''; m.srcDateLabel = src.dateLabel || ''; } }
+function setSourceDate(src, val){
+  if (val) { const p = val.split('-').map(Number); const r = mkDate(p[0],p[1],p[2]); src.date = r ? r.key : val; src.dateLabel = r ? r.label : val; }
+  else { src.date = ''; src.dateLabel = ''; }
+  stampSource(src);
+  renderSources(); refreshOverview(); if (state.query) run(state.query.raw);
+}
+function fillDateFilter(){
+  const sel = $('#dateSel'); if (!sel) return;
+  const dates = new Map(); let undated = false;
+  for (const s of state.sources){ if (s.date) dates.set(s.date, s.dateLabel || s.date); else undated = true; }
+  const keys = [...dates.keys()].sort();
+  const field = $('#dateField'); if (field) field.hidden = keys.length === 0;
+  let opts = '<option value="">All dates</option>';
+  for (const k of keys) opts += `<option value="${k}">${escH(dates.get(k))}</option>`;
+  if (undated && keys.length) opts += '<option value="__none">No date set</option>';
+  sel.innerHTML = opts;
+  const valid = state.dateFilter === '' || keys.includes(state.dateFilter) || (state.dateFilter === '__none' && undated);
+  if (!valid) state.dateFilter = '';
+  sel.value = state.dateFilter;
+}
+
 /* ---------- sources ---------- */
 function addSource(src){
   src.id = ++srcSeq; src.on = true;
   markHosts(src);
+  if (src.date === undefined) { const d = detectDate(src.name); src.date = d ? d.key : ''; src.dateLabel = d ? d.label : ''; }
+  stampSource(src);
   const twin = state.sources.find(o => sameChat(o, src));
   if (twin) { src.on = false; src.dupOf = twin.name; toast(`${src.name} looks like the same chat as ${twin.name}, so it starts switched off`); }
   state.sources.push(src);
@@ -1107,34 +1193,43 @@ function renderSources(){
   $('#srcCount').textContent = state.sources.length ? state.sources.length + (state.sources.length === 1 ? ' file' : ' files') : 'none yet';
   for (const s of state.sources){
     const li = document.createElement('li'); li.className = 'src' + (s.on ? '' : ' off');
-    li.innerHTML = `<input type="checkbox" ${s.on ? 'checked' : ''} aria-label="Include ${escH(s.name)}">
+    li.innerHTML = `<div class="srcmain"><input type="checkbox" ${s.on ? 'checked' : ''} aria-label="Include ${escH(s.name)}">
       <span class="nm" title="${escH(s.name)}">${escH(s.name)}</span>
       <span class="ct" title="${s.dupOf ? 'Same chat as ' + escH(s.dupOf) : ''}${s.hosts && s.hosts.length ? ' Host side: ' + escH(s.hosts.join(', ')) : ''}">${s.messages.length} msgs${s.hosts && s.hosts.length ? ' · ' + s.hosts.length + ' host' : ''}${s.dupOf ? ' · duplicate' : ''}</span>
       ${s.kind === 'csv' ? '<button data-map title="Choose which columns to use">Columns</button>' : ''}
-      <button data-x title="Remove">✕</button>`;
-    li.querySelector('input').onchange = (e) => { s.on = e.target.checked; li.classList.toggle('off', !s.on); refreshOverview(); if (state.query) run(state.query.raw); };
+      <button data-x title="Remove">✕</button></div>
+      <div class="srcdate"><label>Date</label><input type="date" value="${s.date || ''}" aria-label="Session date for ${escH(s.name)}"><span class="dl">${s.dateLabel ? escH(s.dateLabel) : 'not detected'}</span></div>`;
+    li.querySelector('input[type=checkbox]').onchange = (e) => { s.on = e.target.checked; li.classList.toggle('off', !s.on); refreshOverview(); if (state.query) run(state.query.raw); };
     li.querySelector('[data-x]').onclick = () => { state.sources = state.sources.filter(x => x !== s); renderSources(); refreshOverview(); if (state.query) run(state.query.raw); };
+    li.querySelector('.srcdate input').onchange = (e) => setSourceDate(s, e.target.value);
     const mb = li.querySelector('[data-map]'); if (mb) mb.onclick = () => openMap(s, false);
     ul.appendChild(li);
   }
+  fillDateFilter();
 }
 
 /* ---------- visible message pool ---------- */
 function staffList(){ return ($('#staff').value || '').split(/[\n,;]/).map(s => s.trim().toLowerCase()).filter(Boolean); }
-function pool(){
+function srcVisible(src){
   const staff = staffList(), hideRole = $('#optRole').checked, hideDM = $('#optDM').checked, hideReact = $('#optReact').checked;
+  const out = [];
+  for (const m of src.messages){
+    if (hideReact && m.kind === 'reaction') continue;
+    if (hideReact && !m.text) continue;
+    if (hideDM && m.dm) continue;
+    if (hideRole && ((m.role && /host|panelist/.test(m.role)) || m.autoRole)) continue;
+    const ln = m.name.toLowerCase();
+    if (staff.length && staff.some(st => ln.includes(st))) continue;
+    out.push(m);
+  }
+  return out;
+}
+function pool(){
   const out = [];
   for (const s of state.sources){
     if (!s.on) continue;
-    for (const m of s.messages){
-      if (hideReact && m.kind === 'reaction') continue;
-      if (hideReact && !m.text) continue;
-      if (hideDM && m.dm) continue;
-      if (hideRole && ((m.role && /host|panelist/.test(m.role)) || m.autoRole)) continue;
-      const ln = m.name.toLowerCase();
-      if (staff.length && staff.some(st => ln.includes(st))) continue;
-      out.push(m);
-    }
+    if (state.dateFilter) { if (state.dateFilter === '__none') { if (s.date) continue; } else if ((s.date || '') !== state.dateFilter) continue; }
+    const v = srcVisible(s); for (const m of v) out.push(m);
   }
   return out;
 }
@@ -1144,6 +1239,7 @@ const META = { question:1, phone:1, email:1, link:1 };
 function refreshOverview(){
   const hn = detectedHosts();
   $('#hostNote').textContent = hn.length ? `Detected from the chat: ${hn.slice(0,6).join(', ')}${hn.length > 6 ? ` and ${hn.length - 6} more` : ''}` : '';
+  renderMatrix();
   const msgs = pool();
   const ul = $('#buckets'); ul.innerHTML = '';
   const people = new Set(msgs.map(m => m.name.toLowerCase()));
@@ -1204,6 +1300,62 @@ function renderBuckets(msgs){
   grid.querySelectorAll('.bonly').forEach(b => b.onclick = () => { onlyCat(b.dataset.cat); $('#results').scrollIntoView({ behavior:'smooth', block:'start' }); });
 }
 
+/* ---------- session issue matrix (all chats × issues, ignores date filter) ---------- */
+function renderMatrix(){
+  const panel = $('#matPanel'), wrap = $('#matWrap');
+  const data = state.sources.filter(s => s.on).map(s => ({ s, msgs:srcVisible(s) })).filter(d => d.msgs.length);
+  if (data.length < 1){ panel.hidden = true; return; }
+  const cols = cdict.filter(c => !META[c.id]).map(c => {
+    const perSrcP = data.map(d => new Set(d.msgs.filter(m => m.cats[c.id]).map(m => m.name.toLowerCase())).size);
+    return { c, tot:perSrcP.reduce((a,b) => a+b, 0), max:Math.max(0, ...perSrcP) };
+  }).filter(x => x.tot > 0).sort((a,b) => b.tot - a.tot);
+  if (!cols.length){ panel.hidden = true; return; }
+  panel.hidden = false;
+  const rows = data.slice().sort((a,b) => (a.s.date||'zzzz').localeCompare(b.s.date||'zzzz') || a.s.name.localeCompare(b.s.name));
+  $('#matSub').textContent = `${rows.length} ${rows.length===1?'chat':'chats'} · ${cols.length} issues`;
+  const head = cols.map(x => `<th class="mi" title="${escH(x.c.label)}"><span class="midot" style="background:${x.c.color}"></span>${escH(x.c.label)}</th>`).join('');
+  const body = rows.map(d => {
+    const ppl = new Set(d.msgs.map(m => m.name.toLowerCase())).size;
+    const cells = cols.map(x => {
+      const list = d.msgs.filter(m => m.cats[x.c.id]);
+      const p = new Set(list.map(m => m.name.toLowerCase())).size;
+      if (!p) return `<td class="mc z">·</td>`;
+      const ex = bucketExamples(x.c.id, d.msgs, 1)[0];
+      const bg = tint(x.c.color, 0.08 + 0.5 * (x.max ? p/x.max : 0));
+      return `<td class="mc" style="background:${bg}" title="${escH(x.c.label)} — ${p} ${p===1?'person':'people'}, ${list.length} msgs${ex?` — e.g. ${escH(clip(ex.text,90))}`:''}" data-date="${escH(d.s.date||'')}" data-cat="${x.c.id}"><b>${p}</b></td>`;
+    }).join('');
+    return `<tr><th class="mr"><span class="mrd">${escH(d.s.dateLabel || 'no date')}</span><small title="${escH(d.s.name)}">${escH(d.s.name)}</small></th><td class="mt">${ppl}</td><td class="mt">${d.msgs.length}</td>${cells}</tr>`;
+  }).join('');
+  const allPeople = new Set(data.flatMap(d => d.msgs.map(m => m.name.toLowerCase()))).size;
+  const allMsgs = data.reduce((a,d) => a + d.msgs.length, 0);
+  const foot = `<tr class="mfoot"><th class="mr">All chats</th><td class="mt">${allPeople}</td><td class="mt">${allMsgs}</td>${cols.map(x => `<td class="mc mtot"><b>${x.tot}</b></td>`).join('')}</tr>`;
+  wrap.innerHTML = `<table class="mat"><thead><tr><th class="mr">Session</th><th class="mt">People</th><th class="mt">Msgs</th>${head}</tr></thead><tbody>${body}${foot}</tbody></table>`;
+  wrap.querySelectorAll('td.mc[data-cat]').forEach(td => td.onclick = () => {
+    const dt = td.dataset.date;
+    state.dateFilter = dt ? dt : '__none';
+    fillDateFilter();
+    onlyCat(td.dataset.cat);
+    $('#results').scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+}
+function exportMatrix(){
+  const data = state.sources.filter(s => s.on).map(s => ({ s, msgs:srcVisible(s) })).filter(d => d.msgs.length);
+  if (!data.length){ toast('Add a chat first'); return; }
+  const cols = cdict.filter(c => !META[c.id]).map(c => ({ c, tot:data.reduce((a,d) => a + new Set(d.msgs.filter(m => m.cats[c.id]).map(m => m.name.toLowerCase())).size, 0) })).filter(x => x.tot > 0).sort((a,b) => b.tot - a.tot);
+  if (!cols.length){ toast('No issues found'); return; }
+  const rows = data.slice().sort((a,b) => (a.s.date||'zzzz').localeCompare(b.s.date||'zzzz') || a.s.name.localeCompare(b.s.name));
+  const lines = [['Session','Date','People','Messages', ...cols.map(x => x.c.label)].map(csvCell).join(',')];
+  for (const d of rows){
+    const ppl = new Set(d.msgs.map(m => m.name.toLowerCase())).size;
+    const vals = cols.map(x => new Set(d.msgs.filter(m => m.cats[x.c.id]).map(m => m.name.toLowerCase())).size || '');
+    lines.push([d.s.name, d.s.dateLabel || '', ppl, d.msgs.length, ...vals].map(csvCell).join(','));
+  }
+  lines.push(['All chats','', new Set(data.flatMap(d => d.msgs.map(m => m.name.toLowerCase()))).size, data.reduce((a,d) => a + d.msgs.length, 0), ...cols.map(x => x.tot)].map(csvCell).join(','));
+  download('session-issue-matrix.csv', '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
+  toast('Matrix downloaded');
+}
+$('#matCsv').onclick = exportMatrix;
+
 /* ---------- sentiment timeline ---------- */
 function sentOf(m){ const c = m.cats||{}; if (c.negative || c.refund) return 'neg'; if (c.positive) return 'pos'; return 'neu'; }
 const PHASES = [[0,.12,'Opening & join','#5FA8D3'],[.12,.32,'Warm-up','#7A5AF8'],[.32,.64,'Core teaching','#0E9384'],[.64,.86,'Q&A / peak','#9F5F00'],[.86,1,'Offer & close','#C11574']];
@@ -1224,6 +1376,8 @@ function renderTimeline(msgs){
 
   const totP = seq.filter(m => sentOf(m)==='pos').length, totNg = seq.filter(m => sentOf(m)==='neg').length;
   $('#tlSub').textContent = `${seq.length} msgs · ${totP} positive · ${totNg} negative`;
+  const dset = new Set(seq.map(m => m.srcDate).filter(Boolean));
+  const note = $('#tlnote'); if (note) note.textContent = dset.size > 1 ? `${dset.size} dates combined on one axis — pick a Session date for a clean timeline.` : 'Phases are auto-estimated from the session length.';
 
   // geometry
   const W=1000, H=210, padX=26, padT=24, padB=20, iw=W-2*padX, top=padT, bot=H-padB, ph=bot-top;
@@ -1342,6 +1496,7 @@ $('#bktClear').onclick = clearCats;
 
 /* ---------- results ---------- */
 function syncViewSeg(){ $('#viewSeg').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === state.view)); }
+function personDates(p){ const d = [...new Set(p.rows.map(r => r.m.srcDateLabel).filter(Boolean))]; return d.length ? d.join(', ') : [...p.sources].join(', '); }
 
 function filteredRows(){
   const f = state.textFilter.trim().toLowerCase();
@@ -1381,7 +1536,7 @@ function renderResults(){
       <th data-k="time">First at${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th data-k="count">Msgs${arrow('count')}</th><th>Messages</th>${q.cats.length !== 1 || q.cats.length && q.keywords.length ? '<th>Topics</th>' : ''}
       </tr></thead><tbody>${shown.map((p, i) => `<tr${i < 15 ? ` class="rv" style="animation-delay:${i * 28}ms"` : ''}>
         <td class="t">${escH(p.firstT || '')}</td>
-        <td class="n">${escH(p.name)}${multiSrc ? `<small>${escH([...p.sources].join(', '))}</small>` : ''}</td>
+        <td class="n">${escH(p.name)}${multiSrc ? `<small>${escH(personDates(p))}</small>` : ''}</td>
         <td class="c">${p.rows.length}</td>
         <td class="m"><ul class="plist">${p.rows.map(r => `<li><span class="pt">${escH(r.m.time)}${r.m.dm ? ' · private' : ''}</span><span class="pm">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</span></li>`).join('')}</ul></td>
         ${q.cats.length !== 1 || q.cats.length && q.keywords.length ? `<td class="c">${[...p.cats].map(tag).join('')}</td>` : ''}
@@ -1393,13 +1548,13 @@ function renderResults(){
     });
     const shown = list.slice(0, state.limit);
     body.innerHTML = `<div class="tablewrap"><table><thead><tr>
-      <th data-k="time">Time${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th>Message</th>${q.cats.length !== 1 ? '<th>Topics</th>' : ''}${multiSrc ? '<th>Source</th>' : ''}
+      <th data-k="time">Time${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th>Message</th>${q.cats.length !== 1 ? '<th>Topics</th>' : ''}${multiSrc ? '<th>Session</th>' : ''}
       </tr></thead><tbody>${shown.map((r, i) => `<tr${i < 15 ? ` class="rv" style="animation-delay:${i * 28}ms"` : ''}>
         <td class="t">${escH(r.m.time)}</td>
         <td class="n">${escH(r.m.name)}${r.m.dm ? `<small>to ${escH(r.m.to)}</small>` : ''}</td>
         <td class="m">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</td>
         ${q.cats.length !== 1 ? `<td class="c">${r.cats.map(tag).join('')}</td>` : ''}
-        ${multiSrc ? `<td class="s" title="${escH(r.m.source)}">${escH(r.m.source)}</td>` : ''}
+        ${multiSrc ? `<td class="s" title="${escH(r.m.source)}">${r.m.srcDateLabel ? `<b>${escH(r.m.srcDateLabel)}</b><br>` : ''}${escH(r.m.source)}</td>` : ''}
       </tr>`).join('')}</tbody></table></div>${more(list.length)}`;
   }
   const mb = body.querySelector('[data-more]'); if (mb) mb.onclick = () => { state.limit += PAGE; renderResults(); };
@@ -1435,11 +1590,11 @@ function exportCsv(){
   const cb = catById(); const lab = (ids) => ids.map(i => cb[i] ? cb[i].label : i).join('; ');
   let lines;
   if (state.view === 'person'){
-    lines = [['Name','Messages','First at','Topics','Source','All matching messages'].map(csvCell).join(',')];
-    for (const p of Z.groupByPerson(rows)) lines.push([p.name, p.rows.length, p.firstT || '', lab([...p.cats]), [...p.sources].join('; '), p.rows.map(r => `[${r.m.time}] ${r.m.text}`).join('\n')].map(csvCell).join(','));
+    lines = [['Name','Messages','First at','Session dates','Topics','Source','All matching messages'].map(csvCell).join(',')];
+    for (const p of Z.groupByPerson(rows)) lines.push([p.name, p.rows.length, p.firstT || '', personDates(p), lab([...p.cats]), [...p.sources].join('; '), p.rows.map(r => `[${r.m.time}] ${r.m.text}`).join('\n')].map(csvCell).join(','));
   } else {
-    lines = [['Time','Name','Sent to','Message','Topics','Source'].map(csvCell).join(',')];
-    for (const r of rows) lines.push([r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.source].map(csvCell).join(','));
+    lines = [['Date','Time','Name','Sent to','Message','Topics','Source'].map(csvCell).join(',')];
+    for (const r of rows) lines.push([r.m.srcDateLabel || '', r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.source].map(csvCell).join(','));
   }
   const slug = (state.query.raw || 'results').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'results';
   download(`zoom-chat-${slug}-${state.view}.csv`, '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
@@ -1461,7 +1616,7 @@ function buildReport(){
     const people = new Set(rows.map(r => r.name.toLowerCase()));
     const trouble = new Set(rows.filter(r => Z.hasTrouble(r.text)).map(r => r.name.toLowerCase()));
     summary.push([c.label, people.size, rows.length, trouble.size]);
-    topics.push({ label:c.label, rows:[['Name','Time','Message','Describes a problem','Sent to','Source'], ...rows.map(r => [r.name, r.time, r.text, Z.hasTrouble(r.text) ? 'Yes' : '', r.to || 'Everyone', r.source])] });
+    topics.push({ label:c.label, rows:[['Name','Date','Time','Message','Describes a problem','Sent to','Source'], ...rows.map(r => [r.name, r.srcDateLabel || '', r.time, r.text, Z.hasTrouble(r.text) ? 'Yes' : '', r.to || 'Everyone', r.source])] });
   }
   // one row per person: every topic they raised, so the support team can work name by name
   const cb = catById();
@@ -1470,22 +1625,22 @@ function buildReport(){
     const ids = Object.keys(m.cats).filter(id => !META[id]);
     if (!ids.length) continue;
     const k = m.name.toLowerCase().replace(/\s+/g,' ').trim();
-    let p = perPerson.get(k); if (!p) { p = { name:m.name, topics:new Set(), msgs:[] }; perPerson.set(k, p); }
-    ids.forEach(id => p.topics.add(cb[id] ? cb[id].label : id)); p.msgs.push(`[${m.time}] ${m.text}`);
+    let p = perPerson.get(k); if (!p) { p = { name:m.name, topics:new Set(), dates:new Set(), msgs:[] }; perPerson.set(k, p); }
+    ids.forEach(id => p.topics.add(cb[id] ? cb[id].label : id)); if (m.srcDateLabel) p.dates.add(m.srcDateLabel); p.msgs.push(`[${m.srcDateLabel ? m.srcDateLabel + ' ' : ''}${m.time}] ${m.text}`);
   }
-  const people = [['Name','Topics raised','Messages','All flagged messages'], ...[...perPerson.values()].sort((a,b) => a.name.localeCompare(b.name)).map(p => [p.name, [...p.topics].join('; '), p.msgs.length, p.msgs.join('\n')])];
+  const people = [['Name','Session dates','Topics raised','Messages','All flagged messages'], ...[...perPerson.values()].sort((a,b) => a.name.localeCompare(b.name)).map(p => [p.name, [...p.dates].join('; '), [...p.topics].join('; '), p.msgs.length, p.msgs.join('\n')])];
   const base = reportBase();
   loadXlsx().then(() => {
     const wb = XLSX.utils.book_new();
     const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(aoa); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name.replace(/[\[\]:*?\/\\]/g,'-').slice(0,31)); };
     add('Summary', summary, [30, 10, 12, 26]);
-    add('By person', people, [28, 40, 10, 90]);
-    for (const t of topics) add(t.label, t.rows, [28, 10, 90, 18, 22, 28]);
+    add('By person', people, [28, 22, 40, 10, 90]);
+    for (const t of topics) add(t.label, t.rows, [26, 14, 10, 90, 18, 22, 28]);
     XLSX.writeFile(wb, base + '.xlsx');
     toast(`Report ready: ${topics.length} topic sheets`); setMascot('happy', 1500);
   }).catch(() => {
     // no network for the Excel library: one CSV with a Topic column
-    const lines = [['Topic','Name','Time','Message','Describes a problem','Sent to','Source'].map(csvCell).join(',')];
+    const lines = [['Topic','Name','Date','Time','Message','Describes a problem','Sent to','Source'].map(csvCell).join(',')];
     for (const t of topics) for (const r of t.rows.slice(1)) lines.push([t.label, ...r].map(csvCell).join(','));
     download(base + '.csv', '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
     toast('Excel library unavailable, downloaded as one CSV instead');
@@ -1558,6 +1713,7 @@ $('#btnPaste').onclick = () => {
 };
 $('#btnClear').onclick = () => { state.sources = []; state.query = null; state.rows = []; $('#ask').value = ''; renderSources(); refreshOverview(); renderReading(null); renderResults(); };
 
+$('#dateSel').onchange = (e) => { state.dateFilter = e.target.value; refreshOverview(); if (state.query) run(state.query.raw); };
 $('#btnGo').onclick = () => run($('#ask').value);
 $('#ask').addEventListener('keydown', (e) => { if (e.key === 'Enter') run($('#ask').value); });
 let liveT; $('#ask').addEventListener('input', () => { clearTimeout(liveT); liveT = setTimeout(() => renderReading(Z.interpret($('#ask').value, cdict)), 120); });
