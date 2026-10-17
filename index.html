@@ -49,6 +49,11 @@ mark{background:var(--mark);color:inherit;padding:0 1px;border-radius:2px}
 .brand .glyph{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .top .spacer{flex:1}
 .top .hint{color:var(--ink-3);font-size:13px}
+.top .btn,.brand{white-space:nowrap}
+.top .hint{flex:1 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aibtn{display:inline-flex;align-items:center;gap:7px;border-color:var(--accent);color:var(--accent-ink)}
+.aibtn .aidot{width:8px;height:8px;border-radius:50%;background:#C3D0DE;flex:none}
+.aibtn.on .aidot{background:#2E9E6B}
 
 /* layout */
 .app{display:grid;grid-template-columns:320px minmax(0,1fr);gap:18px;padding:18px 22px 40px;max-width:1500px;margin:0 auto}
@@ -251,6 +256,39 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .aistat.bad{color:var(--danger)}
 .dlg .df .grow{flex:1}
 
+/* transcript: tools taught */
+.trhint{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 0;padding:9px 12px;border:1px dashed var(--line);border-radius:var(--radius-s);font-size:13px;color:var(--ink-2)}
+.trrow{margin-top:8px}
+.tralign{display:flex;flex-direction:column;gap:6px;margin:0 0 14px}
+.tral{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:13px;color:var(--ink-2)}
+.tral b{color:var(--ink);min-width:90px}
+.tral input[type=time]{border:1px solid var(--line);border-radius:6px;padding:3px 6px;font:inherit;font-variant-numeric:tabular-nums;background:var(--surface)}
+.tral select{border:1px solid var(--line);border-radius:6px;padding:3px 6px;font:inherit;background:var(--surface);max-width:220px}
+.trok{color:#1F6B47;font-weight:700;font-size:12px}
+.trm{color:var(--accent-ink);font-weight:700;font-size:12px}
+.trw{color:#9A4A12;font-weight:700;font-size:12px}
+.trbar{display:flex;height:30px;border-radius:7px;overflow:hidden;gap:1px;background:var(--line-2)}
+.trseg{border:0;padding:0 4px;min-width:2px;cursor:pointer;color:#fff;font-size:11.5px;font-weight:700;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left;font-family:inherit}
+.trseg:hover{filter:brightness(1.08)}
+.trseg span{text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.trscale{display:flex;justify-content:space-between;font-size:11px;color:var(--ink-3);margin:4px 0 14px;font-variant-numeric:tabular-nums}
+.trextra{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 12px;font-size:13px}
+.trextra{flex-direction:column;align-items:stretch}
+.trextra textarea{width:100%;border:1px solid var(--line);border-radius:var(--radius-s);padding:7px 9px;font:inherit;font-size:13px;resize:vertical;background:var(--surface)}
+.trextra .row{display:flex;gap:10px;align-items:center}
+.trt td{vertical-align:top}
+.trt tbody tr{cursor:pointer}
+.trt tbody tr:hover td{background:#fff}
+.trt .num{text-align:right;font-variant-numeric:tabular-nums}
+.trt .trtime{font-variant-numeric:tabular-nums;color:var(--ink-2);font-size:12.5px;max-width:240px}
+.trt .tag{margin:0 4px 4px 0}
+.tdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.trq{display:block;font-size:12.5px;line-height:1.35;margin-bottom:3px}
+.trq b{color:var(--ink-3);font-weight:800;margin-left:3px}
+.muted{color:var(--ink-3)}
+.mline{display:block;color:var(--ink-3);font-size:12px;margin-top:3px;font-style:italic}
+.mline b{font-style:normal;color:var(--ink-2)}
+
 /* timeline */
 .tlchart svg{width:100%;height:auto;display:block}
 .tllegend{display:flex;gap:14px;margin-top:8px;font-size:12px;color:var(--ink-2);flex-wrap:wrap;align-items:center}
@@ -408,7 +446,7 @@ tbody tr.rv{animation:rise .32s ease both}
 @media (max-width:700px){.mascot{width:64px;height:64px;margin:-10px -4px -8px 0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media (max-width:960px){.side,.main{display:contents}.ask{order:2}.results{order:3}.panel.filters{order:4}.panel.overview{order:5}}
-@media (max-width:700px){.top .hint{display:none}.top{padding:10px 14px}.brand{white-space:nowrap}.askrow{flex-direction:column}.askrow .go{padding:10px}}
+@media (max-width:700px){.top .hint{display:none}.top{padding:10px 14px;flex-wrap:wrap;row-gap:8px}.top .spacer{flex-basis:100%;height:0}.brand{white-space:nowrap}.askrow{flex-direction:column}.askrow .go{padding:10px}}
 </style>
 </head>
 <body>
@@ -484,12 +522,13 @@ tbody tr.rv{animation:rise .32s ease both}
 
 <header class="top">
   <div class="brand"><span class="glyph">?</span> Zoom Chat Analyzer</div>
-  <span class="hint">Runs in your browser. AI sorting is optional and sends only question text.</span>
+  <span class="hint" title="Runs in your browser. AI sorting is optional and sends only question text.">Runs in your browser. AI sorting is optional and sends only question text.</span>
   <span class="spacer"></span>
   <button class="btn primary sm" id="btnReport" title="One Excel file: a summary sheet plus one sheet per topic (refund, LMS, WhatsApp group...) with names and messages">Download full report</button>
   <button class="btn sm" id="btnOneSheet" title="One sheet: the whole chat (every message), with its date and the auto-detected issue beside any message that has one, grouped under each dated chat">Whole chat + issues</button>
   <button class="btn quiet sm" id="btnSample">Load sample chat</button>
-  <button class="btn quiet sm" id="btnSettings">Settings</button>
+  <button class="btn quiet sm" id="btnSettings" title="Edit the topic words used to tag messages">Topic dictionary</button>
+  <button class="btn sm aibtn" id="btnAI" title="OpenRouter key and model for sorting questions with AI"><span class="aidot" aria-hidden="true"></span>AI settings</button>
 </header>
 
 <div class="app">
@@ -499,9 +538,10 @@ tbody tr.rv{animation:rise .32s ease both}
       <div class="pb">
         <div class="drop" id="drop" tabindex="0" role="button" aria-label="Add chat files">
           <strong>Drop files here</strong> or click to choose
-          <small>Zoom saved chat .txt, and .csv / .xlsx exports. Add as many as you like.</small>
-          <input type="file" id="file" class="sr" multiple accept=".txt,.csv,.tsv,.xlsx,.xls,text/plain,text/csv">
+          <small>Zoom saved chat .txt, and .csv / .xlsx exports. Add as many as you like. A session transcript (.vtt / .srt) can go here too.</small>
+          <input type="file" id="file" class="sr" multiple accept=".txt,.csv,.tsv,.xlsx,.xls,.vtt,.srt,text/plain,text/csv,text/vtt">
         </div>
+        <div class="trrow"><button class="btn quiet sm" id="trAdd" title="Optional. Shows which tool was being taught when each question came in.">+ Add session transcript (optional)</button><input type="file" id="trFile" class="sr" multiple accept=".vtt,.srt,.txt,text/vtt"></div>
         <ul class="sources" id="sources"></ul>
         <div class="field" style="margin-top:12px">
           <label for="paste">Or paste a saved chat</label>
@@ -577,6 +617,19 @@ tbody tr.rv{animation:rise .32s ease both}
         <div class="ileg" id="qLeg"></div>
         <div class="qtake" id="qTake" hidden></div>
         <div class="bgrid" id="qGrid"></div>
+        <div class="trhint" id="trHint" hidden><span>Optional: add the session transcript (.vtt or .srt) to see which tool was being taught when each question came in.</span><button class="btn quiet sm" id="trAdd2">Add transcript</button></div>
+      </div>
+    </section>
+
+    <section class="panel" id="trPanel" hidden>
+      <div class="ph"><span>Tools taught, and the questions they raised <span class="sub" id="trSub"></span></span>
+        <span class="tools"><div class="seg" id="trView"><button data-v="tool" class="on">By tool</button><button data-v="time">In order</button></div><button class="btn quiet sm" id="trMore" title="Add tool names the app doesn’t know yet">Add tool names</button></span></div>
+      <div class="pb">
+        <div class="tralign" id="trAlign"></div>
+        <div class="trextra" id="trExtra" hidden><label for="trExtraIn">One tool per line. To count a caption spelling as a tool, write <b>Real name = spelling, spelling</b>.</label><textarea id="trExtraIn" rows="3" spellcheck="false" placeholder="Kimi&#10;Pollo AI&#10;Higgsfield = hexfield, hicks field"></textarea><div class="row"><button class="btn sm" id="trExtraSave">Save</button><span class="help">Saved in this browser for every session.</span></div></div>
+        <div class="trbar" id="trBar" role="group" aria-label="What was being taught over the session"></div>
+        <div class="trscale" id="trScale"></div>
+        <div class="tscroll"><table class="tbl trt" id="trTable"></table></div>
       </div>
     </section>
 
@@ -765,7 +818,15 @@ const DEFAULT_DICT = [
     match:['/how (to|do i|can i|should i) (start|begin|proceed|go)/','getting started','/where (to|do i|should i) (start|begin)/','/from where (to|do i|should i)/','/kaha se (start|shuru)/','shuru kaise','/how (do i|to) (join|attend|access) (the )?(next|upcoming|other)/'] },
   { id:'query', label:'Query / question', color:'#334155',
     ask:['query','queries'],
-    match:['/\\?\\s*$/','/^(how|what|why|when|where|which|can|could|would|should|is|are|do|does|did|will|whom|whose|kya|kaise|kab|kaha|kitna|kitne|kitni|konsa|kaun)\\b/'] },
+    match:['/\\?\\s*$/','/^(how|what|why|when|where|which|can|could|would|should|is|are|do|does|did|will|whom|whose|kya|kaise|kab|kaha|kitna|kitne|kitni|konsa|kaun)\\b/',
+      // queries written as requests, without "?" or a question word
+      '/\\b(please|pls|plz|plzz|kindly)\\b.{0,40}\\b(tell|share|explain|help|show|send|guide|clarify|let (me|us) know|provide|give|repeat)\\b/',
+      '/\\b(i|we) (want|wanna|would like|need) to (know|understand|ask)\\b/',
+      '/\\btell (me|us)\\b|\\blet (me|us) know\\b/',
+      '/\\b(i|we) (have|had) (a|one|some|few) (doubt|query|question)s?\\b|\\bmy (doubt|query|question)\\b|^\\W*(doubt|query|question)\\b/',
+      '/\\bneed (help|guidance|clarity|clarification)\\b|\\bhelp me\\b|\\bguide (me|us)\\b|\\bexplain (it|this|that|again|once)\\b/',
+      '/\\b(batao|bataiye|bataye|bata do|batado|samjhao|samjha do|samjhaiye)\\b/',
+      '/\\bnot (understood|understanding)\\b|\\bdidn.?t (understand|get it)\\b|\\bconfused\\b/'] },
   { id:'question', label:'Asked a question', color:'#344054',
     ask:['question','questions','doubt','doubts','queries','query'],
     match:['/\\?/','/^(how|what|why|when|where|which|can|could|is|are|do|does|will|should|kya|kaise|kab|kaha)\\b/'] },
@@ -1035,6 +1096,7 @@ const QTYPES = [
     ask:['selected','selection','seat','seats','booking status','booked','shortlisted','am i in','name called','slot','slots'],
     re:[/\bam i (selected|registered|confirmed|in\b|part|eligible|enrolled|shortlisted|included|on the list|qualif|chosen|within|among|one of|there in)|after (booking|registering|registration|paying|payment|selection)\b/i,
         /\b(my|is my|was my) (seat|booking|registration|slot|enrol\w*|application|form|name)\b/i,
+        /\b(i'?m|i am) (in|on) (the |that |this |your )?list\b|\bif (i'?m|i am) (in|selected|chosen|there)\b|\b(tell|let) me (know )?if i/i,
         /\bconfirm (my|the|me|if|whether|it|booking|seat)\b|^\W*(sir|mam|ma'?am|prakhar|team)?\W*(can|could|will) (you|u) (please |pls |plz |kindly )?confirm|^\W*(please |pls |plz |kindly )?confirm\b/i,
         /part of (the )?(30|thirty|program|programme|batch|selected|list)|within (the )?(30|thirty|first|top)|\b(30|thirty) (participants|people|seats|members|slots|students)/i,
         /(called|call|calling|said|read|announce\w*|mention\w*) (out )?my name|names? (is |was )?(not )?(being |getting )?(called|said|announced|read)|(list|read|show) (out )?(all )?(the )?names|\b(did|have) i (get|got|make|made) (it|selected|in)|\b(slots?|seats?) (still )?(left|available|remaining|full|booked|open)|(havent|haven'?t|not|already) booked|is there (any )?(slot|seat)/i] },
@@ -1142,9 +1204,244 @@ function applyQType(m){
   delete m.qfaq; delete m.qfaqKey; delete m.qtool; delete m.qcluster; delete m.qclusterKey;
 }
 
+/* ---------- transcript: tools taught over time ----------
+   Optional. A .vtt/.srt transcript of the session tells us which tool the trainer
+   was showing at each moment, so every chat question can be tied to that tool. */
+const PITCH = 'Program pitch';
+// canonical name -> spoken/typed variants (auto-captions mangle names: "hexfield" = Higgsfield)
+const TOOL_LIST = [
+  ['ChatGPT', 'chat ?gpt|chatgpt|gpt ?-?(4o|4|5|o3)\\b|\\bopen ?ai\\b'],
+  ['Claude', 'claude|\\bclawed\\b|\\bclaud\\b|\\bcloud ?(code|desktop|skills?|artifacts?|sonnet|opus|haiku|projects?)\\b|\\bcloud\\.ai\\b'],
+  ['Gemini', 'gemini|jemini|gemni'],
+  ['Grok', '\\bgrok\\b'],
+  ['Perplexity', 'perplexity|perplexi?ty|\\bperplex\\b'],
+  ['DeepSeek', 'deep ?seek'],
+  ['Copilot', 'co-?pilot'],
+  ['Meta AI', '\\bmeta ai\\b'],
+  ['NotebookLM', 'notebook ?l\\.? ?m\\b|notebooklm|notebook ai'],
+  ['Google AI Studio', '\\bai ?studio\\b|aistudio'],
+  ['Google Stitch', '\\bstitch\\b'],
+  ['Google Opal', '\\bopal\\b'],
+  ['Nano Banana', 'nano ?banana'],
+  ['Veo', '\\bveo ?\\d?\\b'],
+  ['Wispr Flow', 'wispr|whispr|whisper ?flow|whisperflow|\\bwhisper\\b'],
+  ['ElevenLabs', 'eleven ?labs?|\\b11 ?labs?\\b|elevenlabs'],
+  ['Vapi', '\\bvapi\\b'],
+  ['Retell AI', '\\bretell\\b'],
+  ['Higgsfield', 'higg?s ?field|hexfield|hex field|hicks ?field|\\bhiggs\\b|higsfeild|higgsfeild'],
+  ['HeyGen', 'hey ?gen\\b|heygen'],
+  ['Synthesia', 'synthesia'],
+  ['Runway', '\\brunway\\b'],
+  ['Kling', '\\bkling\\b'],
+  ['Sora', '\\bsora\\b'],
+  ['Midjourney', 'mid ?journey'],
+  ['Leonardo AI', '\\bleonardo\\b'],
+  ['Ideogram', 'ideogram'],
+  ['Krea', '\\bkrea\\b'],
+  ['Canva', '\\bcanva\\b|\\bkanva\\b'],
+  ['CapCut', 'cap ?cut'],
+  ['InVideo', '\\binvideo\\b|in video ai'],
+  ['Napkin AI', '\\bnapkin\\b'],
+  ['Gamma', '\\bgamma\\b'],
+  ['Suno', '\\bsuno\\b'],
+  ['Lovable', 'lovable|loveable'],
+  ['Bolt', '\\bbolt(\\.new| new| ai)\\b'],
+  ['Cursor', '\\bcursor (ai|ide|app|editor)\\b'],
+  ['Replit', 'replit|rep ?lit\\b'],
+  ['v0', '\\bv0\\b|v0\\.dev|\\bv zero\\b'],
+  ['Emergent', '\\bemergent\\b'],
+  ['Base44', 'base ?44'],
+  ['Firebase', 'firebase'],
+  ['Supabase', 'supabase|supa base'],
+  ['Vercel', 'vercel'],
+  ['Netlify', 'netlify'],
+  ['GitHub', 'git ?hub'],
+  ['Hostinger', 'hostinger'],
+  ['Framer', '\\bframer\\b'],
+  ['n8n', '\\bn8n\\b|\\bn 8 n\\b|\\bn eight n\\b'],
+  ['Make.com', 'make\\.com'],
+  ['Zapier', 'zapier'],
+  ['Manus', '\\bmanus\\b'],
+  ['Genspark', 'gen ?spark'],
+  ['Julius AI', '\\bjulius\\b'],
+  ['Botpress', 'botpress'],
+  ['Voiceflow', 'voice ?flow'],
+  ['ManyChat', 'many ?chat'],
+  ['Notion', '\\bnotion\\b'],
+  ['Otter', '\\botter(\\.ai)?\\b'],
+  ['Fireflies', 'fireflies'],
+  ['Grammarly', 'grammarly'],
+  [PITCH, '\\bqr ?code\\b|\\bqr\\b|scan (the|this) (code|qr)|\\bbonus(es)?\\b|\\benrol+(ment)?\\b|inner circle|scholarship|\\bseats? (left|available|remaining)\\b|\\bemi\\b|\\baccelerator\\b|limited (time|seats)']
+];
+let extraTools = [];
+let TOOL_RX = [];
+let TOOL_ANY = null;
+function toolAliasRx(src){ return new RegExp(src, 'i'); }
+// entries: "Kimi" (a new tool) or "Higgsfield = hexfield, hicks field" (spellings that mean that tool)
+function parseToolEntries(list){
+  const out = [];
+  for (const raw of (list || [])){
+    const line = String(raw).trim(); if (!line) continue;
+    const eq = line.indexOf('=');
+    if (eq > 0) { const name = line.slice(0, eq).trim(); const al = line.slice(eq + 1).split(/[,;\/]/).map(x => x.trim()).filter(Boolean); if (name) out.push({ name, aliases:al }); }
+    else line.split(/[,;]/).map(x => x.trim()).filter(Boolean).forEach(name => out.push({ name, aliases:[] }));
+  }
+  return out;
+}
+function phraseRx(p){ return '(?<![a-z0-9])' + String(p).toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, ' ?') + '(?![a-z0-9])'; }
+function setExtraTools(list){
+  extraTools = parseToolEntries(list);
+  const base = TOOL_LIST.map(([n, src]) => [n, src]);
+  for (const e of extraTools){
+    const alt = [e.name, ...e.aliases].map(phraseRx).join('|');
+    const hit = base.find(([n]) => n.toLowerCase() === e.name.toLowerCase());
+    if (hit) hit[1] = hit[1] + '|' + alt;            // known tool: add the spellings
+    else base.push([e.name, alt]);                    // new tool
+  }
+  TOOL_RX = base.map(([name, src]) => ({ name, re:toolAliasRx(src) }));
+  TOOL_ANY = new RegExp(TOOL_RX.map(t => '(?:' + t.re.source + ')').join('|'), 'i');
+}
+setExtraTools([]);
+// tools named in a text; chat messages leave out the pitch pseudo-tool
+function toolsIn(text, noPitch){
+  const t = String(text || '');
+  if (!t || !TOOL_ANY.test(t)) return [];
+  const out = [];
+  for (const x of TOOL_RX) if (x.re.test(t) && !(noPitch && x.name === PITCH)) out.push(x.name);
+  return out;
+}
+
+function tsToSecs(t){
+  const m = String(t).trim().match(/^(?:(\d+):)?(\d{1,2}):(\d{2})(?:[.,](\d{1,3}))?$/);
+  if (!m) return NaN;
+  return (+(m[1] || 0)) * 3600 + (+m[2]) * 60 + (+m[3]) + (m[4] ? +('0.' + m[4]) : 0);
+}
+// WebVTT or SRT. Zoom cloud transcripts put "Speaker Name: text" in the cue.
+function parseTranscript(text){
+  const lines = String(text || '').replace(/^\uFEFF/, '').replace(/\r/g, '').split('\n');
+  const cues = [];
+  for (let i = 0; i < lines.length; i++){
+    const mm = lines[i].match(/^\s*([\d:.,]+)\s*-->\s*([\d:.,]+)/);
+    if (!mm) continue;
+    const s = tsToSecs(mm[1]), e = tsToSecs(mm[2]);
+    if (isNaN(s)) continue;
+    const buf = [];
+    while (i + 1 < lines.length && lines[i + 1].trim() !== '' && !/-->/.test(lines[i + 1])) { buf.push(lines[++i]); }
+    // a lone number line right before the next cue is an SRT/VTT index
+    if (buf.length && /^\d+$/.test(buf[buf.length - 1].trim()) && i + 1 < lines.length && /-->/.test(lines[i + 1] || '')) buf.pop();
+    let t = buf.join(' ').replace(/<v\s+([^>]+)>/g, '$1: ').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+    let speaker = '';
+    const sp = t.match(/^([A-Z][\w .'-]{1,40}):\s+(.*)$/);
+    if (sp && !/^(https?|note|tip)$/i.test(sp[1])) { speaker = sp[1].trim(); t = sp[2]; }
+    if (t) cues.push({ s, e:isNaN(e) ? s : e, text:t, speaker });
+  }
+  return cues;
+}
+function looksLikeTranscript(text, ext){
+  if (ext === 'vtt' || ext === 'srt') return true;
+  const head = String(text || '').replace(/^\uFEFF/, '').slice(0, 2000);
+  return /^WEBVTT/.test(head) || (/^\s*\d+\s*\n\s*\d{1,2}:\d{2}:\d{2}[,.]\d{1,3}\s*-->/m.test(head));
+}
+
+/* which tool was on screen, minute by minute:
+   a tool "owns" a minute when the trainer named it at least twice in the last 6 minutes
+   (or the next 2); short gaps between two stretches of the same tool are filled. */
+function buildToolTimeline(cues){
+  const mentions = [];
+  for (const c of cues) for (const name of toolsIn(c.text)) mentions.push({ t:c.s, tool:name });
+  const dur = cues.length ? Math.max(...cues.map(c => c.e)) : 0;
+  const mins = Math.ceil(dur / 60) + 1;
+  const cur = new Array(mins).fill('');
+  for (let k = 0; k < mins; k++){
+    const a = k * 60 - 360, b = k * 60 + 180;
+    const score = new Map(), last = new Map();
+    for (const m of mentions){ if (m.t < a || m.t > b) continue; score.set(m.tool, (score.get(m.tool) || 0) + 1); last.set(m.tool, Math.max(last.get(m.tool) || 0, m.t)); }
+    let best = '', bs = 0;
+    for (const [tool, n] of score){ if (n > bs || (n === bs && last.get(tool) > (last.get(best) || 0))) { best = tool; bs = n; } }
+    cur[k] = bs >= 2 ? best : '';
+  }
+  // fill gaps up to 6 minutes between the same tool
+  for (let k = 0; k < mins; k++){
+    if (cur[k]) continue;
+    let p = k - 1; while (p >= 0 && !cur[p]) p--;
+    let n = k + 1; while (n < mins && !cur[n]) n++;
+    if (p >= 0 && n < mins && cur[p] === cur[n] && n - p - 1 <= 6) cur[k] = cur[p];
+  }
+  const segs = [];
+  for (let k = 0; k < mins; k++){
+    const last = segs[segs.length - 1];
+    if (last && last.tool === cur[k]) last.e = (k + 1) * 60;
+    else segs.push({ tool:cur[k], s:k * 60, e:(k + 1) * 60 });
+  }
+  // a 1-minute blip goes to its neighbour
+  for (let i = 1; i < segs.length - 1; i++){
+    if (segs[i].e - segs[i].s <= 60 && segs[i - 1].tool === segs[i + 1].tool) { segs[i - 1].e = segs[i + 1].e; segs.splice(i, 2); i--; }
+  }
+  segs.forEach(sg => { sg.n = mentions.filter(m => m.tool === sg.tool && m.t >= sg.s - 60 && m.t < sg.e).length; });
+  if (segs.length) segs[segs.length - 1].e = Math.min(segs[segs.length - 1].e, Math.ceil(dur));
+  return { mentions, segs:segs.filter(sg => sg.e > sg.s), dur };
+}
+function segAt(tl, t){
+  if (t < 0 || t > tl.dur + 60) return null;
+  let lo = 0, hi = tl.segs.length - 1;
+  while (lo <= hi){ const mid = (lo + hi) >> 1, sg = tl.segs[mid]; if (t < sg.s) hi = mid - 1; else if (t >= sg.e) lo = mid + 1; else return sg; }
+  return null;
+}
+function mentorLine(cues, t, back){
+  back = back || 40;
+  const out = [];
+  for (const c of cues){ if (c.e < t - back) continue; if (c.s > t + 2) break; out.push(c.text); }
+  const s = out.join(' ').replace(/\s+/g, ' ').trim();
+  return s.length > 260 ? '…' + s.slice(-258) : s;
+}
+
+/* line the video up with the chat clock: try every start time within an hour of the
+   first chat message and keep the one where chat mentions of a tool most often come
+   just after the trainer named it. */
+function alignTranscript(msgs, tl){
+  const timed = msgs.filter(m => m.secs >= 0);
+  if (!timed.length || !tl.mentions.length) return null;
+  const first = Math.min(...timed.map(m => m.secs));
+  const byTool = new Map();
+  for (const m of tl.mentions){ if (m.tool === PITCH) continue; if (!byTool.has(m.tool)) byTool.set(m.tool, []); byTool.get(m.tool).push(m.t); }
+  const chat = [];
+  for (const m of timed){ for (const tool of (m.ntools || toolsIn(m.text, true))) if (byTool.has(tool)) chat.push({ t:m.secs, ts:byTool.get(tool) }); }
+  const fallback = { offset:first - 60, score:0, matched:0, total:chat.length, auto:false };
+  if (chat.length < 8) return fallback;
+  const fit = (o) => {
+    let sc = 0, hit = 0;
+    for (const c of chat){
+      const x = c.t - o;
+      let lo = 0, hi = c.ts.length - 1, best = -1;          // last trainer mention at or before x + 60s
+      while (lo <= hi){ const mid = (lo + hi) >> 1; if (c.ts[mid] <= x + 60) { best = mid; lo = mid + 1; } else hi = mid - 1; }
+      if (best < 0) continue;
+      const d = x - c.ts[best];
+      if (d <= 900) { sc += 1 - Math.max(0, d) / 1200; hit++; }
+    }
+    return { sc, hit };
+  };
+  let bestO = fallback.offset, bestS = -1, bestH = 0;
+  const scores = [];
+  for (let o = first - 3600; o <= first + 1800; o += 10){
+    const r = fit(o); scores.push(r.sc);
+    if (r.sc > bestS) { bestS = r.sc; bestO = o; bestH = r.hit; }
+  }
+  scores.sort((a, b) => a - b);
+  const median = scores[scores.length >> 1] || 0;
+  const ok = bestH >= 8 && bestS >= median * 1.4 + 2;
+  return ok ? { offset:bestO, score:bestS, matched:bestH, total:chat.length, auto:true } : fallback;
+}
+function fmtClock(secs){
+  if (secs == null || !isFinite(secs)) return '';
+  secs = ((Math.round(secs) % 86400) + 86400) % 86400;
+  const h = Math.floor(secs / 3600), m = Math.floor(secs / 60) % 60, s = secs % 60;
+  return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+function fmtDur(secs){ const m = Math.round(secs / 60); return m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + 'm'; }
+
 /* ---------- Ask interpretation ---------- */
 function interpret(cmd, cdict){
-  const out = { cats:[], keywords:[], filters:{}, all:false, raw:cmd, view:null, trouble:false, qtypes:[], intents:[], clusters:[] };
+  const out = { cats:[], keywords:[], filters:{}, all:false, raw:cmd, view:null, trouble:false, qtypes:[], intents:[], clusters:[], tools:[] };
   let s = String(cmd||'').trim();
   if (!s) return out;
   s = s.replace(/"([^"]+)"|“([^”]+)”|'([^']{2,})'/g, (m, a, b, c) => { out.keywords.push((a||b||c).trim()); return ' '; });
@@ -1173,8 +1470,9 @@ function interpret(cmd, cdict){
   }
   for (const t of QTYPES){ for (const a of t.askN){ if (low.includes(a)) { out.qtypes.push(t.id); break; } } }
   for (const it of QINTENTS){ for (const a of it.askN){ if (low.includes(a)) { out.intents.push(it.id); break; } } }
-  // "earning questions" means that sub-type, not every question
-  if (out.qtypes.length || out.intents.length) out.cats = out.cats.filter(c => c !== 'question' && c !== 'query');
+  out.tools = toolsIn(s, true);
+  // "earning questions" / "julius questions" mean that slice, not every question
+  if (out.qtypes.length || out.intents.length || out.tools.length) out.cats = out.cats.filter(c => c !== 'question' && c !== 'query');
   if (out.cats.includes('whatsapp') && out.cats.includes('join') && !/\b(zoom|meeting|session|class|webinar|call)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'join');
   if (out.cats.length && TROUBLE_ASK_RE.test(s)) out.trouble = true;
   if (out.cats.includes('phone') && out.cats.length > 1 && !/\b(phone|mobile|contact number)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'phone');
@@ -1182,7 +1480,7 @@ function interpret(cmd, cdict){
   if (out.cats.includes('question') && out.cats.length > 1) out.cats = out.cats.filter(c => c !== 'question');
   if (out.cats.includes('support') && out.cats.length > 1 && !/\b(support|helpline|ticket|complain|escalat|callback|call back|no response|not responding|contact)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'support');
 
-  if (!out.cats.length && !out.qtypes.length && !out.intents.length && !out.keywords.length && !out.all){
+  if (!out.cats.length && !out.qtypes.length && !out.intents.length && !out.tools.length && !out.keywords.length && !out.all){
     const words = low.trim().split(/\s+/).filter(w => w && w.length > 2 && !STOP.has(w));
     if (words.length) out.keywords.push(...words); else if (Object.keys(out.filters).length) out.all = true;
   }
@@ -1212,6 +1510,10 @@ function runQueryInner(msgs, q, cdict, trouble){
     if (q.cats.length || wantQ){
       for (const c of q.cats){ if (m.cats && m.cats[c]) { catHit.push(c); hits.push(...m.cats[c]); } }
       if (wantQ && m.qtype) qHit = (q.qtypes||[]).includes(m.qtype) || (q.intents||[]).includes((QTYPE_BY_ID[m.qtype]||{}).intent) || (q.clusters||[]).includes(m.qclusterKey);
+      // a tool: messages that name it, plus questions asked while it was on screen
+      if (wantQ && !qHit && q.tools && q.tools.length) qHit = q.tools.some(t => (m.ntools && m.ntools.includes(t)) || (m.qtype && (m.atool === t || m.tool === t)));
+      if (wantQ && !qHit && m.qtype && q.qtools && q.qtools.length) qHit = q.qtools.includes(m.atool || '');
+      if (wantQ && !qHit && m.qtype && q.wins && q.wins.length && m.tsec != null) qHit = q.wins.some(w => m.tsec >= w[0] && m.tsec < w[1]);
       if (!catHit.length && !qHit) continue;
     }
     if (kwRes.length){
@@ -1229,7 +1531,7 @@ function runQueryInner(msgs, q, cdict, trouble){
   }
   return out;
 }
-function qSelectors(q){ return !!((q.qtypes && q.qtypes.length) || (q.intents && q.intents.length) || (q.clusters && q.clusters.length)); }
+function qSelectors(q){ return !!((q.qtypes && q.qtypes.length) || (q.intents && q.intents.length) || (q.clusters && q.clusters.length) || (q.tools && q.tools.length) || (q.qtools && q.qtools.length) || (q.wins && q.wins.length)); }
 
 function groupByPerson(rows){
   const map = new Map();
@@ -1245,7 +1547,8 @@ function groupByPerson(rows){
 
 const hasTrouble = (text) => hitsFor(text, TROUBLE).length > 0;
 root.ZCA = { DEFAULT_DICT, compileDict, parseZoomTxt, parseCSV, guessMapping, rowsToMessages, tagMessages, interpret, runQuery, groupByPerson, hitsFor, compilePattern, toSecs, looksLikeZoomSheet, sheetToZoomText, detectHosts, hasTrouble,
-  META, PRIMARY_ORDER, primaryCat, QTYPES, QINTENTS, QTYPE_BY_ID, QINTENT_BY_ID, classifyQuestion, qKey, faqKey, applyQType, qSelectors };
+  META, PRIMARY_ORDER, primaryCat, QTYPES, QINTENTS, QTYPE_BY_ID, QINTENT_BY_ID, classifyQuestion, qKey, faqKey, applyQType, qSelectors,
+  PITCH, TOOL_LIST, setExtraTools, toolsIn, parseTranscript, looksLikeTranscript, buildToolTimeline, segAt, mentorLine, alignTranscript, fmtClock, fmtDur };
 })(typeof window !== 'undefined' ? window : globalThis);
 // @@core-end
 </script>
@@ -1263,10 +1566,14 @@ const LS = 'zca.v1';
 const prefs = (() => { try { return JSON.parse(localStorage.getItem(LS) || '{}'); } catch(e){ return {}; } })();
 function savePrefs(){ try { localStorage.setItem(LS, JSON.stringify(prefs)); } catch(e){} }
 
+const OLD_QUERY_MATCH = JSON.stringify(['/\\?\\s*$/','/^(how|what|why|when|where|which|can|could|would|should|is|are|do|does|did|will|whom|whose|kya|kaise|kab|kaha|kitna|kitne|kitni|konsa|kaun)\\b/']);
 function mergeDict(base){
   const have = new Set(base.map(c => c && c.id));
-  const merged = base.slice();
   let added = false;
+  const merged = base.map(c => {
+    if (c && c.id === 'query' && JSON.stringify(c.match) === OLD_QUERY_MATCH) { added = true; return { ...c, match:Z.DEFAULT_DICT.find(d => d.id === 'query').match.slice() }; }
+    return c;
+  });
   for (const d of Z.DEFAULT_DICT){ if (!have.has(d.id)) { merged.push(d); added = true; } }
   if (added && Array.isArray(prefs.dict) && prefs.dict.length) { prefs.dict = merged; savePrefs(); }
   return merged;
@@ -1377,6 +1684,7 @@ function addSource(src){
   if (twin) { src.on = false; src.dupOf = twin.name; toast(`${src.name} looks like the same chat as ${twin.name}, so it starts switched off`); }
   state.sources.push(src);
   retag();
+  if (state.transcripts.length) attachTranscripts();
   renderSources();
   refreshOverview();
   if (state.query) rerun(); else setMascot('happy', 1500);
@@ -1387,7 +1695,7 @@ function sameChat(a, b){
   const idx = [0, 1, 2, a.messages.length - 2, a.messages.length - 1];
   return idx.every(i => key(a.messages[i]) === key(b.messages[i]));
 }
-function retag(){ for (const s of state.sources) { Z.tagMessages(s.messages, cdict); applyAiLabels(s.messages); } }
+function retag(){ for (const s of state.sources) { Z.tagMessages(s.messages, cdict); applyAiLabels(s.messages); } annotateTools(); }
 function markHosts(src){
   src.hosts = Z.detectHosts(src.messages);
   const set = new Set(src.hosts);
@@ -1404,7 +1712,7 @@ function readFile(file){
   const name = file.name;
   const ext = (name.split('.').pop() || '').toLowerCase();
   if (ext === 'xlsx' || ext === 'xls') return readExcel(file);
-  return file.text().then(text => ingestText(text, name, ext));
+  return file.text().then(text => Z.looksLikeTranscript(text, ext) ? addTranscript(text, name) : ingestText(text, name, ext));
 }
 
 function ingestText(text, name, ext){
@@ -1450,7 +1758,8 @@ function readExcel(file){
 
 function renderSources(){
   const ul = $('#sources'); ul.innerHTML = '';
-  $('#srcCount').textContent = state.sources.length ? state.sources.length + (state.sources.length === 1 ? ' file' : ' files') : 'none yet';
+  const nf = state.sources.length + state.transcripts.length;
+  $('#srcCount').textContent = nf ? nf + (nf === 1 ? ' file' : ' files') : 'none yet';
   for (const s of state.sources){
     const li = document.createElement('li'); li.className = 'src' + (s.on ? '' : ' off');
     li.innerHTML = `<div class="srcmain"><input type="checkbox" ${s.on ? 'checked' : ''} aria-label="Include ${escH(s.name)}">
@@ -1463,6 +1772,16 @@ function renderSources(){
     li.querySelector('[data-x]').onclick = () => { state.sources = state.sources.filter(x => x !== s); renderSources(); refreshOverview(); rerun(); };
     li.querySelector('.srcdate input').onchange = (e) => setSourceDate(s, e.target.value);
     const mb = li.querySelector('[data-map]'); if (mb) mb.onclick = () => openMap(s, false);
+    ul.appendChild(li);
+  }
+  for (const t of state.transcripts){
+    const li = document.createElement('li'); li.className = 'src';
+    const n = new Set(t.tl.segs.map(x => x.tool).filter(x => x && x !== Z.PITCH)).size;
+    const used = state.sources.filter(x => x.tr && x.tr.t === t).length;
+    li.innerHTML = `<div class="srcmain"><span class="nm" title="${escH(t.name)}">${escH(t.name)}</span>
+      <span class="ct">transcript · ${Z.fmtDur(t.tl.dur)} · ${n} tools${used ? ` · ${used} ${used === 1 ? 'chat' : 'chats'}` : ''}</span>
+      <button data-x title="Remove transcript">✕</button></div>`;
+    li.querySelector('[data-x]').onclick = () => { state.transcripts = state.transcripts.filter(x => x !== t); for (const s of state.sources) if (s.tr && s.tr.t === t) s.tr = null; attachTranscripts(); renderSources(); refreshOverview(); rerun(); };
     ul.appendChild(li);
   }
   fillDateFilter();
@@ -1504,7 +1823,7 @@ function refreshOverview(){
   const ul = $('#buckets'); ul.innerHTML = '';
   const people = new Set(msgs.map(m => m.name.toLowerCase()));
   $('#ovSub').textContent = msgs.length ? `${msgs.length} msgs, ${people.size} people` : '';
-  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; if (!AI.running) $('#qPanel').hidden = true; return; }
+  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; if (!AI.running) $('#qPanel').hidden = true; $('#trPanel').hidden = true; return; }
   const counts = cdict.map(c => {
     const ppl = new Set(); let n = 0;
     for (const m of msgs){ if (m.cats[c.id]) { n++; ppl.add(m.name.toLowerCase()); } }
@@ -1521,6 +1840,7 @@ function refreshOverview(){
   syncQuick();
   renderBuckets(msgs);
   renderQPanel(msgs);
+  renderTrPanel(msgs);
   renderTimeline(msgs);
 }
 
@@ -1696,6 +2016,9 @@ function renderReading(q){
   for (const id of (q.qtypes||[])){ const t = QT[id]; if (t) bits.push(`<span class="chip rm" data-qk="qtypes" data-qv="${id}" title="Remove this question type"><span class="dot" style="background:${qIntent(id).color}"></span>${escH(t.label)}<span class="x">×</span></span>`); }
   for (const id of (q.intents||[])){ const it = QI_BY[id]; if (it) bits.push(`<span class="chip rm" data-qk="intents" data-qv="${id}" title="Remove"><span class="dot" style="background:${it.color}"></span>${escH(it.label)} questions<span class="x">×</span></span>`); }
   for (const k of (q.clusters||[])) bits.push(`<span class="chip rm" data-qk="clusters" data-qv="${escH(k)}" title="People who asked this (merged by AI)">≈ ${escH(AI.cl[k] || k)}<span class="x">×</span></span>`);
+  for (const k of (q.tools||[])) bits.push(`<span class="chip rm" data-qk="tools" data-qv="${escH(k)}" title="Messages naming this tool, and questions asked about it"><span class="dot" style="background:${toolColor(k)}"></span>${escH(k)}<span class="x">×</span></span>`);
+  for (const k of (q.qtools||[])) bits.push(`<span class="chip rm" data-qk="qtools" data-qv="${escH(k)}" title="Questions about this tool"><span class="dot" style="background:${toolColor(k)}"></span>Questions on ${escH(k || 'no tool')}<span class="x">×</span></span>`);
+  (q.wins||[]).forEach((w, i) => { const r = refSource(); bits.push(`<span class="chip rm" data-qwin="${i}" title="Questions asked in this stretch of the session">Asked ${escH(Z.fmtClock(w[0] + (r ? r.tr.offset : 0)).slice(0,5))}–${escH(Z.fmtClock(w[1] + (r ? r.tr.offset : 0)).slice(0,5))}<span class="x">×</span></span>`); });
   for (const k of q.keywords) bits.push(`<span class="chip kw" title="Messages containing this text">“${escH(k)}”</span>`);
   if (q.filters.sender) bits.push(`<span class="chip flt">from ${escH(q.filters.sender)}</span>`);
   if (q.filters.source) bits.push(`<span class="chip flt">in ${escH(q.filters.source)}</span>`);
@@ -1706,11 +2029,17 @@ function renderReading(q){
   if (q.all && !q.cats.length && !q.keywords.length) bits.push(`<span class="chip">every message</span>`);
   let lead = 'Looking for';
   if (q.cats.length && q.keywords.length) lead = 'Looking for these topics, and only messages containing';
-  else if (q.cats.length + (q.qtypes||[]).length + (q.intents||[]).length + (q.clusters||[]).length > 1) lead = 'Looking for any of';
+  else if (q.cats.length + (q.qtypes||[]).length + (q.intents||[]).length + (q.clusters||[]).length + (q.tools||[]).length + (q.qtools||[]).length + (q.wins||[]).length > 1) lead = 'Looking for any of';
   const note = q.troubleFallback ? `<span class="lead" style="margin-left:6px">no message describes a problem, so showing every mention</span>` : '';
   el.innerHTML = bits.length ? `<span class="lead">${lead}</span>${bits.join('')}${note}` : '<span class="lead">Type a topic, a name, or put exact text in quotes.</span>';
   el.querySelectorAll('[data-cat]').forEach(ch => ch.onclick = () => toggleCat(ch.dataset.cat));
   el.querySelectorAll('[data-qk]').forEach(ch => ch.onclick = () => toggleQ(ch.dataset.qk, ch.dataset.qv));
+  el.querySelectorAll('[data-qwin]').forEach(ch => ch.onclick = () => {
+    const q2 = { ...state.query, wins:(state.query.wins || []).filter((_, i) => i !== +ch.dataset.qwin) };
+    q2.raw = buildRaw(q2);
+    if (!q2.cats.length && !Z.qSelectors(q2) && !(q2.keywords||[]).length && !q2.all) { clearCats(); return; }
+    execQuery(q2);
+  });
 }
 function fmtSecs(s){ const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
 
@@ -1736,7 +2065,7 @@ function run(text, forceCats){
 /* ---------- multi-select across buckets (union of topics) ---------- */
 function selectedCats(){ return new Set(state.query ? state.query.cats : []); }
 function catLabel(id){ return (catById()[id] || {}).label || id; }
-function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.qtypes||[]).map(id => (Z.QTYPE_BY_ID[id]||{}).label || id), ...(q.intents||[]).map(id => ((Z.QINTENT_BY_ID[id]||{}).label || id) + ' questions'), ...(q.clusters||[]).map(k => '≈ ' + (AI.cl[k] || k)), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
+function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.qtypes||[]).map(id => (Z.QTYPE_BY_ID[id]||{}).label || id), ...(q.intents||[]).map(id => ((Z.QINTENT_BY_ID[id]||{}).label || id) + ' questions'), ...(q.clusters||[]).map(k => '≈ ' + (AI.cl[k] || k)), ...(q.tools||[]), ...(q.qtools||[]).map(k => 'questions on ' + (k || 'no tool')), ...(q.wins||[]).map(w => 'asked at ' + Z.fmtClock(w[0]).slice(0,5)), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
 function execQuery(q){
   state.query = q; state.limit = PAGE;
   if (q.view) { state.view = q.view; syncViewSeg(); }
@@ -1802,8 +2131,9 @@ function renderResults(){
   const qSel = Z.qSelectors(q) || q.cats.includes('query');
   const showTopicsP = q.cats.length !== 1 || (q.cats.length && q.keywords.length) || qSel;
   const showTopicsM = q.cats.length !== 1 || qSel;
-  const norm = (m) => m.qsrc === 'ai' && m.qcluster ? `<span class="qnorm">≈ ${escH(m.qcluster)}</span>` : '';
-  const pQtags = (p) => [...new Set(p.rows.map(r => r.m.qtype).filter(Boolean))].map(qtag).join('');
+  const norm = (m) => (m.qsrc === 'ai' && m.qcluster ? `<span class="qnorm">≈ ${escH(m.qcluster)}</span>` : '') + (qSel && m.tline ? `<span class="mline"><b>Trainer, just before:</b> “${escH(m.tline)}”</span>` : '');
+  const toolTag = (m) => m.atool ? `<span class="tag" style="background:${tint(toolColor(m.atool),.13)};color:${toolColor(m.atool) === '#D3DCE6' ? 'var(--ink-2)' : toolColor(m.atool)}" title="${m.ntools && m.ntools.includes(m.atool) ? 'Named in the message' : m.tool === m.atool ? 'On screen when asked' : 'Tool the question is about'}">${escH(m.atool)}</span>` : '';
+  const pQtags = (p) => [...new Set(p.rows.map(r => r.m.qtype).filter(Boolean))].map(qtag).join('') + [...new Map(p.rows.filter(r => r.m.atool).map(r => [r.m.atool, r.m])).values()].map(toolTag).join('');
   if (state.view === 'person'){
     const list = people.slice().sort((a,b) => {
       if (sort.key === 'name') return a.name.localeCompare(b.name) * sort.dir;
@@ -1832,7 +2162,7 @@ function renderResults(){
         <td class="t">${escH(r.m.time)}</td>
         <td class="n">${escH(r.m.name)}${r.m.dm ? `<small>to ${escH(r.m.to)}</small>` : ''}</td>
         <td class="m">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}${norm(r.m)}</td>
-        ${showTopicsM ? `<td class="c">${r.cats.map(tag).join('')}${r.m.qtype ? qtag(r.m.qtype) : ''}</td>` : ''}
+        ${showTopicsM ? `<td class="c">${r.cats.map(tag).join('')}${r.m.qtype ? qtag(r.m.qtype) : ''}${r.m.qtype ? toolTag(r.m) : ''}</td>` : ''}
         ${multiSrc ? `<td class="s" title="${escH(r.m.source)}">${r.m.srcDateLabel ? `<b>${escH(r.m.srcDateLabel)}</b><br>` : ''}${escH(r.m.source)}</td>` : ''}
       </tr>`).join('')}</tbody></table></div>${more(list.length)}`;
   }
@@ -1929,7 +2259,7 @@ function applyAiLabels(msgs){
     if (c.tool) m.qtool = c.tool; else delete m.qtool;
   }
 }
-function applyAll(){ for (const s of state.sources) applyAiLabels(s.messages); }
+function applyAll(){ for (const s of state.sources) applyAiLabels(s.messages); annotateTools(); }
 
 /* ---------- stats for the panel, exports and the takeaways brief ---------- */
 function qStats(msgs){
@@ -1945,7 +2275,8 @@ function qStats(msgs){
       if (!c) { c = { key:m.qclusterKey, label:m.qcluster, n:0, ppl:new Set(), names:new Set() }; t.clusters.set(m.qclusterKey, c); }
       c.n++; c.ppl.add(m.name.toLowerCase()); c.names.add(m.name);
     }
-    if (m.qtool) { const k = m.qtool.toLowerCase(); const e = t.tools.get(k) || { label:m.qtool, n:0 }; e.n++; t.tools.set(k, e); }
+    const at = m.atool || m.qtool;
+    if (at) { const k = at.toLowerCase(); const e = t.tools.get(k) || { label:at, n:0 }; e.n++; t.tools.set(k, e); }
   }
   const types = [...byType.values()].map(t => ({ ...t, p:t.ppl.size,
       clist:[...t.clusters.values()].map(c => ({ ...c, p:c.ppl.size })).sort((a,b) => b.p - a.p || b.n - a.n),
@@ -2230,6 +2561,7 @@ ${Z.QTYPES.map(t => `- ${t.id}: ${t.desc}`).join('\n')}
 "q": the question rewritten as a short generic question in plain English, at most 12 words. Translate Hindi and Hinglish, fix spelling, drop names and filler. Write the same need the same way every time, e.g. "How do I connect a custom domain to my website?". Use "" when t is "unclear".
 "tool": the specific tool, website or app named or clearly meant, by its common name (e.g. "ElevenLabs"), or "" if none.
 
+Some items end with [on screen: X], the tool the trainer was showing when it was asked. When the question says "this", "it" or "the tool", use X as the tool. "Program pitch" means the trainer was selling the paid program.
 Complaints or sarcasm phrased as questions are "frustration". Questions about their own selection, seat, booking or their name being called are "seat_status".
 Reply with JSON only, no prose: {"r":[{"i":1,"t":"how_to","q":"...","tool":""}]} with exactly one entry per item number.`;
 const SYS_MERGE = `You merge duplicate questions from one category of a live webinar chat. Each line is a normalized question with the number of people who asked it in brackets. Group lines that ask for the same thing, even if worded differently. Keep different needs apart; do not over-merge. Give each group one clear canonical question in plain English, at most 14 words, specific enough to act on.
@@ -2253,7 +2585,7 @@ function collectPending(){
     if (AI.items[k]) continue;
     const rule = Z.classifyQuestion(m.text);
     if (rule === 'unclear' && wordCount(m.text) <= 2) continue;
-    out.push({ k, text:m.text, rule });
+    out.push({ k, text:m.text, rule, screen:m.tool || '' });
   }
   return out;
 }
@@ -2263,7 +2595,7 @@ async function runPool(tasks, n){
   await Promise.all(Array.from({ length:Math.min(n, tasks.length) }, worker));
 }
 async function classifyBatch(b, signal){
-  const user = b.map((p, i) => `${i + 1}. ${redact(p.text)}`).join('\n');
+  const user = b.map((p, i) => `${i + 1}. ${redact(p.text)}${p.screen ? ` [on screen: ${p.screen}]` : ''}`).join('\n');
   let arr = [];
   for (let attempt = 0; attempt < (freeMode() ? 1 : 2) && !arr.length; attempt++){
     const r = await orChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:user }], { signal, maxTokens:300 + b.length * 70 });
@@ -2405,6 +2737,9 @@ function openAI(){
   }).catch(() => { $('#aiModelNote').textContent = 'Couldn’t load the model list. Type a model id from openrouter.ai/models.'; });
 }
 $('#qSet').onclick = openAI;
+$('#btnAI').onclick = openAI;
+function syncAiBtn(){ const b = $('#btnAI'); const on = !!aiKey(); b.classList.toggle('on', on); b.title = on ? `AI is set up (${freeMode() ? 'free models' : shortModel(model())}). Click to change.` : 'Add your OpenRouter key to sort questions with AI'; }
+syncAiBtn();
 $('#aiModel').addEventListener('input', noteModel);
 $('#aiFree').addEventListener('change', () => { $('#aiModel').value = modeDefault($('#aiFree').checked); fillModelList(); noteModel(); });
 $('#aiKeyShow').onclick = () => { const k = $('#aiKey'); const show = k.type === 'password'; k.type = show ? 'text' : 'password'; $('#aiKeyShow').textContent = show ? 'Hide' : 'Show'; };
@@ -2421,7 +2756,7 @@ $('#aiSave').onclick = () => {
   savePrefs(); setAiKey(k, prefs.ai.remember);
   $('#mAI').classList.remove('open');
   toast(k ? 'AI settings saved' : 'AI settings saved, no key');
-  refreshOverview();
+  syncAiBtn(); refreshOverview();
 };
 $('#aiTest').onclick = async () => {
   const k = $('#aiKey').value.trim();
@@ -2440,7 +2775,7 @@ $('#aiTest').onclick = async () => {
     setAiStat('ok', `Key works. ${used}${lim} Free models: ${freeDaily()} requests a day.`);
   } catch(e){ setAiStat('bad', 'Couldn’t reach OpenRouter. Check the connection.'); }
 };
-$('#aiForget').onclick = () => { setAiKey('', false); $('#aiKey').value = ''; setAiStat('ok', 'Key removed from this browser.'); refreshOverview(); };
+$('#aiForget').onclick = () => { setAiKey('', false); $('#aiKey').value = ''; setAiStat('ok', 'Key removed from this browser.'); syncAiBtn(); refreshOverview(); };
 $('#aiClear').onclick = () => {
   AI.items = {}; AI.merges = {}; AI.take = null; AI.cl = {}; AI.err = ''; saveQCache();
   retag(); refreshOverview(); rerun();
@@ -2464,8 +2799,28 @@ function questionSheets(msgs){
       [...g.values()].sort((a,b) => b.ppl.size - a.ppl.size || b.n - a.n).forEach(e => top.push([t.def.label, il, e.q, e.ppl.size, e.n, [...e.names].join(', ')]));
     }
   }
-  const all = [['Name','Date','Time','Message','Query type','Intent','Normalized question','Tool','Sorted by','Source'],
-    ...st.qs.slice().sort(byTime).map(m => [m.name, m.srcDateLabel || '', m.time, m.text, QT[m.qtype].label, qIntent(m.qtype).label, m.qcluster || '', m.qtool || '', m.qsrc === 'ai' ? 'AI' : 'Rules', m.source])];
+  const hasTr = st.qs.some(m => m.tsec != null);
+  const all = [['Name','Date','Time','Message','Query type','Intent','Normalized question','Tool asked about','Tool on screen','Trainer was saying','Sorted by','Source'],
+    ...st.qs.slice().sort(byTime).map(m => [m.name, m.srcDateLabel || '', m.time, m.text, QT[m.qtype].label, qIntent(m.qtype).label, m.qcluster || '', m.atool || '', m.tool || (m.tsec != null ? 'General talk' : ''), m.tline || '', m.qsrc === 'ai' ? 'AI' : 'Rules', m.source])];
+  let byTool = null, timeline = null;
+  if (hasTr || st.qs.some(m => m.atool)) {
+    const tsx = trStats(msgs);
+    const ref = refSource(), tl = ref ? ref.tr.t.tl : null;
+    const shown = (tool) => !tl ? '' : tl.segs.filter(sg => sg.tool === tool).map(sg => segClock(sg, ref)).join(', ');
+    byTool = [['Tool','On screen','Questions','People','Question types','Most asked'],
+      ...tsx.tools.map(e => [e.names ? 'Other tools: ' + e.names.join(', ') : (e.tool || 'No tool on screen'), e.names || !e.tool ? '' : shown(e.tool), e.n, e.ppl.size,
+        [...e.types.entries()].sort((a,b) => b[1] - a[1]).map(([id, n]) => `${QT[id].label} (${n})`).join('\n'),
+        mostAsked(e.msgs, 5).map(x => `${x.label} (${x.ppl.size})`).join('\n')])];
+    if (tl) timeline = [['Time','Being taught','Questions','People','Question types','Most asked','Trainer said (start of stretch)'],
+      ...tl.segs.map(sg => {
+        const list = st.qs.filter(m => m.tsec != null && m.tsec >= sg.s && m.tsec < sg.e);
+        const ty = new Map(); list.forEach(m => ty.set(m.qtype, (ty.get(m.qtype) || 0) + 1));
+        return [segClock(sg, ref), sg.tool || 'General talk', list.length, new Set(list.map(m => m.name.toLowerCase())).size,
+          [...ty.entries()].sort((a,b) => b[1] - a[1]).map(([id, n]) => `${QT[id].label} (${n})`).join('\n'),
+          mostAsked(list, 3).map(x => `${x.label} (${x.ppl.size})`).join('\n'),
+          mentorAt(ref.tr.t, sg.s + 30)];
+      })];
+  }
   const buyers = new Map();
   for (const m of st.qs.slice().sort(byTime)){
     const t = QT[m.qtype]; if (t.intent !== 'buy') continue;
@@ -2478,7 +2833,7 @@ function questionSheets(msgs){
   const types = [['Query type','Intent','People','Messages','Sorted by AI','Top questions','Tools mentioned'],
     ...st.types.map(t => [t.def.label, qIntent(t.id).label, t.p, t.n, t.msgs.filter(m => m.qsrc === 'ai').length, t.clist.slice(0, 5).map(c => `${c.label} (${c.p})`).join('\n'), t.tlist.slice(0, 5).map(x => `${x.label} (${x.n})`).join(', ')])];
   const take = AI.take && AI.take.items && AI.take.items.length && st.aiN ? [['Owner','Takeaway'], ...AI.take.items.map(x => [x.owner, x.text])] : null;
-  return { st, top, all, buy, types, take };
+  return { st, top, all, buy, types, take, byTool, timeline };
 }
 function downloadQuestions(){
   const qs = questionSheets(pool());
@@ -2489,9 +2844,11 @@ function downloadQuestions(){
     const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(capCells(aoa)); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name); };
     if (qs.take) add('Takeaways', qs.take, [12, 110]);
     add('Question types', qs.types, [34, 16, 9, 10, 12, 70, 40]);
+    if (qs.byTool) add('By tool', qs.byTool, [22, 40, 10, 9, 40, 70]);
+    if (qs.timeline) add('Session timeline', qs.timeline, [14, 20, 10, 9, 40, 70, 80]);
     add('Top questions', qs.top, [34, 16, 64, 9, 10, 70]);
     add('Buying signals', qs.buy, [28, 18, 44, 10, 90]);
-    add('All questions', qs.all, [26, 14, 10, 70, 34, 16, 50, 16, 10, 28]);
+    add('All questions', qs.all, [26, 14, 10, 70, 34, 16, 50, 18, 18, 70, 10, 28]);
     XLSX.writeFile(wb, base + '.xlsx');
     toast('Questions file ready'); setMascot('happy', 1500);
   }).catch(() => {
@@ -2500,6 +2857,207 @@ function downloadQuestions(){
   });
 }
 $('#qDl').onclick = downloadQuestions;
+
+/* ---------- optional transcript: which tool was being taught when each question came ---------- */
+state.transcripts = [];
+let trSeq = 0;
+const TR = { view:'tool' };
+const TOOL_COLORS = ['#3B7FB0','#0E8A6A','#8A5CC2','#C2410C','#BE185D','#2563A8','#4D7C0F','#0E7490','#9F1239','#6D28D9','#475569','#0F766E'];
+prefs.tools = Array.isArray(prefs.tools) ? prefs.tools : [];
+Z.setExtraTools(prefs.tools);
+function toolColor(name){
+  if (!name) return '#D3DCE6';
+  if (name === Z.PITCH) return '#C98A12';
+  const t = state.transcripts[0];
+  const order = t ? [...new Set(t.tl.segs.map(s => s.tool).filter(x => x && x !== Z.PITCH))] : [];
+  let i = order.indexOf(name);
+  if (i < 0) { let h = 0; for (const ch of name) h = (h * 31 + ch.charCodeAt(0)) >>> 0; i = h; }
+  return TOOL_COLORS[i % TOOL_COLORS.length];
+}
+function addTranscript(text, name){
+  const cues = Z.parseTranscript(text);
+  if (cues.length < 5) { toast('Could not read ' + name + ' as a transcript (.vtt or .srt)'); setMascot('puzzled', 2200); return; }
+  const t = { id:++trSeq, name, cues, text, tl:Z.buildToolTimeline(cues) };
+  state.transcripts.push(t);
+  attachTranscripts();
+  renderSources(); refreshOverview(); rerun();
+  const tools = new Set(t.tl.segs.map(s => s.tool).filter(x => x && x !== Z.PITCH));
+  toast(`Transcript added: ${Z.fmtDur(t.tl.dur)}, ${tools.size} ${tools.size === 1 ? 'tool' : 'tools'} found`);
+  setMascot('happy', 1500);
+}
+function rebuildTimelines(){ for (const t of state.transcripts) t.tl = Z.buildToolTimeline(t.cues); }
+
+// pick the best-matching transcript and start time for each chat (manual choices are kept)
+function attachTranscripts(){
+  for (const s of state.sources){
+    if (!state.transcripts.length || s.trNone) { s.tr = null; continue; }
+    if (s.tr && s.tr.manual && state.transcripts.includes(s.tr.t)) continue;
+    if (s.trPick && !state.transcripts.includes(s.trPick)) s.trPick = null;
+    let best = null;
+    for (const t of (s.trPick ? state.transcripts.filter(x => x === s.trPick) : state.transcripts)){
+      const al = Z.alignTranscript(s.messages, t.tl);
+      if (al && (!best || al.score > best.al.score)) best = { t, al };
+    }
+    s.tr = best ? { t:best.t, offset:best.al.offset, auto:best.al.auto, matched:best.al.matched, total:best.al.total, manual:false } : null;
+  }
+  annotateTools();
+}
+function cueIndexAt(cues, t){ let lo = 0, hi = cues.length - 1, ans = cues.length; while (lo <= hi){ const mid = (lo + hi) >> 1; if (cues[mid].s >= t) { ans = mid; hi = mid - 1; } else lo = mid + 1; } return ans; }
+function mentorAt(tr, tsec){
+  const cues = tr.cues, out = [];
+  for (let i = Math.max(0, cueIndexAt(cues, tsec - 90) - 1); i < cues.length; i++){
+    const c = cues[i]; if (c.s > tsec + 2) break; if (c.e < tsec - 40) continue; out.push(c.text);
+  }
+  const s = out.join(' ').replace(/\s+/g, ' ').trim();
+  return s.length > 260 ? '…' + s.slice(-258) : s;
+}
+// the tool a question is about: one it names, else what the AI read, else what was on screen
+function askedTool(m){
+  if (m.ntools && m.ntools.length) return m.ntools[0];
+  if (m.qtool) { const k = Z.toolsIn(m.qtool, true); return k[0] || m.qtool; }
+  return m.tool && m.tool !== Z.PITCH ? m.tool : (m.tool || '');
+}
+function annotateTools(){
+  for (const s of state.sources){
+    const tr = s.tr;
+    for (const m of s.messages){
+      delete m.tool; delete m.tsec; delete m.tline; delete m.atool;
+      const nt = Z.toolsIn(m.text, true); if (nt.length) m.ntools = nt; else delete m.ntools;
+      if (tr && m.secs >= 0) {
+        const ts = m.secs - tr.offset;
+        const sg = Z.segAt(tr.t.tl, ts);
+        if (sg) { m.tsec = ts; m.tool = sg.tool || ''; }
+        if (m.qtype && sg) m.tline = mentorAt(tr.t, ts);
+      }
+      if (m.qtype) { const a = askedTool(m); if (a) m.atool = a; }
+    }
+  }
+}
+function srcLabel(s){ return s.dateLabel || s.name; }
+
+/* ---------- panel ---------- */
+function trStats(msgs){
+  const qs = msgs.filter(m => m.qtype);
+  const byTool = new Map();
+  for (const m of qs){
+    const k = m.atool || '';
+    let e = byTool.get(k); if (!e) byTool.set(k, e = { tool:k, n:0, ppl:new Set(), types:new Map(), msgs:[] });
+    e.n++; e.ppl.add(m.name.toLowerCase()); e.types.set(m.qtype, (e.types.get(m.qtype) || 0) + 1); e.msgs.push(m);
+  }
+  const t = (refSource() || {}).tr, onScreen = new Set(t ? t.t.tl.segs.map(s => s.tool) : []);
+  let tools = [...byTool.values()];
+  const small = tools.filter(e => e.tool && !onScreen.has(e.tool) && e.n < 3);
+  if (small.length > 1) {
+    tools = tools.filter(e => !small.includes(e));
+    const o = { tool:'__other', names:small.map(e => e.tool), n:0, ppl:new Set(), types:new Map(), msgs:[] };
+    for (const e of small){ o.n += e.n; e.ppl.forEach(p => o.ppl.add(p)); e.types.forEach((v, k) => o.types.set(k, (o.types.get(k) || 0) + v)); o.msgs.push(...e.msgs); }
+    tools.push(o);
+  }
+  const rank = (e) => e.tool === '' ? 2 : e.tool === '__other' ? 1 : 0;
+  return { qs, tools:tools.sort((a,b) => rank(a) - rank(b) || b.n - a.n) };
+}
+function mostAsked(list, k){
+  const g = new Map();
+  for (const m of list){
+    const key = m.qclusterKey || Z.qKey(m.text);
+    let e = g.get(key); if (!e) g.set(key, e = { label:m.qcluster || clean(m.text), ppl:new Set() });
+    e.ppl.add(m.name.toLowerCase());
+  }
+  return [...g.values()].filter(e => e.label.length > 3).sort((a,b) => b.ppl.size - a.ppl.size).slice(0, k);
+}
+function refSource(){ return state.sources.find(s => s.on && s.tr) || state.sources.find(s => s.tr); }
+function segClock(sg, s){ return s ? `${Z.fmtClock(sg.s + s.tr.offset).slice(0,5)}–${Z.fmtClock(sg.e + s.tr.offset).slice(0,5)}` : `${Z.fmtClock(sg.s).slice(0,5)}–${Z.fmtClock(sg.e).slice(0,5)}`; }
+function renderTrPanel(msgs){
+  const panel = $('#trPanel'), hint = $('#trHint');
+  if (hint) hint.hidden = state.transcripts.length > 0 || !state.sources.length;
+  if (!state.transcripts.length || !msgs.length) { panel.hidden = true; return; }
+  panel.hidden = false;
+  const ref = refSource();
+  const t = ref ? ref.tr.t : state.transcripts[0];
+  const toolSet = new Set(t.tl.segs.map(s => s.tool).filter(x => x && x !== Z.PITCH));
+  $('#trSub').textContent = `${t.name} · ${Z.fmtDur(t.tl.dur)} · ${toolSet.size} ${toolSet.size === 1 ? 'tool' : 'tools'} taught`;
+
+  // per-chat start time
+  const al = $('#trAlign');
+  al.innerHTML = state.sources.map(s => {
+    const opts = state.transcripts.map(x => `<option value="${x.id}" ${s.tr && s.tr.t === x ? 'selected' : ''}>${escH(x.name)}</option>`).join('') + `<option value="none" ${!s.tr ? 'selected' : ''}>No transcript</option>`;
+    const status = !s.tr ? '<span class="trw">Not linked</span>'
+      : s.tr.manual ? '<span class="trm">Set by you</span>'
+      : s.tr.auto ? `<span class="trok" title="${s.tr.matched} of ${s.tr.total} tool mentions in the chat line up with the transcript">Matched automatically</span>`
+      : '<span class="trw" title="Too few tool mentions to line up the video with the chat. Check the start time.">Estimated: check the start time</span>';
+    return `<div class="tral" data-src="${s.id}"><b title="${escH(s.name)}">${escH(srcLabel(s))}</b>
+      ${state.transcripts.length > 1 || !s.tr ? `<select data-trsel aria-label="Transcript for ${escH(s.name)}">${opts}</select>` : ''}
+      ${s.tr ? `<label>video started at <input type="time" step="1" data-off value="${Z.fmtClock(s.tr.offset)}"></label>${status}${s.tr.manual ? '<button class="btn quiet sm" data-auto>Auto</button>' : ''}<button class="btn quiet sm" data-unlink title="Don’t use a transcript for this chat">Unlink</button>` : ''}
+    </div>`;
+  }).join('');
+  al.querySelectorAll('.tral').forEach(row => {
+    const s = state.sources.find(x => String(x.id) === row.dataset.src); if (!s) return;
+    const sel = row.querySelector('[data-trsel]');
+    if (sel) sel.onchange = () => { if (sel.value === 'none') { s.trNone = true; s.tr = null; } else { s.trNone = false; s.trPick = state.transcripts.find(x => String(x.id) === sel.value); s.tr = null; } attachTranscripts(); refreshOverview(); rerun(); };
+    const off = row.querySelector('[data-off]');
+    if (off) off.onchange = () => { const v = Z.toSecs(off.value); if (v < 0) return; s.tr.offset = v; s.tr.manual = true; annotateTools(); refreshOverview(); rerun(); };
+    const au = row.querySelector('[data-auto]'); if (au) au.onclick = () => { s.tr.manual = false; s.tr = null; attachTranscripts(); refreshOverview(); rerun(); };
+    const un = row.querySelector('[data-unlink]'); if (un) un.onclick = () => { s.trNone = true; s.tr = null; annotateTools(); refreshOverview(); rerun(); };
+  });
+
+  // questions per transcript minute, for the bar
+  const qs = msgs.filter(m => m.qtype && m.tsec != null);
+  const segQ = t.tl.segs.map(sg => qs.filter(m => m.tsec >= sg.s && m.tsec < sg.e).length);
+  const tot = Math.max(1, t.tl.dur);
+  $('#trBar').innerHTML = t.tl.segs.map((sg, i) => {
+    const w = 100 * (sg.e - sg.s) / tot, label = sg.tool || 'General talk';
+    return `<button class="trseg" style="width:${w.toFixed(3)}%;background:${toolColor(sg.tool)}" data-seg="${i}" title="${escH(segClock(sg, ref))} · ${escH(label)} · ${segQ[i]} questions">${w > 4.5 ? `<span>${escH(label)}</span>` : ''}</button>`;
+  }).join('');
+  $('#trBar').querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { const sg = t.tl.segs[+b.dataset.seg]; onlyQ({ wins:[[sg.s, sg.e]] }); });
+  $('#trScale').innerHTML = [0, .25, .5, .75, 1].map(f => `<span>${Z.fmtClock(f * tot + (ref ? ref.tr.offset : 0)).slice(0,5)}</span>`).join('');
+
+  // table
+  $('#trView').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === TR.view));
+  const table = $('#trTable');
+  const typeChips = (types) => [...types.entries()].sort((a,b) => b[1] - a[1]).slice(0, 3).map(([id, n]) => `${qtag(id).replace('</span>', ` <b>${n}</b></span>`)}`).join('');
+  const asked = (list) => mostAsked(list, 2).map(e => `<span class="trq">${escH(clip(e.label, 90))} <b>${e.ppl.size}</b></span>`).join('');
+  if (TR.view === 'tool') {
+    const st = trStats(msgs);
+    const onScreen = (tool) => {
+      const segs = t.tl.segs.filter(sg => sg.tool === tool);
+      if (!segs.length) return '<span class="muted">named in chat only</span>';
+      const mins = segs.reduce((a, sg) => a + (sg.e - sg.s), 0);
+      return `${segs.map(sg => segClock(sg, ref)).join(', ')} <span class="muted">(${Z.fmtDur(mins)})</span>`;
+    };
+    table.innerHTML = `<thead><tr><th>Tool</th><th>On screen</th><th class="num">Questions</th><th class="num">People</th><th>Question types</th><th>Most asked</th></tr></thead><tbody>${
+      st.tools.map(e => `<tr data-tool="${escH(e.names ? e.names.join('|') : e.tool)}" tabindex="0" title="Show these ${e.n} questions">
+        <td><span class="tdot" style="background:${e.names ? '#94A3B8' : toolColor(e.tool)}"></span><b>${escH(e.names ? 'Other tools named in chat' : (e.tool || 'No tool on screen'))}</b></td>
+        <td class="trtime">${e.names ? `<span class="muted">${escH(e.names.join(', '))}</span>` : e.tool ? onScreen(e.tool) : '<span class="muted">intro, breaks, general talk</span>'}</td>
+        <td class="num"><b>${e.n}</b></td><td class="num">${e.ppl.size}</td>
+        <td>${typeChips(e.types)}</td><td>${asked(e.msgs)}</td></tr>`).join('')}</tbody>`;
+    table.querySelectorAll('tr[data-tool]').forEach(tr => { const go = () => onlyQ({ qtools:tr.dataset.tool.split('|') }); tr.onclick = go; tr.onkeydown = (e) => { if (e.key === 'Enter') go(); }; });
+  } else {
+    table.innerHTML = `<thead><tr><th>Time</th><th>Being taught</th><th class="num">Questions</th><th class="num">People</th><th>Question types</th><th>Most asked</th></tr></thead><tbody>${
+      t.tl.segs.map((sg, i) => {
+        const list = qs.filter(m => m.tsec >= sg.s && m.tsec < sg.e);
+        const types = new Map(); list.forEach(m => types.set(m.qtype, (types.get(m.qtype) || 0) + 1));
+        return `<tr data-seg="${i}" tabindex="0" title="Show the questions asked in this stretch">
+          <td class="trtime">${escH(segClock(sg, ref))}</td>
+          <td><span class="tdot" style="background:${toolColor(sg.tool)}"></span><b>${escH(sg.tool || 'General talk')}</b></td>
+          <td class="num"><b>${list.length}</b></td><td class="num">${new Set(list.map(m => m.name.toLowerCase())).size}</td>
+          <td>${typeChips(types)}</td><td>${asked(list)}</td></tr>`;
+      }).join('')}</tbody>`;
+    table.querySelectorAll('tr[data-seg]').forEach(tr => { const sg = t.tl.segs[+tr.dataset.seg]; const go = () => onlyQ({ wins:[[sg.s, sg.e]] }); tr.onclick = go; tr.onkeydown = (e) => { if (e.key === 'Enter') go(); }; });
+  }
+  if (document.activeElement !== $('#trExtraIn')) $('#trExtraIn').value = prefs.tools.join('\n');
+}
+$('#trView').querySelectorAll('button').forEach(b => b.onclick = () => { TR.view = b.dataset.v; renderTrPanel(pool()); });
+$('#trMore').onclick = () => { const box = $('#trExtra'); box.hidden = !box.hidden; if (!box.hidden) $('#trExtraIn').focus(); };
+$('#trExtraSave').onclick = () => {
+  prefs.tools = $('#trExtraIn').value.split('\n').map(x => x.trim()).filter(Boolean);
+  savePrefs(); Z.setExtraTools(prefs.tools); rebuildTimelines();
+  for (const s of state.sources) if (s.tr && !s.tr.manual) s.tr = null;
+  attachTranscripts(); refreshOverview(); rerun();
+  toast(prefs.tools.length ? 'Tool names saved' : 'Extra tool names cleared');
+};
+const trFile = $('#trFile');
+['#trAdd', '#trAdd2'].forEach(id => { const b = $(id); if (b) b.onclick = () => trFile.click(); });
+trFile.onchange = () => { [...trFile.files].forEach(f => f.text().then(tx => addTranscript(tx, f.name))); trFile.value = ''; };
 
 /* ---------- export ---------- */
 function exportCsv(){
@@ -2510,8 +3068,8 @@ function exportCsv(){
     lines = [['Name','Messages','First at','Session dates','Topics','Query types','Source','All matching messages'].map(csvCell).join(',')];
     for (const p of Z.groupByPerson(rows)) lines.push([p.name, p.rows.length, p.firstT || '', personDates(p), lab([...p.cats]), [...new Set(p.rows.map(r => r.m.qtype).filter(Boolean))].map(id => QT[id].label).join('; '), [...p.sources].join('; '), p.rows.map(r => `[${r.m.time}] ${r.m.text}`).join('\n')].map(csvCell).join(','));
   } else {
-    lines = [['Date','Time','Name','Sent to','Message','Topics','Query type','Intent','Normalized question','Source'].map(csvCell).join(',')];
-    for (const r of rows) lines.push([r.m.srcDateLabel || '', r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.qtype ? QT[r.m.qtype].label : '', r.m.qtype ? qIntent(r.m.qtype).label : '', r.m.qcluster || '', r.m.source].map(csvCell).join(','));
+    lines = [['Date','Time','Name','Sent to','Message','Topics','Query type','Intent','Normalized question','Tool asked about','Tool on screen','Trainer was saying','Source'].map(csvCell).join(',')];
+    for (const r of rows) lines.push([r.m.srcDateLabel || '', r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.qtype ? QT[r.m.qtype].label : '', r.m.qtype ? qIntent(r.m.qtype).label : '', r.m.qcluster || '', r.m.atool || (r.m.ntools ? r.m.ntools.join(', ') : ''), r.m.tool || (r.m.tsec != null ? 'General talk' : ''), r.m.tline || '', r.m.source].map(csvCell).join(','));
   }
   const slug = (state.query.raw || 'results').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'results';
   download(`zoom-chat-${slug}-${state.view}.csv`, '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
@@ -2559,6 +3117,7 @@ function buildReport(){
     add('By person', people, [28, 22, 40, 10, 90]);
     if (qsh.st.qs.length){
       if (qsh.take) add('Question takeaways', qsh.take, [12, 110]);
+      if (qsh.byTool) add('Questions by tool', qsh.byTool, [22, 40, 10, 9, 40, 70]);
       add('Top questions', qsh.top, [34, 16, 64, 9, 10, 70]);
       add('Buying signals', qsh.buy, [28, 18, 44, 10, 90]);
     }
@@ -2583,27 +3142,27 @@ function buildIssuesByChat(){
   if (!srcs.length){ toast('Add a chat first'); return; }
   const ordered = srcs.slice().sort((a,b) => (a.date||'zzzz').localeCompare(b.date||'zzzz') || a.name.localeCompare(b.name));
   const byTime = (a,b) => (a.secs<0?a.idx:a.secs) - (b.secs<0?b.idx:b.secs);
-  const aoa = [['Date','Time','Name','Message','Issue(s)','Category','Query type','Intent','Normalized question']];
+  const aoa = [['Date','Time','Name','Message','Issue(s)','Category','Query type','Intent','Normalized question','Tool asked about','Tool on screen']];
   let any = false;
   for (const s of ordered){
     const dl = s.dateLabel || 'No date';
     const rows = s.messages.filter(m => m.text && m.kind !== 'reaction').sort(byTime);
-    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '', '', '', '', '']);
+    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '', '', '', '', '', '', '']);
     for (const m of rows){
       const ids = Object.keys(m.cats).filter(id => !META[id]);
       const issues = ids.map(id => (cb[id]||{}).label || id).join('; ');
       const primId = primaryCat(ids);
       const category = primId ? ((cb[primId]||{}).label || primId) : '';
-      aoa.push([dl, m.time, m.name, m.text, issues, category, m.qtype ? QT[m.qtype].label : '', m.qtype ? qIntent(m.qtype).label : '', m.qcluster || '']);
+      aoa.push([dl, m.time, m.name, m.text, issues, category, m.qtype ? QT[m.qtype].label : '', m.qtype ? qIntent(m.qtype).label : '', m.qcluster || '', m.atool || (m.ntools ? m.ntools.join(', ') : ''), m.tool || (m.tsec != null ? 'General talk' : '')]);
       any = true;
     }
-    aoa.push(['', '', '', '', '', '', '', '', '']);
+    aoa.push(['', '', '', '', '', '', '', '', '', '', '']);
   }
   if (!any){ toast('No messages in these chats'); return; }
   const base = reportBase().replace('report','issues-by-chat');
   loadXlsx().then(() => {
     const ws = XLSX.utils.aoa_to_sheet(capCells(aoa));
-    ws['!cols'] = [16,10,24,74,34,22,30,16,46].map(w => ({ wch:w }));
+    ws['!cols'] = [16,10,24,74,34,22,30,16,46,18,18].map(w => ({ wch:w }));
     ws['!freeze'] = { xSplit:0, ySplit:1 };
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Whole chat');
@@ -2680,7 +3239,7 @@ $('#btnPaste').onclick = () => {
   const t = $('#paste').value; if (!t.trim()) { toast('Paste a chat first'); return; }
   ingestText(t, 'Pasted chat ' + (++pasteN), 'txt'); $('#paste').value = '';
 };
-$('#btnClear').onclick = () => { state.sources = []; state.query = null; state.rows = []; $('#ask').value = ''; renderSources(); refreshOverview(); renderReading(null); renderResults(); };
+$('#btnClear').onclick = () => { state.sources = []; state.transcripts = []; state.query = null; state.rows = []; $('#ask').value = ''; renderSources(); refreshOverview(); renderReading(null); renderResults(); };
 
 $('#dateSel').onchange = (e) => { state.dateFilter = e.target.value; refreshOverview(); rerun(); };
 $('#btnGo').onclick = () => run($('#ask').value);
