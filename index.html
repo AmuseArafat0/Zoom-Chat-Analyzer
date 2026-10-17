@@ -44,7 +44,7 @@ mark{background:var(--mark);color:inherit;padding:0 1px;border-radius:2px}
 [hidden]{display:none!important}
 
 /* top bar */
-.top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(214,227,238,.9);position:sticky;top:0;z-index:5}
+.top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(214,227,238,.9);position:sticky;top:0;z-index:40}
 .brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;letter-spacing:-.01em}
 .brand .glyph{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:800;font-size:15px}
 .top .spacer{flex:1}
@@ -283,11 +283,99 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .trt .trtime{font-variant-numeric:tabular-nums;color:var(--ink-2);font-size:12.5px;max-width:240px}
 .trt .tag{margin:0 4px 4px 0}
 .tdot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:1px}
-.trq{display:block;font-size:12.5px;line-height:1.35;margin-bottom:3px}
-.trq b{color:var(--ink-3);font-weight:800;margin-left:3px}
+.tq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.tqb{display:flex;gap:8px;align-items:baseline;width:100%;text-align:left;border:0;background:transparent;padding:3px 5px;margin:0 -5px;border-radius:6px;font:inherit;font-size:12.5px;line-height:1.35;color:var(--ink)}
+button.tqb{cursor:pointer}
+button.tqb:hover{background:var(--accent-soft)}
+.tqb .tqt{flex:1;min-width:0}
+.tqb b{flex:none;color:var(--ink-3);font-weight:800;font-variant-numeric:tabular-nums}
+.tqb .tag{flex:none;margin:0}
+.trsub td{background:var(--surface-2);padding-top:8px;padding-bottom:10px;cursor:default}
+.tqall{columns:2 340px;column-gap:24px;display:block}
+.tqall li{break-inside:avoid;margin-bottom:2px}
+.trt .qmore{margin-top:4px}
 .muted{color:var(--ink-3)}
 .mline{display:block;color:var(--ink-3);font-size:12px;margin-top:3px;font-style:italic}
 .mline b{font-style:normal;color:var(--ink-2)}
+
+/* friendlier dashboard */
+.tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.trt{min-width:640px}
+.jump{position:sticky;top:var(--toph,58px);z-index:20;display:flex;gap:4px;padding:6px;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid rgba(214,227,238,.9);border-radius:999px;box-shadow:var(--shadow);overflow-x:auto;scrollbar-width:none}
+.jump::-webkit-scrollbar{display:none}
+.jump a{flex:none;padding:6px 13px;border-radius:999px;font-size:13px;font-weight:700;color:var(--ink-2);text-decoration:none;white-space:nowrap}
+.jump a:hover{background:var(--surface-2);color:var(--ink)}
+.jump a.on{background:var(--accent);color:#fff}
+.panel,.ask{scroll-margin-top:calc(var(--toph,58px) + 62px)}
+.phelp{margin:0 0 12px;font-size:13px;color:var(--ink-3);max-width:90ch}
+.rhelp{margin:0;padding:8px 16px 0}
+.gsteps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;counter-reset:g}
+.gsteps li{counter-increment:g;position:relative;display:flex;flex-direction:column;gap:6px;padding:14px 14px 14px 46px;border:1px solid var(--line-2);border-radius:var(--radius-s);background:var(--surface-2);font-size:13px;color:var(--ink-2)}
+.gsteps li::before{content:counter(g);position:absolute;left:14px;top:13px;width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;font-size:12px;display:grid;place-items:center}
+.gsteps b{color:var(--ink);font-size:14px}
+.gsteps em{font-style:normal;font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.gsteps .btn{align-self:flex-start;margin-top:2px}
+.linkbtn{border:0;background:none;padding:0;color:var(--accent-ink);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;gap:3px;text-align:left;border:1px solid var(--line-2);border-top:3px solid var(--accent);border-radius:var(--radius-s);background:var(--surface-2);padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer;min-width:0}
+.tile:hover:not([disabled]){background:#fff;border-color:var(--line)}
+.tile[disabled]{cursor:default}
+.tile.bad{border-top-color:#C24A5A}.tile.opp{border-top-color:#0F766E}
+.tile .tk{font-size:12px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.04em}
+.tile .tv{font-size:24px;font-weight:800;line-height:1.15;font-variant-numeric:tabular-nums}
+.tile .ts{font-size:12px;color:var(--ink-2);line-height:1.35}
+.tmood{display:block;height:6px;border-radius:3px;background:#E8B4B0;overflow:hidden;margin:2px 0}
+.tmood i{display:block;height:100%;background:#2E9E6B}
+.dlwrap{position:relative}
+.dlmenu{position:absolute;right:0;top:calc(100% + 6px);width:340px;max-width:calc(100vw - 24px);background:#fff;border:1px solid var(--line);border-radius:var(--radius-s);box-shadow:0 12px 32px rgba(30,58,95,.18);padding:6px;z-index:60;display:flex;flex-direction:column}
+.dlmenu button{display:flex;flex-direction:column;gap:2px;text-align:left;border:0;background:transparent;padding:9px 10px;border-radius:7px;font:inherit;cursor:pointer;color:var(--ink);white-space:normal}
+.dlmenu button:hover,.dlmenu button:focus-visible{background:var(--surface-2);outline:none}
+.dlmenu b{font-size:13.5px}
+.dlmenu span{font-size:12px;color:var(--ink-3);line-height:1.35}
+/* session health */
+.hchips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;align-items:center}
+.hchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px;font-size:12.5px;font-weight:600;color:var(--ink-3);cursor:pointer}
+.hchip i{width:9px;height:9px;border-radius:50%;opacity:.35}
+.hchip.on{color:var(--ink);border-color:var(--ink-3)}
+.hchip.on i{opacity:1}
+.hcmp{margin:0 0 0 8px;font-size:12.5px}
+.hchart{--lab:150px}
+.hphase{display:flex;height:22px;margin-left:var(--lab);border-radius:6px 6px 0 0;overflow:hidden;gap:1px}
+.hphase span{display:block;height:100%;color:#fff;font-size:11px;font-weight:700;padding:3px 5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-shadow:0 1px 1px rgba(0,0,0,.25)}
+.hlwrap{position:relative;user-select:none}
+.hlane{display:grid;grid-template-columns:var(--lab) minmax(0,1fr);align-items:stretch;border-top:1px solid var(--line-2)}
+.hlab{display:flex;flex-direction:column;justify-content:center;padding:2px 10px 2px 0;font-size:12px;line-height:1.2}
+.hlab span{color:var(--ink-3);font-variant-numeric:tabular-nums}
+.hplot{height:46px;cursor:crosshair}
+.hplot svg{display:block;width:100%;height:100%}
+.hcross{position:absolute;top:0;bottom:0;background:rgba(30,58,95,.35);pointer-events:none}
+.hsel{position:absolute;top:0;bottom:0;background:rgba(78,155,209,.18);border:1px solid var(--accent);pointer-events:none}
+.htip{position:absolute;z-index:5;width:230px;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 8px 24px rgba(30,58,95,.16);padding:8px 10px;font-size:12px;line-height:1.5;pointer-events:none}
+.htip span{display:flex;align-items:center;gap:6px}
+.htip span b{margin-left:auto;font-variant-numeric:tabular-nums}
+.htip i{width:8px;height:8px;border-radius:50%;flex:none}
+.hscale{display:flex;justify-content:space-between;margin-left:var(--lab);font-size:11px;color:var(--ink-3);padding-top:4px;border-top:1px solid var(--line-2);font-variant-numeric:tabular-nums}
+.tllegend i.dash{background:none;border-top:2px dashed #1E3A5F;height:0;width:16px;border-radius:0}
+.tlnote{font-size:12px;color:var(--ink-3);margin:6px 0 0}
+.hh{margin:20px 0 10px;font-size:14px;font-weight:800;color:var(--ink)}
+.fixgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.fix{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line-2);border-left:4px solid #C24A5A;border-radius:var(--radius-s);background:var(--surface-2);padding:10px 12px}
+.fix.opp{border-left-color:#0F766E}.fix.good{border-left-color:#2E9E6B}
+.fixh{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:baseline}
+.fixk{font-weight:800;font-size:13.5px}
+.fix.bad .fixk{color:#A12C3C}.fix.opp .fixk{color:#0F766E}.fix.good .fixk{color:#1F6B47}
+.fixw{font-size:12px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.fixb{margin:0;font-size:13px;line-height:1.4}
+.fixex{margin:0;padding:0;list-style:none;font-size:12.5px;color:var(--ink-2);font-style:italic}
+.fixex li{margin-bottom:2px}
+.fixex span{font-style:normal;color:var(--ink-3);font-size:11.5px}
+.fixa{margin:0;font-size:12.5px;line-height:1.4;color:var(--ink-2)}
+.fix .btn{align-self:flex-start}
+.hscore td{font-variant-numeric:tabular-nums}
+.vflag{display:inline-block;font-size:11px;font-weight:700;padding:1px 7px;border-radius:999px;margin:0 4px 3px 0}
+.vflag.bad{background:#FBE4E6;color:#A12C3C}.vflag.opp{background:#DDF1EE;color:#0F766E}.vflag.good{background:#E3F3EA;color:#1F6B47}
+.mpos{color:#1F6B47;font-weight:700}.mneg{color:#A12C3C;font-weight:700}
+@media (max-width:700px){.top{position:relative}.jump{top:6px}.panel,.ask{scroll-margin-top:64px}.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.hchart{--lab:96px}.hlab{font-size:11px}.tile .tv{font-size:20px}.dlmenu{position:fixed;left:12px;right:12px;top:auto;width:auto}}
 
 /* timeline */
 .tlchart svg{width:100%;height:auto;display:block}
@@ -445,7 +533,7 @@ tbody tr.rv{animation:rise .32s ease both}
 .drop.over{transform:scale(1.015)}
 @media (max-width:700px){.mascot{width:64px;height:64px;margin:-10px -4px -8px 0}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
-@media (max-width:960px){.side,.main{display:contents}.ask{order:2}.results{order:3}.panel.filters{order:4}.panel.overview{order:5}}
+@media (max-width:960px){.side,.main{display:contents}.jump{order:-1}#guide{order:0}#sumPanel{order:1}.ask{order:2}.results{order:3}#matPanel{order:4}#bktPanel{order:5}#qPanel{order:6}#trPanel{order:7}#tlPanel{order:8}.panel.filters{order:9}.panel.overview{order:10}}
 @media (max-width:700px){.top .hint{display:none}.top{padding:10px 14px;flex-wrap:wrap;row-gap:8px}.top .spacer{flex-basis:100%;height:0}.brand{white-space:nowrap}.askrow{flex-direction:column}.askrow .go{padding:10px}}
 </style>
 </head>
@@ -524,8 +612,16 @@ tbody tr.rv{animation:rise .32s ease both}
   <div class="brand"><span class="glyph">?</span> Zoom Chat Analyzer</div>
   <span class="hint" title="Runs in your browser. AI sorting is optional and sends only question text.">Runs in your browser. AI sorting is optional and sends only question text.</span>
   <span class="spacer"></span>
-  <button class="btn primary sm" id="btnReport" title="One Excel file: a summary sheet plus one sheet per topic (refund, LMS, WhatsApp group...) with names and messages">Download full report</button>
-  <button class="btn sm" id="btnOneSheet" title="One sheet: the whole chat (every message), with its date and the auto-detected issue beside any message that has one, grouped under each dated chat">Whole chat + issues</button>
+  <div class="dlwrap">
+    <button class="btn primary sm" id="btnDl" aria-haspopup="true" aria-expanded="false" aria-controls="dlMenu">Downloads ▾</button>
+    <div class="dlmenu" id="dlMenu" role="menu" hidden>
+      <button role="menuitem" id="btnReport"><b>Full report</b><span>Excel. Summary, every topic with names and messages, top questions, queries by tool, buying signals.</span></button>
+      <button role="menuitem" data-dl="questions"><b>Questions</b><span>Excel. Queries by tool, question types, session timeline, buying signals, every question with its tool.</span></button>
+      <button role="menuitem" data-dl="health"><b>Session health</b><span>Excel. What to fix, scorecard per stretch, minute-by-minute numbers.</span></button>
+      <button role="menuitem" id="btnOneSheet"><b>Whole chat + issues</b><span>Excel. Every message with its issue, query type, intent and tool. Good for pivots.</span></button>
+      <button role="menuitem" data-dl="matrix"><b>Issue matrix</b><span>CSV. People per issue per session.</span></button>
+    </div>
+  </div>
   <button class="btn quiet sm" id="btnSample">Load sample chat</button>
   <button class="btn quiet sm" id="btnSettings" title="Edit the topic words used to tag messages">Topic dictionary</button>
   <button class="btn sm aibtn" id="btnAI" title="OpenRouter key and model for sorting questions with AI"><span class="aidot" aria-hidden="true"></span>AI settings</button>
@@ -581,7 +677,30 @@ tbody tr.rv{animation:rise .32s ease both}
   </aside>
 
   <main class="main">
-    <section class="ask">
+    <nav class="jump" id="jump" aria-label="Jump to a section" hidden></nav>
+
+    <section class="panel guide" id="guide">
+      <div class="ph">Get started</div>
+      <div class="pb">
+        <ol class="gsteps">
+          <li><b>Add the saved chat</b><span>Zoom saved chat .txt, or a .csv / .xlsx export. Add one per session.</span><button class="btn primary sm" id="gChat">Choose chat file</button></li>
+          <li><b>Add the transcript</b> <em>optional</em><span>The session’s .vtt captions. Shows which tool was being taught when each question came in.</span><button class="btn sm" id="gTr">Choose transcript</button></li>
+          <li><b>Sort questions with AI</b> <em>optional, free</em><span>Exact question types and the top queries for every tool. Needs an OpenRouter key.</span><button class="btn sm" id="gAI">AI settings</button></li>
+          <li><b>Download</b><span>Everything is in the Downloads menu at the top: full report, questions, session health.</span></li>
+        </ol>
+        <p class="muted" style="margin:10px 0 0;font-size:13px">Just looking around? <button class="linkbtn" id="gSample">Load a sample chat</button></p>
+      </div>
+    </section>
+
+    <section class="panel" id="sumPanel" hidden>
+      <div class="ph"><span>Session summary <span class="sub" id="sumSub"></span></span></div>
+      <div class="pb">
+        <p class="phelp">The session at a glance. Click a tile to jump to the detail behind it.</p>
+        <div class="tiles" id="sumTiles"></div>
+      </div>
+    </section>
+
+    <section class="ask" id="askSec">
       <div class="ah"><h1>Ask the chat</h1><div class="mascot" id="mascot" title="Chibi, your chat assistant"><svg viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"> <!-- speed lines --> <g class="lines" stroke="#5FA8D3" stroke-width="3" stroke-linecap="round" opacity=".6"> <line x1="2" y1="44" x2="26" y2="44"/><line x1="8" y1="58" x2="24" y2="58"/><line x1="0" y1="72" x2="20" y2="72"/> </g> <g class="body"> <!-- hair back --> <path fill="#2E3F5C" d="M31 62 C28 34 44 18 66 18 C88 18 104 34 101 62 C100 70 96 76 92 78 L40 78 C36 76 32 70 31 62 Z"/> <!-- hoodie --> <path d="M44 90 C44 82 52 78 66 78 C80 78 88 82 88 90 L90 118 C90 122 86 124 82 124 L50 124 C46 124 42 122 42 118 Z" fill="#5FA8D3"/> <path d="M56 80 L66 92 L76 80" fill="none" stroke="#3F86BA" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/> <!-- neck --> <rect fill="#FFDCC2" x="60" y="72" width="12" height="12" rx="4"/> <!-- head --> <circle fill="#FFDCC2" cx="66" cy="54" r="29"/> <!-- bangs --> <path fill="#2E3F5C" d="M37 56 C36 30 48 22 66 22 C84 22 96 30 95 56 C90 46 84 42 80 46 C78 38 72 36 68 44 C64 34 56 36 54 46 C50 40 42 44 37 56 Z"/> <path fill="#4A6C99" d="M58 30 C62 26 70 26 74 29 C68 28 63 29 58 30 Z" opacity=".9"/> <!-- ears --> <circle fill="#FFDCC2" cx="37" cy="58" r="5"/><circle fill="#FFDCC2" cx="95" cy="58" r="5"/> <!-- headset --> <path d="M36 52 C38 32 50 24 66 24 C82 24 94 32 96 52" fill="none" stroke="#16202E" stroke-width="3.5" stroke-linecap="round"/> <rect fill="#16202E" x="31" y="50" width="9" height="14" rx="4"/><rect fill="#16202E" x="92" y="50" width="9" height="14" rx="4"/> <path d="M96 62 C98 72 90 78 80 76" fill="none" stroke="#16202E" stroke-width="2.5" stroke-linecap="round"/> <circle fill="#16202E" cx="79" cy="76" r="2.6"/> <!-- blush --> <ellipse cx="48" cy="66" rx="5" ry="2.6" fill="#FF9EA8" opacity=".55"/><ellipse cx="84" cy="66" rx="5" ry="2.6" fill="#FF9EA8" opacity=".55"/> <!-- eyes --> <g class="eyes"> <ellipse fill="#16202E" cx="55" cy="58" rx="5.2" ry="7"/><ellipse fill="#16202E" cx="77" cy="58" rx="5.2" ry="7"/> <ellipse cx="55" cy="58" rx="5.2" ry="7" fill="url(#g)"/><ellipse cx="77" cy="58" rx="5.2" ry="7" fill="url(#g)"/> <circle cx="53" cy="55" r="1.9" fill="#fff"/><circle cx="75" cy="55" r="1.9" fill="#fff"/> <circle cx="57" cy="61" r=".9" fill="#fff" opacity=".8"/><circle cx="79" cy="61" r=".9" fill="#fff" opacity=".8"/> </g> <g class="happyEyes" fill="none" stroke="#16202E" stroke-width="2.6" stroke-linecap="round" opacity="0"> <path d="M49 59 C52 53 58 53 61 59"/><path d="M71 59 C74 53 80 53 83 59"/> </g> <!-- mouth --> <path class="mouth" d="M62 69 C64 72 68 72 70 69" fill="none" stroke="#16202E" stroke-width="2" stroke-linecap="round"/> <path class="smile" d="M60 68 C63 74 69 74 72 68" fill="#16202E" opacity="0"/> <!-- arm + magnifier --> <path d="M86 96 C94 92 100 96 104 100" fill="none" stroke="#FFDCC2" stroke-width="7" stroke-linecap="round"/> <g class="glass"> <line x1="112" y1="112" x2="104" y2="104" stroke="#16202E" stroke-width="4" stroke-linecap="round"/> <circle cx="99" cy="98" r="9" fill="#DDEEF9" fill-opacity=".85" stroke="#16202E" stroke-width="3"/> <path d="M94 95 C95 93 98 92 100 93" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/> </g> <!-- sweat drop --> <path class="sweat" d="M104 40 C104 40 100 46 100 49 A4 4 0 0 0 108 49 C108 46 104 40 104 40 Z" fill="#7CC4F0" stroke="#3B8FC7" stroke-width="1"/> <!-- sparkles --> <g class="spark" fill="#FFD23F"> <path d="M112 22 L114.5 29 L121 31 L114.5 33 L112 40 L109.5 33 L103 31 L109.5 29 Z"/> <path d="M22 18 L23.6 22 L28 23.5 L23.6 25 L22 29 L20.4 25 L16 23.5 L20.4 22 Z"/> </g> </g> <defs> <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2C6F86"/><stop offset="1" stop-color="#16202E" stop-opacity="0"/></linearGradient> </defs> </svg></div></div>
       <div class="askrow">
         <div class="in">
@@ -597,6 +716,7 @@ tbody tr.rv{animation:rise .32s ease both}
     <section class="panel mat" id="matPanel" hidden>
       <div class="ph"><span>Session issue matrix <span class="sub" id="matSub"></span></span><span class="tools"><button class="btn quiet sm" id="matCsv">Download matrix</button></span></div>
       <div class="pb">
+        <p class="phelp">How many people raised each problem, per session. Click a number to see who.</p>
         <div class="matwrap" id="matWrap"></div>
         <p class="matnote">Each number is how many people raised that issue in that session. Darker means more. Click a cell to open those messages.</p>
       </div>
@@ -604,13 +724,14 @@ tbody tr.rv{animation:rise .32s ease both}
 
     <section class="panel bkt" id="bktPanel" hidden>
       <div class="ph"><span>Chat buckets <span class="sub" id="bktSub"></span></span><span class="tools"><span class="sub" id="bktSel"></span><button class="btn quiet sm" id="bktClear" hidden>Clear</button></span></div>
-      <div class="pb"><div class="bgrid" id="bgrid"></div></div>
+      <div class="pb"><p class="phelp">Every message sorted into topics, with real examples. Tick cards to combine them.</p><div class="bgrid" id="bgrid"></div></div>
     </section>
 
     <section class="panel qp" id="qPanel" hidden>
       <div class="ph"><span>Questions, broken down <span class="sub" id="qSub"></span></span>
         <span class="tools"><span class="qmode" id="qMode"></span><button class="btn quiet sm" id="qClr" hidden>Clear</button><button class="btn quiet sm" id="qSet">AI settings</button><button class="btn quiet sm" id="qDl" title="Excel file: question types, top questions with names, buying-signal people, every question">Download questions</button><button class="btn primary sm" id="qRun">Sort with AI</button></span></div>
       <div class="pb">
+        <p class="phelp">Questions that aren’t about a known problem, sorted by what people want. Sort with AI for exact types and merged top questions.</p>
         <div class="qprog" id="qProg" hidden><div class="qbar"><i id="qBar"></i></div><span id="qProgT" aria-live="polite"></span><button class="btn quiet sm" id="qStop">Stop</button></div>
         <p class="qnote" id="qNote"></p>
         <div class="istrip" id="qStrip" aria-hidden="true"></div>
@@ -622,9 +743,10 @@ tbody tr.rv{animation:rise .32s ease both}
     </section>
 
     <section class="panel" id="trPanel" hidden>
-      <div class="ph"><span>Tools taught, and the questions they raised <span class="sub" id="trSub"></span></span>
+      <div class="ph"><span><span id="trTitle">Tools taught, and the questions they raised</span> <span class="sub" id="trSub"></span></span>
         <span class="tools"><div class="seg" id="trView"><button data-v="tool" class="on">By tool</button><button data-v="time">In order</button></div><button class="btn quiet sm" id="trMore" title="Add tool names the app doesn’t know yet">Add tool names</button></span></div>
       <div class="pb">
+        <p class="phelp">What was being taught, and what people asked about each tool. Click a tool or a query to see who asked.</p>
         <div class="tralign" id="trAlign"></div>
         <div class="trextra" id="trExtra" hidden><label for="trExtraIn">One tool per line. To count a caption spelling as a tool, write <b>Real name = spelling, spelling</b>.</label><textarea id="trExtraIn" rows="3" spellcheck="false" placeholder="Kimi&#10;Pollo AI&#10;Higgsfield = hexfield, hicks field"></textarea><div class="row"><button class="btn sm" id="trExtraSave">Save</button><span class="help">Saved in this browser for every session.</span></div></div>
         <div class="trbar" id="trBar" role="group" aria-label="What was being taught over the session"></div>
@@ -634,12 +756,22 @@ tbody tr.rv{animation:rise .32s ease both}
     </section>
 
     <section class="panel tl" id="tlPanel" hidden>
-      <div class="ph"><span>Sentiment timeline <span class="sub" id="tlSub"></span></span></div>
+      <div class="ph"><span>Session health <span class="sub" id="tlSub"></span></span><span class="tools"><button class="btn quiet sm" id="hmDl">Download</button></span></div>
       <div class="pb">
-        <div class="tlchart" id="tlchart"></div>
-        <div class="tllegend"><span><i style="background:#2E9E6B"></i>Positive</span><span><i style="background:#C3D0DE"></i>Neutral</span><span><i style="background:#D6564C"></i>Negative</span><span class="tlnote" id="tlnote">Phases are auto-estimated from the session length.</span></div>
-        <div class="tlphases" id="tlphases"></div>
-        <div class="tlspikes" id="tlspikes"></div>
+        <p class="phelp">Minute by minute: when people got stuck, had tech trouble, went quiet or got excited, and what to change next time.</p>
+        <div class="hchips" id="hmChips"></div>
+        <div class="hchart">
+          <div class="hphase" id="hmPhase"></div>
+          <div class="hlwrap" id="hmWrap"><div class="hlanes" id="hmLanes"></div><div class="hcross" id="hmCross" hidden></div><div class="hsel" id="hmSel" hidden></div><div class="htip" id="hmTip" hidden></div></div>
+          <div class="hscale" id="hmScale"></div>
+        </div>
+        <div class="tllegend" id="hmLegend"></div>
+        <p class="tlnote" id="tlnote"></p>
+        <h3 class="hh">What to fix next time</h3>
+        <div class="fixgrid" id="hmFix"></div>
+        <h3 class="hh">Scorecard by stretch</h3>
+        <p class="phelp" style="margin-top:-4px">Darker cells are the busiest for that measure. Click a row to see its messages.</p>
+        <div class="tscroll"><table class="tbl trt hscore" id="hmScore"></table></div>
       </div>
     </section>
 
@@ -657,6 +789,7 @@ tbody tr.rv{animation:rise .32s ease both}
           <button class="btn sm" id="btnCsv">Download CSV</button>
         </div>
       </div>
+      <p class="phelp rhelp">The people and messages behind whatever you clicked or searched.</p>
       <div id="rBody">
         <div class="blank">
           <h2>Add a chat, then ask a question</h2>
@@ -1199,8 +1332,8 @@ function faqKey(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9\u0900-\
 
 function applyQType(m){
   const ids = Object.keys(m.cats || {}).filter(id => !META[id]);
-  if (ids.length && primaryCat(ids) === 'query') { m.qtype = classifyQuestion(m.text); m.qsrc = 'rule'; }
-  else { delete m.qtype; delete m.qsrc; }
+  if (ids.length && primaryCat(ids) === 'query') { m.qtype = m.qrule = classifyQuestion(m.text); m.qsrc = 'rule'; }
+  else { delete m.qtype; delete m.qsrc; delete m.qrule; }
   delete m.qfaq; delete m.qfaqKey; delete m.qtool; delete m.qcluster; delete m.qclusterKey;
 }
 
@@ -1514,6 +1647,7 @@ function runQueryInner(msgs, q, cdict, trouble){
       if (wantQ && !qHit && q.tools && q.tools.length) qHit = q.tools.some(t => (m.ntools && m.ntools.includes(t)) || (m.qtype && (m.atool === t || m.tool === t)));
       if (wantQ && !qHit && m.qtype && q.qtools && q.qtools.length) qHit = q.qtools.includes(m.atool || '');
       if (wantQ && !qHit && m.qtype && q.wins && q.wins.length && m.tsec != null) qHit = q.wins.some(w => m.tsec >= w[0] && m.tsec < w[1]);
+      if (wantQ && !qHit && q.twin && m.tx != null) qHit = m.tx >= q.twin[0] && m.tx < q.twin[1] && (!q.tmetric || !!(m.hm && m.hm[q.tmetric]));
       if (!catHit.length && !qHit) continue;
     }
     if (kwRes.length){
@@ -1531,7 +1665,7 @@ function runQueryInner(msgs, q, cdict, trouble){
   }
   return out;
 }
-function qSelectors(q){ return !!((q.qtypes && q.qtypes.length) || (q.intents && q.intents.length) || (q.clusters && q.clusters.length) || (q.tools && q.tools.length) || (q.qtools && q.qtools.length) || (q.wins && q.wins.length)); }
+function qSelectors(q){ return !!((q.qtypes && q.qtypes.length) || (q.intents && q.intents.length) || (q.clusters && q.clusters.length) || (q.tools && q.tools.length) || (q.qtools && q.qtools.length) || (q.wins && q.wins.length) || !!q.twin); }
 
 function groupByPerson(rows){
   const map = new Map();
@@ -1695,7 +1829,7 @@ function sameChat(a, b){
   const idx = [0, 1, 2, a.messages.length - 2, a.messages.length - 1];
   return idx.every(i => key(a.messages[i]) === key(b.messages[i]));
 }
-function retag(){ for (const s of state.sources) { Z.tagMessages(s.messages, cdict); applyAiLabels(s.messages); } annotateTools(); }
+function retag(){ for (const s of state.sources) Z.tagMessages(s.messages, cdict); annotateTools(); }
 function markHosts(src){
   src.hosts = Z.detectHosts(src.messages);
   const set = new Set(src.hosts);
@@ -1823,7 +1957,7 @@ function refreshOverview(){
   const ul = $('#buckets'); ul.innerHTML = '';
   const people = new Set(msgs.map(m => m.name.toLowerCase()));
   $('#ovSub').textContent = msgs.length ? `${msgs.length} msgs, ${people.size} people` : '';
-  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; if (!AI.running) $('#qPanel').hidden = true; $('#trPanel').hidden = true; return; }
+  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; if (!AI.running) $('#qPanel').hidden = true; $('#trPanel').hidden = true; renderSummary(msgs); syncJump(); return; }
   const counts = cdict.map(c => {
     const ppl = new Set(); let n = 0;
     for (const m of msgs){ if (m.cats[c.id]) { n++; ppl.add(m.name.toLowerCase()); } }
@@ -1842,6 +1976,7 @@ function refreshOverview(){
   renderQPanel(msgs);
   renderTrPanel(msgs);
   renderTimeline(msgs);
+  renderSummary(msgs);
 }
 
 /* ---------- bucket breakdown (cards with verbatim examples) ---------- */
@@ -1942,69 +2077,286 @@ $('#matCsv').onclick = exportMatrix;
 /* ---------- sentiment timeline ---------- */
 function sentOf(m){ const c = m.cats||{}; if (c.negative || c.refund) return 'neg'; if (c.positive) return 'pos'; return 'neu'; }
 const PHASES = [[0,.12,'Opening & join','#5FA8D3'],[.12,.32,'Warm-up','#7A5AF8'],[.32,.64,'Core teaching','#0E9384'],[.64,.86,'Q&A / peak','#9F5F00'],[.86,1,'Offer & close','#C11574']];
+/* ---------- Session health: minute by minute, what went wrong and what landed ---------- */
+const CONFUSE_RE = /\b(didn.?t|did not|can.?t|cannot|not able to) (understand|get it|follow)\b|\bnot understood\b|\bconfus(ed|ing)\b|\brepeat\b|\bonce again\b|\bslow(ly| down)?\b|\btoo fast\b|\blost\b|\bsamajh nahi|\bsamjh nahi/i;
+const HM = [
+  { id:'msgs',  label:'Chat activity',    color:'#4E9BD1', kind:'base', help:'All messages per minute. The line is people chatting.' },
+  { id:'q',     label:'Questions',        color:'#475569', kind:'info', help:'Questions and queries per minute.', test:(m) => !!(m.cats && (m.cats.query || m.cats.question)) },
+  { id:'stuck', label:'Stuck / confused', color:'#6D28D9', kind:'bad',  help:'How-to questions, "repeat", "too fast", "didn’t understand".', test:(m) => m.qtype === 'how_to' || !!(m.cats && m.cats.pace) || CONFUSE_RE.test(m.text) },
+  { id:'tech',  label:'Tech issues',      color:'#B54708', kind:'bad',  help:'Audio, video, screen, stream quality and joining problems.', test:(m) => !!(m.cats && (m.cats.av || m.cats.stream_quality || m.cats.join)) },
+  { id:'neg',   label:'Negative',         color:'#B42318', kind:'bad',  help:'Complaints, refund asks and frustration.', test:(m) => sentOf(m) === 'neg' || m.qtype === 'frustration' },
+  { id:'pos',   label:'Positive',         color:'#0E7A3F', kind:'good', help:'Thanks, wow, great, loved it.', test:(m) => sentOf(m) === 'pos' },
+  { id:'buy',   label:'Buying signals',   color:'#0F766E', kind:'good', help:'Questions about seats, the program, earning or fit.', test:(m) => !!(m.qtype && (QT[m.qtype] || {}).intent === 'buy') }
+];
+const HM_BY = Object.fromEntries(HM.map(x => [x.id, x]));
+const HS = { hidden:new Set(prefs.hmHidden || []), compare:false, sel:null };
+const SESSION_COLORS = ['#2F6E9E', '#C2410C', '#0E8A6A', '#8A5CC2'];
+
+// one shared time axis: video time when every chat is linked to a transcript, else clock time
+function healthAxis(msgs){
+  const srcs = state.sources.filter(s => s.on);
+  const video = srcs.length > 0 && srcs.every(s => s.tr || !s.messages.some(m => m.secs >= 0));
+  const ref = refSource();
+  return { video, ref, off:video && ref ? ref.tr.offset : 0, toClock:(x) => Z.fmtClock(x + (video && ref ? ref.tr.offset : 0)).slice(0, 5) };
+}
+function computeHealth(msgs){
+  const ax = healthAxis(msgs);
+  const timed = [];
+  for (const m of msgs){
+    delete m.tx;
+    if (!m.text || !m.text.trim()) continue;
+    const x = ax.video ? (m.tsec != null ? m.tsec : null) : (m.secs >= 0 ? m.secs : null);
+    if (x == null) continue;
+    m.tx = x;
+    const hm = {}; for (const h of HM) if (h.test && h.test(m)) hm[h.id] = 1; m.hm = hm;
+    timed.push(m);
+  }
+  if (timed.length < 20) return null;
+  const xs = timed.map(m => m.tx).sort((a, b) => a - b);
+  const lo = Math.floor(xs[Math.floor(xs.length * 0.002)] / 60) * 60, hi = Math.ceil((xs[Math.ceil(xs.length * 0.998) - 1] + 1) / 60) * 60;
+  const mins = Math.max(1, Math.round((hi - lo) / 60));
+  // per-minute counts, per session too
+  const groupOf = (m) => m.srcDateLabel || m.source || '';
+  const groups = [...new Set(timed.map(groupOf))];
+  const blank = () => ({ msgs:0, ppl:new Set(), q:0, stuck:0, tech:0, neg:0, pos:0, buy:0 });
+  const minute = Array.from({ length:mins }, blank);
+  const byGroup = Object.fromEntries(groups.map(g => [g, Array.from({ length:mins }, blank)]));
+  for (const m of timed){
+    const i = Math.floor((m.tx - lo) / 60); if (i < 0 || i >= mins) continue;
+    for (const arr of [minute, byGroup[groupOf(m)]]){
+      const b = arr[i]; b.msgs++; b.ppl.add(m.name.toLowerCase());
+      for (const k in m.hm) b[k]++;
+    }
+  }
+  // stretches: what was being taught (transcript) or estimated phases
+  let stretches;
+  const tl = ax.video && ax.ref ? ax.ref.tr.t.tl : null;
+  if (tl) stretches = tl.segs.filter(sg => sg.e > lo && sg.s < hi).map(sg => ({ s:Math.max(sg.s, lo), e:Math.min(sg.e, hi), label:sg.tool || 'General talk', color:toolColor(sg.tool) }));
+  else stretches = PHASES.map(([a, c, name, col]) => ({ s:lo + a * (hi - lo), e:lo + c * (hi - lo), label:name, color:col, est:true }));
+  return { ax, lo, hi, mins, minute, byGroup, groups, timed, stretches };
+}
+const stretchAt = (H, x) => H.stretches.find(st => x >= st.s && x < st.e) || null;
+const sumRange = (arr, a, b, k) => { let s = 0; for (let i = a; i <= b; i++) s += (k === 'ppl' ? arr[i].ppl.size : arr[i][k]); return s; };
+
+/* moments worth fixing (or keeping), each with the evidence behind it */
+function findMoments(H){
+  const out = [], M = H.minute, n = H.mins;
+  const mean = (k) => M.reduce((a, b) => a + b[k], 0) / n;
+  const label = (a, b) => `${H.ax.toClock(H.lo + a * 60)}–${H.ax.toClock(H.lo + (b + 1) * 60)}`;
+  const during = (a, b) => { const st = stretchAt(H, H.lo + ((a + b + 1) / 2) * 60); return st && !st.est ? st.label : ''; };
+  const spikes = (k, minW) => {
+    const mu = mean(k), W = 3, sums = [];
+    for (let i = 0; i + W <= n; i++) sums.push(sumRange(M, i, i + W - 1, k));
+    const th = Math.max(mu * W * 2.5, minW);
+    const runs = [];
+    for (let i = 0; i < sums.length; i++){
+      if (sums[i] < th) continue;
+      const last = runs[runs.length - 1];
+      if (last && i <= last.b + 1) last.b = i + W - 1; else runs.push({ a:i, b:i + W - 1 });
+    }
+    return runs.map(r => { const tot = sumRange(M, r.a, r.b, k), len = r.b - r.a + 1; return { ...r, tot, x:mu > 0 ? (tot / len) / mu : 0, excess:tot - mu * len }; })
+      .sort((a, b) => b.excess - a.excess);
+  };
+  const ACT = {
+    tech:  { title:'Tech trouble', tone:'bad', fix:'Check audio and screen-share before this point, and keep a ready message to paste (rejoin, switch speaker, refresh).' },
+    stuck: { title:'People got stuck', tone:'bad', fix:'Slow down here: show the step once more and paste the exact prompt or link in the chat.' },
+    neg:   { title:'Negative reactions', tone:'bad', fix:'Look at what was said here. If it’s the pitch, shorten it or move it after the teaching.' },
+    buy:   { title:'Buying moment', tone:'opp', fix:'Have sales ready at this point. These people are worth a call.' },
+    pos:   { title:'This landed well', tone:'good', fix:'Keep this part, and use it as a highlight in promotions.' }
+  };
+  for (const [k, minW, keep] of [['tech', 8, 3], ['stuck', 8, 3], ['neg', 6, 2], ['buy', 8, 1], ['pos', 8, 2]]){
+    // the thank-you burst at the very end isn't a finding
+    spikes(k, minW).filter(r => k !== 'pos' || r.b < n * 0.92).slice(0, keep).forEach(r => out.push({ kind:k, ...ACT[k], a:r.a, b:r.b, when:label(r.a, r.b), during:during(r.a, r.b), n:r.tot,
+      head:`${fmtN(r.tot)} ${HM_BY[k].label.toLowerCase()} messages in ${r.b - r.a + 1} minutes${r.x >= 1.5 ? `, ${r.x.toFixed(1)}× the usual rate` : ''}`, metric:k, score:r.excess * (ACT[k].tone === 'bad' ? 1.2 : 1) }));
+  }
+  // chat went quiet: 5-minute average under 45% of the 10 minutes before
+  const act = M.map(b => b.msgs), avgAll = act.reduce((a, b) => a + b, 0) / n;
+  const quiet = [];
+  for (let i = Math.max(10, Math.floor(n * 0.05)); i + 5 <= Math.floor(n * 0.92); i++){
+    const now = (act[i] + act[i + 1] + act[i + 2] + act[i + 3] + act[i + 4]) / 5;
+    const before = act.slice(i - 10, i).reduce((a, b) => a + b, 0) / 10;
+    if (before >= avgAll * 0.6 && now <= before * 0.45) {
+      const last = quiet[quiet.length - 1];
+      if (last && i <= last.b + 1) { last.b = i + 4; last.drop = Math.max(last.drop, 1 - now / before); } else quiet.push({ a:i, b:i + 4, drop:1 - now / before, before });
+    }
+  }
+  quiet.sort((a, b) => b.drop - a.drop).slice(0, 2).forEach(r => out.push({ kind:'quiet', title:'Chat went quiet', tone:'bad', a:r.a, b:r.b, when:label(r.a, r.b), during:during(r.a, r.b), n:sumRange(M, r.a, r.b, 'msgs'),
+    head:`Chat dropped ${Math.round(r.drop * 100)}% compared with the 10 minutes before`, fix:'Add an interaction here: a poll, a quick question to answer in chat, or a live example from the audience.', metric:'', score:r.drop * 60 }));
+  // too fast: a taught tool that drew far more questions per minute than the session average
+  if (!H.stretches[0] || !H.stretches[0].est) {
+    const qAvg = mean('q');
+    const byTool = new Map();
+    for (const st of H.stretches){
+      if (!st.label || st.label === 'General talk' || st.label === Z.PITCH) continue;
+      const a = Math.max(0, Math.floor((st.s - H.lo) / 60)), b = Math.min(n - 1, Math.ceil((st.e - H.lo) / 60) - 1);
+      if (b < a) continue;
+      const e = byTool.get(st.label) || { q:0, stuck:0, mins:0, a, b }; e.q += sumRange(M, a, b, 'q'); e.stuck += sumRange(M, a, b, 'stuck'); e.mins += b - a + 1; byTool.set(st.label, e);
+    }
+    [...byTool.entries()].map(([tool, e]) => ({ tool, ...e, rate:e.q / e.mins })).filter(e => e.q >= 15 && qAvg > 0 && e.rate >= qAvg * 1.6)
+      .sort((a, b) => b.rate - a.rate).slice(0, 2).forEach(e => out.push({ kind:'fast', title:'Too fast for the room', tone:'bad', a:e.a, b:e.b, when:label(e.a, e.b), during:e.tool, n:e.q,
+        head:`${e.tool} drew ${fmtN(e.q)} questions in ${e.mins} minutes on screen, ${(e.rate / qAvg).toFixed(1)}× the session rate${e.stuck ? ` (${fmtN(e.stuck)} stuck or confused)` : ''}`,
+        fix:`Give ${e.tool} more time, or share a short step-by-step for it before the demo.`, metric:'q', tool:e.tool, score:e.q / 2 }));
+  }
+  // examples for each card
+  for (const c of out){
+    const a = H.lo + c.a * 60, b = H.lo + (c.b + 1) * 60;
+    let ex = H.timed.filter(m => m.tx >= a && m.tx < b && (!c.metric || m.hm[c.metric]) && m.text.trim().length > 8);
+    if (c.kind === 'fast') ex = ex.filter(m => m.atool === c.tool || m.tool === c.tool);
+    const seen = new Set(); c.ex = [];
+    for (const m of ex.sort((p, q) => Math.abs(p.text.length - 60) - Math.abs(q.text.length - 60))){ const k = Z.qKey(m.text); if (seen.has(k)) continue; seen.add(k); c.ex.push(m); if (c.ex.length >= 2) break; }
+    c.win = [a, b];
+  }
+  // up to 7 problems, then the best buying moment and the best-received stretch
+  const pick = (tone, k) => out.filter(c => c.tone === tone).sort((a, b) => b.score - a.score).slice(0, k);
+  return [...pick('bad', 7), ...pick('opp', 1), ...pick('good', 1)];
+}
+function scorecard(H){
+  const M = H.minute, n = H.mins;
+  const tot = (k) => M.reduce((a, b) => a + b[k], 0);
+  const avg = { msgs:tot('msgs') / n, q:tot('q') / n, stuck:tot('stuck') / n, tech:tot('tech') / n, neg:tot('neg') / n, pos:tot('pos') / n, buy:tot('buy') / n };
+  const rows = H.stretches.map(st => {
+    const a = Math.max(0, Math.floor((st.s - H.lo) / 60)), b = Math.min(n - 1, Math.ceil((st.e - H.lo) / 60) - 1);
+    if (b < a) return null;
+    const len = b - a + 1, r = { st, a, b, len, ppl:new Set() };
+    for (const k of ['msgs', 'q', 'stuck', 'tech', 'neg', 'pos', 'buy']) r[k] = sumRange(M, a, b, k);
+    for (let i = a; i <= b; i++) M[i].ppl.forEach(p => r.ppl.add(p));
+    const rate = (k) => r[k] / len;
+    const flags = [];
+    if (r.stuck >= 5 && rate('stuck') >= avg.stuck * 1.6) flags.push(['Confusing', 'bad']);
+    if (r.tech >= 5 && rate('tech') >= avg.tech * 1.6) flags.push(['Tech trouble', 'bad']);
+    if (r.neg >= 4 && rate('neg') >= avg.neg * 1.6) flags.push(['Negative', 'bad']);
+    if (len >= 4 && rate('msgs') <= avg.msgs * 0.5) flags.push(['Quiet', 'bad']);
+    if (r.buy >= 5 && rate('buy') >= avg.buy * 1.6) flags.push(['Buying moment', 'opp']);
+    if (r.pos >= 5 && rate('pos') >= avg.pos * 1.6) flags.push(['Landed well', 'good']);
+    r.flags = flags;
+    return r;
+  }).filter(Boolean);
+  return { rows, avg };
+}
+
 function renderTimeline(msgs){
   const panel = $('#tlPanel');
-  const withT = msgs.filter(m => m.secs >= 0);
-  const useTime = withT.length >= Math.max(6, msgs.length * 0.5);
-  const seq = (useTime ? withT : msgs).filter(m => m.text.trim().length > 0);
-  if (seq.length < 6){ panel.hidden = true; return; }
-  panel.hidden = false;
-  const xOf = (m) => useTime ? m.secs : m.idx;
-  let lo = Math.min(...seq.map(xOf)), hi = Math.max(...seq.map(xOf));
-  if (hi <= lo) hi = lo + 1;
-  const span = hi - lo;
-  const N = Math.min(24, Math.max(8, Math.round(useTime ? span/120 : seq.length/12)));
-  const bins = Array.from({length:N}, (_,i) => ({ pos:0, neu:0, neg:0, msgs:[], i }));
-  for (const m of seq){ const b = bins[Math.min(N-1, Math.floor((xOf(m)-lo)/span*N))]; b[sentOf(m)]++; b.msgs.push(m); }
+  const H = computeHealth(msgs);
+  if (!H) { panel.hidden = true; HS.last = null; return; }
+  panel.hidden = false; HS.last = H;
+  const T = (k) => H.minute.reduce((a, b) => a + b[k], 0);
+  const peak = H.minute.reduce((best, b, i) => b.msgs > H.minute[best].msgs ? i : best, 0);
+  $('#tlSub').textContent = `${fmtN(H.timed.length)} msgs over ${Z.fmtDur(H.mins * 60)} · busiest minute ${H.ax.toClock(H.lo + peak * 60)}`;
+  $('#tlnote').textContent = H.ax.video ? 'Time is the video clock, so sessions that replay the same video line up.' : H.stretches[0] && H.stretches[0].est ? 'Phases are estimated from the session length. Add the transcript for the real ones.' : '';
 
-  const totP = seq.filter(m => sentOf(m)==='pos').length, totNg = seq.filter(m => sentOf(m)==='neg').length;
-  $('#tlSub').textContent = `${seq.length} msgs · ${totP} positive · ${totNg} negative`;
-  const dset = new Set(seq.map(m => m.srcDate).filter(Boolean));
-  const note = $('#tlnote'); if (note) note.textContent = dset.size > 1 ? `${dset.size} dates combined on one axis — pick a Session date for a clean timeline.` : 'Phases are auto-estimated from the session length.';
+  // lane switches + compare
+  const canCompare = H.groups.length > 1;
+  if (!canCompare) HS.compare = false;
+  $('#hmChips').innerHTML = HM.map(h => `<button class="hchip ${HS.hidden.has(h.id) ? '' : 'on'}" data-hm="${h.id}" title="${escH(h.help)}"><i style="background:${h.color}"></i>${escH(h.label)}</button>`).join('')
+    + (canCompare ? `<label class="check hcmp"><input type="checkbox" id="hmCmp" ${HS.compare ? 'checked' : ''}> Compare sessions</label>` : '');
+  $('#hmChips').querySelectorAll('[data-hm]').forEach(b => b.onclick = () => { const k = b.dataset.hm; HS.hidden.has(k) ? HS.hidden.delete(k) : HS.hidden.add(k); prefs.hmHidden = [...HS.hidden]; savePrefs(); renderTimeline(pool()); });
+  const cmp = $('#hmCmp'); if (cmp) cmp.onchange = () => { HS.compare = cmp.checked; renderTimeline(pool()); };
 
-  // geometry
-  const W=1000, H=210, padX=26, padT=24, padB=20, iw=W-2*padX, top=padT, bot=H-padB, ph=bot-top;
-  const slot=iw/N, bw=slot*0.8, maxT=Math.max(1,...bins.map(b=>b.pos+b.neu+b.neg)), sc=ph/maxT;
-  const xpix=(p)=>padX+p*iw, bx=(i)=>padX+i*slot+(slot-bw)/2;
-  let svg=`<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="Sentiment over the session">`;
-  // phase bands + labels
-  PHASES.forEach((ph2,k)=>{ const x0=xpix(ph2[0]), w=(ph2[1]-ph2[0])*iw; svg+=`<rect x="${x0.toFixed(1)}" y="${top}" width="${w.toFixed(1)}" height="${ph}" fill="${ph2[3]}" opacity="${k%2?0.05:0.09}"/><text x="${(x0+w/2).toFixed(1)}" y="14" text-anchor="middle" font-size="11" font-weight="700" fill="#5B6A82">${ph2[2]}</text>`; });
-  svg+=`<line x1="${padX}" y1="${bot}" x2="${W-padX}" y2="${bot}" stroke="#D6E3EE" stroke-width="1"/>`;
-  // stacked bars: neg (bottom), neu, pos
-  bins.forEach(b=>{ const x=bx(b.i); let y=bot;
-    const seg=(v,col)=>{ if(v<=0) return; const h=v*sc; y-=h; svg+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" fill="${col}" rx="1.5"/>`; };
-    seg(b.neg,'#D6564C'); seg(b.neu,'#C3D0DE'); seg(b.pos,'#2E9E6B');
-  });
-  // spike markers
-  const negs=bins.map(b=>b.neg), poss=bins.map(b=>b.pos), avg=a=>a.reduce((x,y)=>x+y,0)/a.length;
-  const find=(arr,base)=>{ const th=Math.max(2,Math.ceil(base*1.8)),o=[]; for(let i=0;i<arr.length;i++){ if(arr[i]>=th && arr[i]>=(arr[i-1]||0) && arr[i]>=(arr[i+1]||0)) o.push(i); } return o; };
-  const negSp=find(negs,avg(negs)), posSp=find(poss,avg(poss));
-  const mark=(i,col)=>{ const cx=bx(i)+bw/2, tot=bins[i].pos+bins[i].neu+bins[i].neg, y=bot-tot*sc-5; svg+=`<path d="M${(cx-4).toFixed(1)} ${(y-6).toFixed(1)} L${(cx+4).toFixed(1)} ${(y-6).toFixed(1)} L${cx.toFixed(1)} ${y.toFixed(1)} Z" fill="${col}"/>`; };
-  negSp.forEach(i=>mark(i,'#B23B32')); posSp.forEach(i=>mark(i,'#1F7A50'));
-  // x labels (~5)
-  const midLabel=(i)=>{ const mid=lo+(i+0.5)/N*span; return useTime?fmtSecs(mid):('#'+Math.round(mid)); };
-  [0,Math.floor(N/4),Math.floor(N/2),Math.floor(3*N/4),N-1].filter((v,i,a)=>a.indexOf(v)===i).forEach(i=>{ svg+=`<text x="${(bx(i)+bw/2).toFixed(1)}" y="${H-6}" text-anchor="middle" font-size="10" fill="#93A0B4">${midLabel(i)}</text>`; });
-  svg+=`</svg>`;
-  $('#tlchart').innerHTML = svg;
+  // phase strip
+  const span = H.hi - H.lo;
+  $('#hmPhase').innerHTML = H.stretches.map((st, i) => { const w = 100 * (st.e - st.s) / span; return `<span style="width:${w.toFixed(3)}%;background:${st.color}${st.color === '#D3DCE6' ? ';color:var(--ink-2);text-shadow:none' : ''}" title="${escH(st.label)} · ${H.ax.toClock(st.s)}–${H.ax.toClock(st.e)}">${w > 5 ? escH(st.label) : ''}</span>`; }).join('');
 
-  // phase aggregates
-  $('#tlphases').innerHTML = PHASES.map(([a,c,name,col])=>{ const x0=lo+a*span, x1=lo+c*span; let p=0,nu=0,ng=0;
-    for(const m of seq){ const x=xOf(m); if(x>=x0 && (x<x1 || (c===1 && x<=x1))){ const s=sentOf(m); if(s==='pos')p++; else if(s==='neg')ng++; else nu++; } }
-    return `<div class="tlphase" style="--pc:${col}"><b>${escH(name)}</b><div class="pc"><i style="color:#1F7A50">${p}+</i><i style="color:#7C8AA0">${nu}</i><i style="color:#B23B32">${ng}−</i></div></div>`;
-  }).join('');
-
-  // spikes explained
-  const explain=(i,kind)=>{ const b=bins[i], cnt={};
-    for(const m of b.msgs) for(const id in m.cats){ if(META[id]) continue; cnt[id]=(cnt[id]||0)+1; }
-    const top=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,2).map(([id])=>(catById()[id]||{}).label||id);
-    const ex=b.msgs.filter(m=>sentOf(m)===kind && m.text.trim().length>3).sort((a,b)=>a.text.length-b.text.length)[0];
-    return { i, kind, n:kind==='neg'?b.neg:b.pos, at:midLabel(i), top, ex };
+  // lanes
+  const W = 1000, LH = 46, lanes = HM.filter(h => !HS.hidden.has(h.id));
+  const xOf = (i) => (i + 0.5) / H.mins * W;
+  const bands = H.stretches.map((st, i) => `<rect x="${((st.s - H.lo) / span * W).toFixed(1)}" y="0" width="${((st.e - st.s) / span * W).toFixed(1)}" height="${LH}" fill="${st.color}" opacity="${i % 2 ? 0.05 : 0.09}"/>`).join('');
+  const series = (arr, k) => arr.map(b => k === 'ppl' ? b.ppl.size : b[k]);
+  const pathOf = (vals, max, area) => {
+    const pts = vals.map((v, i) => `${xOf(i).toFixed(1)},${(LH - 3 - (v / max) * (LH - 8)).toFixed(1)}`);
+    return area ? `M${xOf(0).toFixed(1)},${LH} L${pts.join(' L')} L${xOf(vals.length - 1).toFixed(1)},${LH} Z` : `M${pts.join(' L')}`;
   };
-  let sp=[...negSp.map(i=>explain(i,'neg')), ...posSp.map(i=>explain(i,'pos'))].sort((a,b)=>b.n-a.n).slice(0,5).sort((a,b)=>a.i-b.i);
-  const box=$('#tlspikes');
-  if(!sp.length){ box.innerHTML=`<h4>Spikes</h4><div class="spike"><span class="sb">No sharp spikes. Sentiment stayed fairly even across the session.</span></div>`; return; }
-  box.innerHTML=`<h4>Spikes explained</h4>`+sp.map(s=>`<div class="spike"><span class="sk ${s.kind}">${s.kind==='neg'?'Negative':'Positive'} · ${escH(s.at)}</span><span class="sb"><b>${s.n} ${s.kind==='neg'?'negative':'positive'} msgs</b>${s.top.length?`, mostly ${escH(s.top.join(' + '))}`:''}.${s.ex?`<q>${escH(clip(s.ex.text,150))} — ${escH(s.ex.name)}</q>`:''}</span></div>`).join('');
+  $('#hmLanes').innerHTML = lanes.map(h => {
+    let svg = `<svg viewBox="0 0 ${W} ${LH}" preserveAspectRatio="none" aria-hidden="true">${bands}`;
+    if (HS.compare) {
+      const all = H.groups.map(g => series(H.byGroup[g], h.id)), max = Math.max(1, ...all.flat());
+      all.forEach((vals, gi) => { svg += `<path d="${pathOf(vals, max, false)}" fill="none" stroke="${SESSION_COLORS[gi % 4]}" stroke-width="1.6" vector-effect="non-scaling-stroke"/>`; });
+    } else {
+      const vals = series(H.minute, h.id), max = Math.max(1, ...vals);
+      svg += `<path d="${pathOf(vals, max, true)}" fill="${h.color}" opacity=".22"/><path d="${pathOf(vals, max, false)}" fill="none" stroke="${h.color}" stroke-width="1.5" vector-effect="non-scaling-stroke"/>`;
+      if (h.id === 'msgs') { const pv = series(H.minute, 'ppl'); svg += `<path d="${pathOf(pv, max, false)}" fill="none" stroke="#1E3A5F" stroke-width="1" stroke-dasharray="3 3" vector-effect="non-scaling-stroke" opacity=".6"/>`; }
+    }
+    svg += `</svg>`;
+    return `<div class="hlane" data-hm="${h.id}"><div class="hlab"><b style="color:${h.color}">${escH(h.label)}</b><span>${fmtN(T(h.id))}</span></div><div class="hplot">${svg}</div></div>`;
+  }).join('');
+  $('#hmLegend').innerHTML = HS.compare ? H.groups.map((g, gi) => `<span><i style="background:${SESSION_COLORS[gi % 4]}"></i>${escH(g || 'Session ' + (gi + 1))}</span>`).join('')
+    : `<span><i class="dash"></i>People chatting (on Chat activity)</span><span class="muted">Hover for the numbers. Click or drag across the chart to see those messages.</span>`;
+  const ticks = 6;
+  $('#hmScale').innerHTML = Array.from({ length:ticks + 1 }, (_, i) => `<span>${H.ax.toClock(H.lo + span * i / ticks)}</span>`).join('');
+
+  // hover + click/drag selection
+  const box = $('#hmWrap'), tip = $('#hmTip'), cross = $('#hmCross'), selEl = $('#hmSel');
+  const binAt = (ev) => { const r = box.querySelector('.hplot').getBoundingClientRect(); const f = (ev.clientX - r.left) / r.width; return { i:Math.max(0, Math.min(H.mins - 1, Math.floor(f * H.mins))), r }; };
+  const place = (el, i0, i1, r) => { const pr = box.getBoundingClientRect(); el.style.left = (r.left - pr.left + r.width * i0 / H.mins) + 'px'; el.style.width = Math.max(2, r.width * (i1 - i0 + 1) / H.mins) + 'px'; };
+  let drag = null;
+  box.onmousemove = (ev) => {
+    if (!box.querySelector('.hplot')) return;
+    const { i, r } = binAt(ev); const b = H.minute[i]; const st = stretchAt(H, H.lo + i * 60 + 30);
+    cross.hidden = false; place(cross, i, i, r); cross.style.width = '2px';
+    if (drag) { selEl.hidden = false; place(selEl, Math.min(drag, i), Math.max(drag, i), r); }
+    tip.hidden = false;
+    tip.innerHTML = `<b>${H.ax.toClock(H.lo + i * 60)}</b>${st ? ` · ${escH(st.label)}` : ''}<br>${HM.map(h => `<span><i style="background:${h.color}"></i>${escH(h.label)} <b>${h.id === 'msgs' ? `${b.msgs} (${b.ppl.size} people)` : b[h.id]}</b></span>`).join('')}`;
+    const pr = box.getBoundingClientRect(); let lx = ev.clientX - pr.left + 14; if (lx + 230 > pr.width) lx = ev.clientX - pr.left - 244; tip.style.left = lx + 'px'; tip.style.top = Math.max(0, ev.clientY - pr.top - 20) + 'px';
+  };
+  box.onmouseleave = () => { cross.hidden = true; tip.hidden = true; };
+  box.onmousedown = (ev) => { if (!ev.target.closest('.hplot')) return; drag = binAt(ev).i; ev.preventDefault(); };
+  box.onmouseup = (ev) => {
+    if (drag == null) return;
+    const { i } = binAt(ev), a = Math.min(drag, i), b = Math.max(drag, i); drag = null; selEl.hidden = true;
+    const lane = ev.target.closest('.hlane'); const metric = lane && lane.dataset.hm !== 'msgs' && a === b ? lane.dataset.hm : '';
+    onlyQ({ twin:[H.lo + a * 60, H.lo + (b + 1) * 60], tmetric:metric });
+  };
+
+  // what to fix
+  const moments = findMoments(H); HS.moments = moments;
+  $('#hmFix').innerHTML = moments.length ? moments.map((c, i) => `<article class="fix ${c.tone}">
+      <div class="fixh"><span class="fixk">${escH(c.title)}</span><span class="fixw">${escH(c.when)}${c.during ? ` · ${escH(c.during)}` : ''}</span></div>
+      <p class="fixb">${escH(c.head)}.</p>
+      ${c.ex.length ? `<ul class="fixex">${c.ex.map(m => `<li>“${escH(clip(m.text, 120))}” <span>${escH(m.name)}</span></li>`).join('')}</ul>` : ''}
+      <p class="fixa"><b>${c.tone === 'good' ? 'Keep:' : c.tone === 'opp' ? 'Do:' : 'Try:'}</b> ${escH(c.fix)}</p>
+      <button class="btn quiet sm" data-fix="${i}">See these messages →</button>
+    </article>`).join('') : '<p class="muted">No sharp problems found. The session ran evenly.</p>';
+  $('#hmFix').querySelectorAll('[data-fix]').forEach(b => b.onclick = () => { const c = moments[+b.dataset.fix]; onlyQ(c.kind === 'fast' ? { qtools:[c.tool] } : { twin:c.win, tmetric:c.metric }); });
+
+  // scorecard
+  const sc = scorecard(H); HS.score = sc;
+  const maxOf = (k) => Math.max(1e-9, ...sc.rows.map(r => r[k] / r.len));
+  const heat = (r, k, col) => { const v = r[k] / r.len, f = v / maxOf(k); return `<td class="num" style="background:${tint(col, Math.min(.5, f * .45))}">${v >= 10 ? Math.round(v) : v.toFixed(1)}</td>`; };
+  $('#hmScore').innerHTML = `<thead><tr><th>${H.stretches[0] && H.stretches[0].est ? 'Phase' : 'Being taught'}</th><th>Time</th><th class="num">Min</th><th class="num" title="Messages per minute">Chat /min</th><th class="num" title="Questions per minute">Questions /min</th><th class="num" title="Stuck or confused per minute">Stuck /min</th><th class="num" title="Tech issues per minute">Tech /min</th><th class="num" title="Positive and negative messages">Mood</th><th class="num" title="Buying signals">Buying</th><th>Verdict</th></tr></thead><tbody>${
+    sc.rows.map((r, i) => `<tr data-row="${i}" tabindex="0" title="See the messages from this stretch">
+      <td><span class="tdot" style="background:${r.st.color}"></span><b>${escH(r.st.label)}</b></td>
+      <td class="trtime">${H.ax.toClock(H.lo + r.a * 60)}–${H.ax.toClock(H.lo + (r.b + 1) * 60)}</td>
+      <td class="num">${r.len}</td>${heat(r, 'msgs', '#4E9BD1')}${heat(r, 'q', '#475569')}${heat(r, 'stuck', '#6D28D9')}${heat(r, 'tech', '#B54708')}
+      <td class="num"><span class="mpos">${r.pos}+</span> <span class="mneg">${r.neg}−</span></td><td class="num">${r.buy}</td>
+      <td>${r.flags.length ? r.flags.map(([f, t]) => `<span class="vflag ${t}">${escH(f)}</span>`).join('') : '<span class="muted">OK</span>'}</td></tr>`).join('')}</tbody>`;
+  $('#hmScore').querySelectorAll('tr[data-row]').forEach(tr => { const r = sc.rows[+tr.dataset.row]; const go = () => onlyQ({ twin:[H.lo + r.a * 60, H.lo + (r.b + 1) * 60] }); tr.onclick = go; tr.onkeydown = (e) => { if (e.key === 'Enter') go(); }; });
 }
+
+function healthSheets(){
+  const H = HS.last; if (!H) return null;
+  const moments = findMoments(H), sc = scorecard(H);
+  const fix = [['What', 'When', 'Being taught', 'Evidence', 'Suggestion', 'Example messages'],
+    ...moments.map(c => [c.title, c.when, c.during || '', c.head, c.fix, c.ex.map(m => `${m.name}: ${m.text}`).join('\n')])];
+  const score = [[H.stretches[0] && H.stretches[0].est ? 'Phase' : 'Being taught', 'Time', 'Minutes', 'Messages', 'People', 'Questions', 'Stuck / confused', 'Tech issues', 'Positive', 'Negative', 'Buying signals', 'Chat per min', 'Questions per min', 'Verdict'],
+    ...sc.rows.map(r => [r.st.label, `${H.ax.toClock(H.lo + r.a * 60)}–${H.ax.toClock(H.lo + (r.b + 1) * 60)}`, r.len, r.msgs, r.ppl.size, r.q, r.stuck, r.tech, r.pos, r.neg, r.buy, +(r.msgs / r.len).toFixed(1), +(r.q / r.len).toFixed(2), r.flags.map(f => f[0]).join(', ') || 'OK'])];
+  const head = ['Minute', 'Being taught', 'Messages', 'People', 'Questions', 'Stuck / confused', 'Tech issues', 'Positive', 'Negative', 'Buying signals'];
+  const per = H.groups.length > 1 ? H.groups.map(g => `Messages: ${g || 'session'}`) : [];
+  const minute = [[...head, ...per], ...H.minute.map((b, i) => { const st = stretchAt(H, H.lo + i * 60 + 30); return [H.ax.toClock(H.lo + i * 60), st ? st.label : '', b.msgs, b.ppl.size, b.q, b.stuck, b.tech, b.pos, b.neg, b.buy, ...H.groups.map(g => H.groups.length > 1 ? H.byGroup[g][i].msgs : null).filter(v => v !== null)]; })];
+  return { fix, score, minute };
+}
+function downloadHealth(){
+  const hs = healthSheets(); if (!hs) { toast('Add a chat with times first'); return; }
+  const base = reportBase().replace('report', 'session-health');
+  loadXlsx().then(() => {
+    const wb = XLSX.utils.book_new();
+    const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(capCells(aoa)); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name); };
+    add('What to fix', hs.fix, [22, 14, 20, 60, 70, 80]);
+    add('Scorecard', hs.score, [24, 14, 9, 10, 9, 10, 14, 11, 9, 9, 13, 12, 14, 30]);
+    add('Minute by minute', hs.minute, [9, 22, 10, 9, 10, 14, 11, 9, 9, 13, 16, 16]);
+    XLSX.writeFile(wb, base + '.xlsx'); toast('Session health file ready');
+  }).catch(() => { download(base + '.csv', '\uFEFF' + hs.minute.map(r => r.map(csvCell).join(',')).join('\n'), 'text/csv;charset=utf-8'); toast('Excel library unavailable, downloaded minute-by-minute CSV'); });
+}
+$('#hmDl').onclick = downloadHealth;
+
 
 /* ---------- ask ---------- */
 function renderReading(q){
@@ -2018,6 +2370,7 @@ function renderReading(q){
   for (const k of (q.clusters||[])) bits.push(`<span class="chip rm" data-qk="clusters" data-qv="${escH(k)}" title="People who asked this (merged by AI)">≈ ${escH(AI.cl[k] || k)}<span class="x">×</span></span>`);
   for (const k of (q.tools||[])) bits.push(`<span class="chip rm" data-qk="tools" data-qv="${escH(k)}" title="Messages naming this tool, and questions asked about it"><span class="dot" style="background:${toolColor(k)}"></span>${escH(k)}<span class="x">×</span></span>`);
   for (const k of (q.qtools||[])) bits.push(`<span class="chip rm" data-qk="qtools" data-qv="${escH(k)}" title="Questions about this tool"><span class="dot" style="background:${toolColor(k)}"></span>Questions on ${escH(k || 'no tool')}<span class="x">×</span></span>`);
+  if (q.twin) { const H = HS.last; const lab = H ? `${H.ax.toClock(q.twin[0])}–${H.ax.toClock(q.twin[1])}` : 'selected time'; bits.push(`<span class="chip rm" data-qtwin="1" title="Messages from this stretch of the session">${q.tmetric ? escH(HM_BY[q.tmetric].label) + ', ' : ''}${escH(lab)}<span class="x">×</span></span>`); }
   (q.wins||[]).forEach((w, i) => { const r = refSource(); bits.push(`<span class="chip rm" data-qwin="${i}" title="Questions asked in this stretch of the session">Asked ${escH(Z.fmtClock(w[0] + (r ? r.tr.offset : 0)).slice(0,5))}–${escH(Z.fmtClock(w[1] + (r ? r.tr.offset : 0)).slice(0,5))}<span class="x">×</span></span>`); });
   for (const k of q.keywords) bits.push(`<span class="chip kw" title="Messages containing this text">“${escH(k)}”</span>`);
   if (q.filters.sender) bits.push(`<span class="chip flt">from ${escH(q.filters.sender)}</span>`);
@@ -2029,11 +2382,16 @@ function renderReading(q){
   if (q.all && !q.cats.length && !q.keywords.length) bits.push(`<span class="chip">every message</span>`);
   let lead = 'Looking for';
   if (q.cats.length && q.keywords.length) lead = 'Looking for these topics, and only messages containing';
-  else if (q.cats.length + (q.qtypes||[]).length + (q.intents||[]).length + (q.clusters||[]).length + (q.tools||[]).length + (q.qtools||[]).length + (q.wins||[]).length > 1) lead = 'Looking for any of';
+  else if (q.cats.length + (q.qtypes||[]).length + (q.intents||[]).length + (q.clusters||[]).length + (q.tools||[]).length + (q.qtools||[]).length + (q.wins||[]).length + (q.twin ? 1 : 0) > 1) lead = 'Looking for any of';
   const note = q.troubleFallback ? `<span class="lead" style="margin-left:6px">no message describes a problem, so showing every mention</span>` : '';
   el.innerHTML = bits.length ? `<span class="lead">${lead}</span>${bits.join('')}${note}` : '<span class="lead">Type a topic, a name, or put exact text in quotes.</span>';
   el.querySelectorAll('[data-cat]').forEach(ch => ch.onclick = () => toggleCat(ch.dataset.cat));
   el.querySelectorAll('[data-qk]').forEach(ch => ch.onclick = () => toggleQ(ch.dataset.qk, ch.dataset.qv));
+  el.querySelectorAll('[data-qtwin]').forEach(ch => ch.onclick = () => {
+    const q2 = { ...state.query }; delete q2.twin; delete q2.tmetric; q2.raw = buildRaw(q2);
+    if (!q2.cats.length && !Z.qSelectors(q2) && !(q2.keywords||[]).length && !q2.all) { clearCats(); return; }
+    execQuery(q2);
+  });
   el.querySelectorAll('[data-qwin]').forEach(ch => ch.onclick = () => {
     const q2 = { ...state.query, wins:(state.query.wins || []).filter((_, i) => i !== +ch.dataset.qwin) };
     q2.raw = buildRaw(q2);
@@ -2065,7 +2423,7 @@ function run(text, forceCats){
 /* ---------- multi-select across buckets (union of topics) ---------- */
 function selectedCats(){ return new Set(state.query ? state.query.cats : []); }
 function catLabel(id){ return (catById()[id] || {}).label || id; }
-function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.qtypes||[]).map(id => (Z.QTYPE_BY_ID[id]||{}).label || id), ...(q.intents||[]).map(id => ((Z.QINTENT_BY_ID[id]||{}).label || id) + ' questions'), ...(q.clusters||[]).map(k => '≈ ' + (AI.cl[k] || k)), ...(q.tools||[]), ...(q.qtools||[]).map(k => 'questions on ' + (k || 'no tool')), ...(q.wins||[]).map(w => 'asked at ' + Z.fmtClock(w[0]).slice(0,5)), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
+function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.qtypes||[]).map(id => (Z.QTYPE_BY_ID[id]||{}).label || id), ...(q.intents||[]).map(id => ((Z.QINTENT_BY_ID[id]||{}).label || id) + ' questions'), ...(q.clusters||[]).map(k => '≈ ' + (AI.cl[k] || k)), ...(q.tools||[]), ...(q.qtools||[]).map(k => 'questions on ' + (k || 'no tool')), ...(q.wins||[]).map(w => 'asked at ' + Z.fmtClock(w[0]).slice(0,5)), ...(q.twin ? [(q.tmetric ? HM_BY[q.tmetric].label + ' ' : '') + 'messages in selected time'] : []), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
 function execQuery(q){
   state.query = q; state.limit = PAGE;
   if (q.view) { state.view = q.view; syncViewSeg(); }
@@ -2243,23 +2601,30 @@ const clean = (s) => String(s == null ? '' : s).replace(/\s+/g,' ').trim();
 const qIntent = (id) => QI_BY[(QT[id] || {}).intent] || QI_BY.noise;
 function qtag(id){ const t = QT[id]; if (!t) return ''; const c = qIntent(id).color; return `<span class="tag" style="background:${tint(c,.12)};color:${c}" title="Question type">${escH(t.label)}</span>`; }
 
-/* apply cached AI labels on top of the rule labels */
-function applyAiLabels(msgs){
-  for (const m of msgs){
-    if (!m.qtype) continue;
-    const c = AI.items[Z.qKey(m.text)];
-    if (!c) continue;
-    if (c.t && QT[c.t]) m.qtype = c.t;
-    m.qsrc = 'ai';
-    if (c.q) {
-      m.qfaq = c.q; m.qfaqKey = Z.faqKey(c.q);
-      m.qcluster = AI.merges[m.qfaqKey] || c.q; m.qclusterKey = Z.faqKey(m.qcluster);
-      AI.cl[m.qclusterKey] = m.qcluster;
-    } else { delete m.qfaq; delete m.qfaqKey; delete m.qcluster; delete m.qclusterKey; }
-    if (c.tool) m.qtool = c.tool; else delete m.qtool;
-  }
+/* AI labels are cached per question text + the tool on screen, so "is it free?"
+   during Higgsfield and during Julius are two different questions */
+function aiKeyFor(m){ return Z.qKey(m.text) + (m.tool ? '\u0001' + m.tool : ''); }
+function aiLabel(m){
+  m.qtype = m.qrule || m.qtype; m.qsrc = 'rule';
+  delete m.qfaq; delete m.qfaqKey; delete m.qtool;
+  const c = AI.items[aiKeyFor(m)];
+  if (!c) return;
+  if (c.t && QT[c.t]) m.qtype = c.t;
+  m.qsrc = 'ai';
+  if (c.q) { m.qfaq = c.q; m.qfaqKey = Z.faqKey(c.q); }
+  if (c.tool) m.qtool = c.tool;
 }
-function applyAll(){ for (const s of state.sources) applyAiLabels(s.messages); annotateTools(); }
+// questions are merged within a tool (or, with no tool, within a question type)
+function qGroup(m){ return m.atool ? 'tool:' + m.atool : 'type:' + m.qtype; }
+function clusterOf(m){
+  delete m.qcluster; delete m.qclusterKey;
+  if (!m.qfaqKey) return;
+  const g = qGroup(m);
+  m.qcluster = AI.merges[g + '\u0001' + m.qfaqKey] || m.qfaq;
+  m.qclusterKey = Z.faqKey(g) + '|' + Z.faqKey(m.qcluster);
+  AI.cl[m.qclusterKey] = m.qcluster;
+}
+function applyAll(){ annotateTools(); }
 
 /* ---------- stats for the panel, exports and the takeaways brief ---------- */
 function qStats(msgs){
@@ -2321,7 +2686,8 @@ function fmtUsd(x){ if (x == null || !isFinite(x)) return ''; return x < 0.01 ? 
 function estimate(pending){
   if (freeMode()) {
     const big = new Map(); pending.forEach(p => big.set(p.rule, (big.get(p.rule) || 0) + 1));
-    const merges = Math.min(8, [...big.values()].filter(n => n >= 10).length);
+    const grp = new Map(); allQueryMsgs().forEach(m => { const g = m.atool || m.qtype; grp.set(g, (grp.get(g) || 0) + 1); });
+    const merges = Math.min(12, [...grp.values()].filter(n => n >= 15).length);
     return { reqs:Math.ceil(pending.length / batchSize()) + merges + 1, usd:0, free:true };
   }
   const reqs = Math.ceil(pending.length / 60);
@@ -2558,15 +2924,15 @@ const SYS_CLASSIFY = () => `You label questions typed into the Zoom chat of a li
 For every numbered item return:
 "t": the one type id that best fits what the person wants:
 ${Z.QTYPES.map(t => `- ${t.id}: ${t.desc}`).join('\n')}
-"q": the question rewritten as a short generic question in plain English, at most 12 words. Translate Hindi and Hinglish, fix spelling, drop names and filler. Write the same need the same way every time, e.g. "How do I connect a custom domain to my website?". Use "" when t is "unclear".
+"q": the question rewritten as a short generic question in plain English, at most 12 words. Translate Hindi and Hinglish, fix spelling, drop names and filler. Write the same need the same way every time, e.g. "How do I connect a custom domain to my website?". If it's about a specific tool (named, or the one on screen when they say this or it), put the tool's name in q, e.g. "Is Higgsfield free to use?". Use "" when t is "unclear".
 "tool": the specific tool, website or app named or clearly meant, by its common name (e.g. "ElevenLabs"), or "" if none.
 
 Some items end with [on screen: X], the tool the trainer was showing when it was asked. When the question says "this", "it" or "the tool", use X as the tool. "Program pitch" means the trainer was selling the paid program.
 Complaints or sarcasm phrased as questions are "frustration". Questions about their own selection, seat, booking or their name being called are "seat_status".
 Reply with JSON only, no prose: {"r":[{"i":1,"t":"how_to","q":"...","tool":""}]} with exactly one entry per item number.`;
-const SYS_MERGE = `You merge duplicate questions from one category of a live webinar chat. Each line is a normalized question with the number of people who asked it in brackets. Group lines that ask for the same thing, even if worded differently. Keep different needs apart; do not over-merge. Give each group one clear canonical question in plain English, at most 14 words, specific enough to act on.
+const SYS_MERGE = `You merge duplicate questions from one group of a live webinar chat: either all questions about one tool, or one kind of question. Each line is a normalized question with the number of people who asked it in brackets. Group lines that ask for the same thing, even if worded differently. Keep different needs apart; do not over-merge. Give each group one clear canonical question in plain English, at most 14 words, specific enough to act on. When the group is about a tool and the question is about that tool, name the tool (e.g. "Is Higgsfield free to use?").
 Reply with JSON only: {"c":[{"q":"canonical question","m":[1,4,9]}]}. Every line number appears in exactly one group. One-line groups are fine.`;
-const SYS_TAKE = `You brief a webinar team right after a live session. The JSON lists questions attendees typed that were not about refunds, payments, certificates or other known topics, grouped by type with people counts and the most-asked merged questions.
+const SYS_TAKE = `You brief a webinar team right after a live session. The JSON lists questions attendees typed that were not about refunds, payments, certificates or other known topics, grouped by type and by tool with people counts and the most-asked merged questions, plus moments in the session where people got stuck, had tech trouble, went quiet or reacted strongly.
 Write 3 to 5 takeaways the team can act on before the next session. Each takeaway is one sentence of at most 28 words, starts with what to do, cites a count from the data, and has an owner: "Trainer" (content and demos), "Sales" (program, seats, earning, fit) or "Support" (live-session logistics). Use only numbers present in the data.
 Reply with JSON only: {"k":[{"owner":"Trainer","text":"..."}]}`;
 
@@ -2580,7 +2946,7 @@ function wordCount(t){ return String(t).trim().split(/\s+/).filter(w => /[a-z0-9
 function collectPending(){
   const seen = new Set(), out = [];
   for (const m of allQueryMsgs()){
-    const k = Z.qKey(m.text);
+    const k = aiKeyFor(m);
     if (seen.has(k)) continue; seen.add(k);
     if (AI.items[k]) continue;
     const rule = Z.classifyQuestion(m.text);
@@ -2616,33 +2982,38 @@ async function classifyBatch(b, signal){
   return got.size;
 }
 async function mergePhase(signal){
-  const byType = new Map();
+  annotateTools();
+  const groups = new Map();
   for (const m of allQueryMsgs()){
     if (m.qsrc !== 'ai' || !m.qfaq || m.qtype === 'unclear') continue;
-    let t = byType.get(m.qtype); if (!t) byType.set(m.qtype, t = new Map());
+    const g = qGroup(m);
+    let t = groups.get(g); if (!t) groups.set(g, t = new Map());
     let e = t.get(m.qfaqKey); if (!e) t.set(m.qfaqKey, e = { k:m.qfaqKey, q:m.qfaq, ppl:new Set() });
     e.ppl.add(m.name.toLowerCase());
   }
   const merges = { ...AI.merges };
   const jobs = [];
-  for (const [tid, map] of [...byType.entries()].sort((a,b) => b[1].size - a[1].size)){
-    const list = [...map.values()].sort((a,b) => b.ppl.size - a.ppl.size).slice(0, 160);
+  for (const [g, map] of [...groups.entries()].sort((a,b) => b[1].size - a[1].size)){
+    const list = [...map.values()].sort((a,b) => b.ppl.size - a.ppl.size).slice(0, 180);
     if (list.length < (freeMode() ? 10 : 3)) continue;
+    const head = g.startsWith('tool:')
+      ? (g.slice(5) === Z.PITCH ? 'Group: questions asked while the trainer was pitching the paid program' : `Group: questions about ${g.slice(5)} (named in the question, or on screen when it was asked)`)
+      : `Group: ${(QT[g.slice(5)] || {}).label || 'questions'}`;
     jobs.push(async () => {
       if (signal.aborted) return;
       try {
-        const r = await orChat([{ role:'system', content:SYS_MERGE }, { role:'user', content:`Category: ${QT[tid].label}\n\n` + list.map((e, i) => `${i + 1}. ${e.q} (${e.ppl.size})`).join('\n') }], { signal, maxTokens:6000 });
+        const r = await orChat([{ role:'system', content:SYS_MERGE }, { role:'user', content:head + '\n\n' + list.map((e, i) => `${i + 1}. ${e.q} (${e.ppl.size})`).join('\n') }], { signal, maxTokens:6500 });
         const obj = parseLoose(r.text);
-        const groups = Array.isArray(obj) ? obj : (obj && (obj.c || obj.clusters || obj.groups)) || [];
-        for (const g of groups){
-          const label = clean(g && (g.q || g.question)).slice(0, 140); if (!label) continue;
-          for (const n of (g.m || g.members || [])) { const e = list[(+n) - 1]; if (e) merges[e.k] = label; }
+        const cl = Array.isArray(obj) ? obj : (obj && (obj.c || obj.clusters || obj.groups)) || [];
+        for (const c of cl){
+          const label = clean(c && (c.q || c.question)).slice(0, 140); if (!label) continue;
+          for (const n of (c.m || c.members || [])) { const e = list[(+n) - 1]; if (e) merges[g + '\u0001' + e.k] = label; }
         }
-      } catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') throw e; /* keep last merge for this type */ }
+      } catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') throw e; /* keep the last merge for this group */ }
     });
   }
-  // free: merge only the 8 biggest types (jobs are built biggest-first) to protect the daily limit
-  await runPool(freeMode() ? jobs.slice(0, 8) : jobs, par());
+  // free: the 12 biggest groups (built biggest-first) keep the run inside the daily limit
+  await runPool(freeMode() ? jobs.slice(0, 12) : jobs, par());
   AI.merges = merges;
 }
 async function takeawaysPhase(signal){
@@ -2650,7 +3021,9 @@ async function takeawaysPhase(signal){
   if (!st.aiN) return;
   const brief = { questions:st.qs.length, people:st.people,
     intents:st.intents.filter(i => i.n).map(i => ({ intent:i.def.label, people:i.p })),
-    types:st.types.filter(t => t.id !== 'unclear').map(t => ({ type:t.def.label, people:t.p, messages:t.n, top:t.clist.slice(0, 5).map(c => ({ q:c.label, people:c.p })), tools:t.tlist.slice(0, 3).map(x => x.label) })) };
+    types:st.types.filter(t => t.id !== 'unclear').map(t => ({ type:t.def.label, people:t.p, messages:t.n, top:t.clist.slice(0, 5).map(c => ({ q:c.label, people:c.p })) })),
+    moments:(HS.moments || []).slice(0, 6).map(c => ({ what:c.title, when:c.when, during:c.during, evidence:c.head })),
+    tools:trStats(pool()).tools.filter(e => e.tool && e.tool !== '__other').slice(0, 10).map(e => ({ tool:e.tool, questions:e.n, people:e.ppl.size, top:mostAsked(e.msgs, 4).map(x => ({ q:x.label, people:x.ppl.size })) })) };
   const r = await orChat([{ role:'system', content:SYS_TAKE }, { role:'user', content:JSON.stringify(brief) }], { signal, maxTokens:1500 });
   const obj = parseLoose(r.text);
   const k = Array.isArray(obj) ? obj : (obj && (obj.k || obj.takeaways)) || [];
@@ -2833,7 +3206,15 @@ function questionSheets(msgs){
   const types = [['Query type','Intent','People','Messages','Sorted by AI','Top questions','Tools mentioned'],
     ...st.types.map(t => [t.def.label, qIntent(t.id).label, t.p, t.n, t.msgs.filter(m => m.qsrc === 'ai').length, t.clist.slice(0, 5).map(c => `${c.label} (${c.p})`).join('\n'), t.tlist.slice(0, 5).map(x => `${x.label} (${x.n})`).join(', ')])];
   const take = AI.take && AI.take.items && AI.take.items.length && st.aiN ? [['Owner','Takeaway'], ...AI.take.items.map(x => [x.owner, x.text])] : null;
-  return { st, top, all, buy, types, take, byTool, timeline };
+  let queriesByTool = null;
+  if (st.qs.some(m => m.atool)) {
+    queriesByTool = [['Tool','Query','Query type','People','Messages','How people asked it','Names']];
+    for (const e of trStats(msgs).tools){
+      const tname = e.names ? 'Other: ' + e.names.join(', ') : (e.tool || (hasTr ? 'No tool on screen' : 'No tool named'));
+      for (const x of mostAsked(e.msgs, 100000)) queriesByTool.push([tname, x.label, QT[x.type].label, x.ppl.size, x.n, x.ex.join('\n'), [...x.names].join(', ')]);
+    }
+  }
+  return { st, top, all, buy, types, take, byTool, timeline, queriesByTool };
 }
 function downloadQuestions(){
   const qs = questionSheets(pool());
@@ -2844,6 +3225,7 @@ function downloadQuestions(){
     const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(capCells(aoa)); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name); };
     if (qs.take) add('Takeaways', qs.take, [12, 110]);
     add('Question types', qs.types, [34, 16, 9, 10, 12, 70, 40]);
+    if (qs.queriesByTool) add('Queries by tool', qs.queriesByTool, [22, 60, 30, 9, 10, 70, 60]);
     if (qs.byTool) add('By tool', qs.byTool, [22, 40, 10, 9, 40, 70]);
     if (qs.timeline) add('Session timeline', qs.timeline, [14, 20, 10, 9, 40, 70, 80]);
     add('Top questions', qs.top, [34, 16, 64, 9, 10, 70]);
@@ -2929,7 +3311,7 @@ function annotateTools(){
         if (sg) { m.tsec = ts; m.tool = sg.tool || ''; }
         if (m.qtype && sg) m.tline = mentorAt(tr.t, ts);
       }
-      if (m.qtype) { const a = askedTool(m); if (a) m.atool = a; }
+      if (m.qtype) { aiLabel(m); const a = askedTool(m); if (a) m.atool = a; clusterOf(m); }
     }
   }
 }
@@ -2959,23 +3341,32 @@ function trStats(msgs){
 function mostAsked(list, k){
   const g = new Map();
   for (const m of list){
-    const key = m.qclusterKey || Z.qKey(m.text);
-    let e = g.get(key); if (!e) g.set(key, e = { label:m.qcluster || clean(m.text), ppl:new Set() });
-    e.ppl.add(m.name.toLowerCase());
+    const key = m.qclusterKey || 'raw|' + Z.qKey(m.text);
+    let e = g.get(key); if (!e) g.set(key, e = { key:m.qclusterKey || '', label:m.qcluster || clean(m.text), ppl:new Set(), n:0, types:new Map(), ex:[], names:new Set() });
+    e.ppl.add(m.name.toLowerCase()); e.n++; e.names.add(m.name);
+    e.types.set(m.qtype, (e.types.get(m.qtype) || 0) + 1);
+    if (e.ex.length < 3 && !e.ex.includes(clean(m.text))) e.ex.push(clean(m.text));
   }
-  return [...g.values()].filter(e => e.label.length > 3).sort((a,b) => b.ppl.size - a.ppl.size).slice(0, k);
+  return [...g.values()].filter(e => e.label.length > 3).map(e => ({ ...e, type:[...e.types.entries()].sort((a,b) => b[1] - a[1])[0][0] }))
+    .sort((a,b) => b.ppl.size - a.ppl.size || b.n - a.n).slice(0, k);
 }
 function refSource(){ return state.sources.find(s => s.on && s.tr) || state.sources.find(s => s.tr); }
 function segClock(sg, s){ return s ? `${Z.fmtClock(sg.s + s.tr.offset).slice(0,5)}–${Z.fmtClock(sg.e + s.tr.offset).slice(0,5)}` : `${Z.fmtClock(sg.s).slice(0,5)}–${Z.fmtClock(sg.e).slice(0,5)}`; }
 function renderTrPanel(msgs){
   const panel = $('#trPanel'), hint = $('#trHint');
   if (hint) hint.hidden = state.transcripts.length > 0 || !state.sources.length;
-  if (!state.transcripts.length || !msgs.length) { panel.hidden = true; return; }
+  const hasTr = state.transcripts.length > 0;
+  if (!msgs.length || (!hasTr && msgs.filter(m => m.qtype && m.atool).length < 10)) { panel.hidden = true; return; }
   panel.hidden = false;
+  ['#trAlign', '#trBar', '#trScale', '#trView'].forEach(id => { $(id).hidden = !hasTr; });
+  if (!hasTr) TR.view = 'tool';
   const ref = refSource();
-  const t = ref ? ref.tr.t : state.transcripts[0];
-  const toolSet = new Set(t.tl.segs.map(s => s.tool).filter(x => x && x !== Z.PITCH));
-  $('#trSub').textContent = `${t.name} · ${Z.fmtDur(t.tl.dur)} · ${toolSet.size} ${toolSet.size === 1 ? 'tool' : 'tools'} taught`;
+  const t = hasTr ? (ref ? ref.tr.t : state.transcripts[0]) : null;
+  if (t) {
+    const toolSet = new Set(t.tl.segs.map(s => s.tool).filter(x => x && x !== Z.PITCH));
+    $('#trSub').textContent = `${t.name} · ${Z.fmtDur(t.tl.dur)} · ${toolSet.size} ${toolSet.size === 1 ? 'tool' : 'tools'} taught`;
+  } else $('#trSub').textContent = 'tools named in the questions. Add the session transcript to also catch “this tool” questions.';
+  $('#trTitle').textContent = t ? 'Tools taught, and the questions they raised' : 'Questions by tool';
 
   // per-chat start time
   const al = $('#trAlign');
@@ -3002,37 +3393,47 @@ function renderTrPanel(msgs){
 
   // questions per transcript minute, for the bar
   const qs = msgs.filter(m => m.qtype && m.tsec != null);
+  if (t) {
   const segQ = t.tl.segs.map(sg => qs.filter(m => m.tsec >= sg.s && m.tsec < sg.e).length);
   const tot = Math.max(1, t.tl.dur);
   $('#trBar').innerHTML = t.tl.segs.map((sg, i) => {
     const w = 100 * (sg.e - sg.s) / tot, label = sg.tool || 'General talk';
-    return `<button class="trseg" style="width:${w.toFixed(3)}%;background:${toolColor(sg.tool)}" data-seg="${i}" title="${escH(segClock(sg, ref))} · ${escH(label)} · ${segQ[i]} questions">${w > 4.5 ? `<span>${escH(label)}</span>` : ''}</button>`;
+    return `<button class="trseg" style="width:${w.toFixed(3)}%;background:${toolColor(sg.tool)}${sg.tool ? '' : ';color:var(--ink-2)'}" data-seg="${i}" title="${escH(segClock(sg, ref))} · ${escH(label)} · ${segQ[i]} questions">${w > 4.5 ? `<span>${escH(label)}</span>` : ''}</button>`;
   }).join('');
   $('#trBar').querySelectorAll('[data-seg]').forEach(b => b.onclick = () => { const sg = t.tl.segs[+b.dataset.seg]; onlyQ({ wins:[[sg.s, sg.e]] }); });
   $('#trScale').innerHTML = [0, .25, .5, .75, 1].map(f => `<span>${Z.fmtClock(f * tot + (ref ? ref.tr.offset : 0)).slice(0,5)}</span>`).join('');
+  }
 
   // table
   $('#trView').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.v === TR.view));
   const table = $('#trTable');
   const typeChips = (types) => [...types.entries()].sort((a,b) => b[1] - a[1]).slice(0, 3).map(([id, n]) => `${qtag(id).replace('</span>', ` <b>${n}</b></span>`)}`).join('');
-  const asked = (list) => mostAsked(list, 2).map(e => `<span class="trq">${escH(clip(e.label, 90))} <b>${e.ppl.size}</b></span>`).join('');
+  const qItem = (e, withType) => `<li>${e.key ? `<button class="tqb" data-cl="${escH(e.key)}" title="${escH(e.ex.join(' · '))}">` : `<span class="tqb" title="${escH(e.ex.join(' · '))}">`}${withType ? qtag(e.type) : ''}<span class="tqt">${escH(clip(e.label, 110))}</span><b>${e.ppl.size}</b>${e.key ? '</button>' : '</span>'}</li>`;
+  const asked = (list) => `<ol class="tq">${mostAsked(list, 3).map(e => qItem(e, false)).join('')}</ol>`;
   if (TR.view === 'tool') {
     const st = trStats(msgs);
     const onScreen = (tool) => {
+      if (!t) return '<span class="muted">—</span>';
       const segs = t.tl.segs.filter(sg => sg.tool === tool);
       if (!segs.length) return '<span class="muted">named in chat only</span>';
       const mins = segs.reduce((a, sg) => a + (sg.e - sg.s), 0);
       return `${segs.map(sg => segClock(sg, ref)).join(', ')} <span class="muted">(${Z.fmtDur(mins)})</span>`;
     };
-    table.innerHTML = `<thead><tr><th>Tool</th><th>On screen</th><th class="num">Questions</th><th class="num">People</th><th>Question types</th><th>Most asked</th></tr></thead><tbody>${
-      st.tools.map(e => `<tr data-tool="${escH(e.names ? e.names.join('|') : e.tool)}" tabindex="0" title="Show these ${e.n} questions">
-        <td><span class="tdot" style="background:${e.names ? '#94A3B8' : toolColor(e.tool)}"></span><b>${escH(e.names ? 'Other tools named in chat' : (e.tool || 'No tool on screen'))}</b></td>
-        <td class="trtime">${e.names ? `<span class="muted">${escH(e.names.join(', '))}</span>` : e.tool ? onScreen(e.tool) : '<span class="muted">intro, breaks, general talk</span>'}</td>
+    TR.open = TR.open || {};
+    table.innerHTML = `<thead><tr><th>Tool</th><th>On screen</th><th class="num">Questions</th><th class="num">People</th><th>Question types</th><th>What they asked <span class="muted">(people)</span></th></tr></thead><tbody>${
+      st.tools.map(e => {
+        const id = e.names ? e.names.join('|') : e.tool;
+        const all = mostAsked(e.msgs, 100000), open = !!TR.open[id];
+        return `<tr data-tool="${escH(id)}" tabindex="0" title="Show these ${e.n} questions">
+        <td><span class="tdot" style="background:${e.names ? '#94A3B8' : toolColor(e.tool)}"></span><b>${escH(e.names ? 'Other tools named in chat' : (e.tool || (t ? 'No tool on screen' : 'No tool named')))}</b></td>
+        <td class="trtime">${e.names ? `<span class="muted">${escH(e.names.join(', '))}</span>` : e.tool ? onScreen(e.tool) : `<span class="muted">${t ? 'intro, breaks, general talk' : '—'}</span>`}</td>
         <td class="num"><b>${e.n}</b></td><td class="num">${e.ppl.size}</td>
-        <td>${typeChips(e.types)}</td><td>${asked(e.msgs)}</td></tr>`).join('')}</tbody>`;
-    table.querySelectorAll('tr[data-tool]').forEach(tr => { const go = () => onlyQ({ qtools:tr.dataset.tool.split('|') }); tr.onclick = go; tr.onkeydown = (e) => { if (e.key === 'Enter') go(); }; });
+        <td>${typeChips(e.types)}</td>
+        <td>${asked(e.msgs)}${all.length > 3 ? `<button class="qmore" data-open="${escH(id)}">${open ? 'Show fewer' : `All ${all.length} queries`}</button>` : ''}</td></tr>
+        ${open ? `<tr class="trsub"><td colspan="6"><ol class="tq tqall">${all.slice(0, 80).map(x => qItem(x, true)).join('')}</ol>${all.length > 80 ? `<p class="muted" style="margin:8px 0 0;font-size:12px">Showing the top 80 of ${all.length}. Every query is in Download questions → Queries by tool.</p>` : ''}</td></tr>` : ''}`;
+      }).join('')}</tbody>`;
   } else {
-    table.innerHTML = `<thead><tr><th>Time</th><th>Being taught</th><th class="num">Questions</th><th class="num">People</th><th>Question types</th><th>Most asked</th></tr></thead><tbody>${
+    table.innerHTML = `<thead><tr><th>Time</th><th>Being taught</th><th class="num">Questions</th><th class="num">People</th><th>Question types</th><th>What they asked <span class="muted">(people)</span></th></tr></thead><tbody>${
       t.tl.segs.map((sg, i) => {
         const list = qs.filter(m => m.tsec >= sg.s && m.tsec < sg.e);
         const types = new Map(); list.forEach(m => types.set(m.qtype, (types.get(m.qtype) || 0) + 1));
@@ -3042,8 +3443,15 @@ function renderTrPanel(msgs){
           <td class="num"><b>${list.length}</b></td><td class="num">${new Set(list.map(m => m.name.toLowerCase())).size}</td>
           <td>${typeChips(types)}</td><td>${asked(list)}</td></tr>`;
       }).join('')}</tbody>`;
-    table.querySelectorAll('tr[data-seg]').forEach(tr => { const sg = t.tl.segs[+tr.dataset.seg]; const go = () => onlyQ({ wins:[[sg.s, sg.e]] }); tr.onclick = go; tr.onkeydown = (e) => { if (e.key === 'Enter') go(); }; });
   }
+  table.onclick = (ev) => {
+    const cl = ev.target.closest('[data-cl]'); if (cl) { onlyQ({ clusters:[cl.dataset.cl] }); return; }
+    const op = ev.target.closest('[data-open]'); if (op) { TR.open[op.dataset.open] = !TR.open[op.dataset.open]; renderTrPanel(pool()); return; }
+    if (ev.target.closest('.trsub')) return;
+    const tr = ev.target.closest('tr[data-tool]'); if (tr) { onlyQ({ qtools:tr.dataset.tool.split('|') }); return; }
+    const sr = ev.target.closest('tr[data-seg]'); if (sr && t) { const sg = t.tl.segs[+sr.dataset.seg]; onlyQ({ wins:[[sg.s, sg.e]] }); }
+  };
+  table.onkeydown = (ev) => { if (ev.key === 'Enter' && ev.target.matches('tr')) ev.target.click(); };
   if (document.activeElement !== $('#trExtraIn')) $('#trExtraIn').value = prefs.tools.join('\n');
 }
 $('#trView').querySelectorAll('button').forEach(b => b.onclick = () => { TR.view = b.dataset.v; renderTrPanel(pool()); });
@@ -3058,6 +3466,88 @@ $('#trExtraSave').onclick = () => {
 const trFile = $('#trFile');
 ['#trAdd', '#trAdd2'].forEach(id => { const b = $(id); if (b) b.onclick = () => trFile.click(); });
 trFile.onchange = () => { [...trFile.files].forEach(f => f.text().then(tx => addTranscript(tx, f.name))); trFile.value = ''; };
+
+/* ---------- friendlier dashboard: summary, jump menu, start guide, downloads ---------- */
+const PROBLEM_CATS = ['refund','lms','whatsapp','join','recording','certificate','payment','login','av','support','stream_quality'];
+function renderSummary(msgs){
+  const panel = $('#sumPanel'), guide = $('#guide');
+  guide.hidden = state.sources.length > 0;
+  if (!msgs.length) { panel.hidden = true; return; }
+  panel.hidden = false;
+  const ppl = new Set(msgs.map(m => m.name.toLowerCase()));
+  const who = (f) => { const s = new Set(); let n = 0; for (const m of msgs) if (f(m)) { n++; s.add(m.name.toLowerCase()); } return { n, p:s.size }; };
+  const q = who(m => m.cats.query || m.cats.question);
+  const prob = who(m => PROBLEM_CATS.some(c => m.cats[c]));
+  const buy = who(m => m.qtype && (QT[m.qtype] || {}).intent === 'buy');
+  const pos = msgs.filter(m => sentOf(m) === 'pos').length, neg = msgs.filter(m => sentOf(m) === 'neg').length;
+  const H = HS.last, peak = H ? H.minute.reduce((best, b, i) => b.msgs > H.minute[best].msgs ? i : best, 0) : -1;
+  const fixN = HS.moments ? HS.moments.filter(c => c.tone === 'bad').length : 0;
+  const pct = (a, b) => b ? Math.round(100 * a / b) : 0;
+  const dates = new Set(state.sources.filter(s => s.on).map(s => s.dateLabel).filter(Boolean));
+  $('#sumSub').textContent = `${state.sources.filter(s => s.on).length} ${state.sources.filter(s => s.on).length === 1 ? 'chat' : 'chats'}${dates.size ? ' · ' + [...dates].join(', ') : ''}${state.dateFilter ? ' · filtered to one date' : ''}`;
+  const tiles = [
+    { k:'People', v:fmtN(ppl.size), s:'typed at least one message', go:null },
+    { k:'Messages', v:fmtN(msgs.length), s:peak >= 0 ? `busiest minute ${H.ax.toClock(H.lo + peak * 60)}` : 'in the chat', go:'#tlPanel' },
+    { k:'Questions', v:fmtN(q.n), s:`from ${fmtN(q.p)} people (${pct(q.p, ppl.size)}% of the room). ${fmtN(msgs.filter(m => m.qtype).length)} aren’t about a known problem.`, go:'#qPanel' },
+    { k:'Problems', v:fmtN(prob.p), s:'people with refund, login, join, audio or other issues', go:'#matPanel', tone:'bad' },
+    { k:'Buying signals', v:fmtN(buy.p), s:'people asking about seats, program, earning', act:() => onlyQ({ intents:['buy'] }), tone:'opp' },
+    { k:'Mood', v:`${pct(pos, pos + neg)}%`, s:`positive: ${fmtN(pos)} positive and ${fmtN(neg)} negative messages${fixN ? `. ${fixN} moments to fix` : ''}`, go:'#tlPanel', mood:[pos, neg] }
+  ];
+  $('#sumTiles').innerHTML = tiles.map((t, i) => `<button class="tile ${t.tone || ''}" data-t="${i}" ${!t.go && !t.act ? 'disabled' : ''}>
+      <span class="tk">${escH(t.k)}</span><span class="tv">${escH(t.v)}</span>
+      ${t.mood ? `<span class="tmood"><i style="width:${pct(t.mood[0], t.mood[0] + t.mood[1])}%"></i></span>` : ''}
+      <span class="ts">${escH(t.s)}</span></button>`).join('');
+  $('#sumTiles').querySelectorAll('[data-t]').forEach(b => b.onclick = () => { const t = tiles[+b.dataset.t]; if (t.act) t.act(); else if (t.go) jumpTo(t.go); });
+  syncJump();
+}
+function jumpTo(sel){ const el = $(sel); if (el && !el.hidden) el.scrollIntoView({ behavior:'smooth', block:'start' }); }
+const JUMP = [['#sumPanel', 'Summary'], ['#askSec', 'Search'], ['#matPanel', 'Issues'], ['#qPanel', 'Questions'], ['#trPanel', 'Tools'], ['#tlPanel', 'Session health'], ['#results', 'Results']];
+function syncJump(){
+  const nav = $('#jump');
+  const any = state.sources.length > 0;
+  nav.hidden = !any;
+  if (!any) return;
+  nav.innerHTML = JUMP.filter(([sel]) => { const el = $(sel); return el && !el.hidden; }).map(([sel, label]) => `<a href="${sel}" data-j="${sel}">${escH(label)}</a>`).join('');
+  nav.querySelectorAll('[data-j]').forEach(a => a.onclick = (e) => { e.preventDefault(); jumpTo(a.dataset.j); });
+  spyJump();
+}
+let jumpObs = null;
+function spyJump(){
+  if (!('IntersectionObserver' in window)) return;
+  if (jumpObs) jumpObs.disconnect();
+  const vis = new Map();
+  jumpObs = new IntersectionObserver((ents) => {
+    ents.forEach(e => vis.set('#' + e.target.id, e.isIntersecting ? e.intersectionRect.top : null));
+    let best = null, bestTop = Infinity;
+    for (const [sel] of JUMP){ const t = vis.get(sel); if (t != null && t < bestTop) { best = sel; bestTop = t; } }
+    $('#jump').querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.j === best));
+  }, { rootMargin:'-120px 0px -55% 0px' });
+  JUMP.forEach(([sel]) => { const el = $(sel); if (el && !el.hidden) jumpObs.observe(el); });
+}
+function setTopH(){ const h = $('header.top').offsetHeight; document.documentElement.style.setProperty('--toph', h + 'px'); }
+window.addEventListener('resize', setTopH); setTopH();
+
+// start guide
+$('#gChat').onclick = () => $('#file').click();
+$('#gTr').onclick = () => $('#trFile').click();
+$('#gAI').onclick = openAI;
+$('#gSample').onclick = () => $('#btnSample').click();
+
+// downloads menu
+const dlBtn = $('#btnDl'), dlMenu = $('#dlMenu');
+function closeDl(){ dlMenu.hidden = true; dlBtn.setAttribute('aria-expanded', 'false'); }
+dlBtn.onclick = (e) => { e.stopPropagation(); const open = dlMenu.hidden; dlMenu.hidden = !open; dlBtn.setAttribute('aria-expanded', String(open)); if (open) { const f = dlMenu.querySelector('button'); if (f) f.focus(); } };
+document.addEventListener('click', (e) => { if (!dlMenu.hidden && !dlMenu.contains(e.target)) closeDl(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !dlMenu.hidden) { closeDl(); dlBtn.focus(); } });
+dlMenu.addEventListener('click', (e) => {
+  const b = e.target.closest('button'); if (!b) return;
+  closeDl();
+  if (!state.sources.length) { toast('Add a chat first'); return; }
+  const k = b.dataset.dl;
+  if (k === 'questions') downloadQuestions();
+  else if (k === 'health') downloadHealth();
+  else if (k === 'matrix') $('#matCsv').click();
+});
 
 /* ---------- export ---------- */
 function exportCsv(){
@@ -3117,6 +3607,7 @@ function buildReport(){
     add('By person', people, [28, 22, 40, 10, 90]);
     if (qsh.st.qs.length){
       if (qsh.take) add('Question takeaways', qsh.take, [12, 110]);
+      if (qsh.queriesByTool) add('Queries by tool', qsh.queriesByTool, [22, 60, 30, 9, 10, 70, 60]);
       if (qsh.byTool) add('Questions by tool', qsh.byTool, [22, 40, 10, 9, 40, 70]);
       add('Top questions', qsh.top, [34, 16, 64, 9, 10, 70]);
       add('Buying signals', qsh.buy, [28, 18, 44, 10, 90]);
@@ -3199,7 +3690,7 @@ $('#mapApply').onclick = () => {
   mapSrc.header = $('#mapHeader').checked;
   mapSrc.messages = Z.rowsToMessages(mapSrc.rows, mapSrc.map, mapSrc.header, mapSrc.name);
   markHosts(mapSrc);
-  Z.tagMessages(mapSrc.messages, cdict); applyAiLabels(mapSrc.messages);
+  Z.tagMessages(mapSrc.messages, cdict); annotateTools();
   $('#mMap').classList.remove('open');
   renderSources(); refreshOverview(); rerun();
 };
