@@ -210,6 +210,10 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .qnote{font-size:13px;color:var(--ink-2);margin:0 0 12px;max-width:80ch}
 .qnote:empty{display:none}
 .qnote.err{color:var(--danger);font-weight:600}
+.qalert{border:1px solid #F1C3C9;background:#FDF2F3;border-left:4px solid var(--danger);border-radius:var(--radius-s);padding:10px 12px;margin:0 0 14px}
+.qalert p{margin:0 0 8px;font-size:13.5px;color:#7A1F2B;line-height:1.45}
+.qalert .row{display:flex;gap:8px;flex-wrap:wrap}
+.qtest{margin:10px 0 0;padding:8px 10px;background:#fff;border:1px solid var(--line-2);border-radius:7px;font-size:12px;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}
 .qprog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
 .qbar{flex:1;height:6px;border-radius:3px;background:var(--line-2);overflow:hidden;min-width:80px}
 .qbar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .3s ease}
@@ -734,6 +738,7 @@ tbody tr.rv{animation:rise .32s ease both}
         <p class="phelp">Questions that aren’t about a known problem, sorted by what people want. Sort with AI for exact types and merged top questions.</p>
         <div class="qprog" id="qProg" hidden><div class="qbar"><i id="qBar"></i></div><span id="qProgT" aria-live="polite"></span><button class="btn quiet sm" id="qStop">Stop</button></div>
         <p class="qnote" id="qNote"></p>
+        <div class="qalert" id="qAlert" hidden role="alert"><p id="qAlertT"></p><div class="row"><button class="btn primary sm" id="qRetry">Try again</button><button class="btn sm" id="qTest">Test AI connection</button><button class="btn quiet sm" id="qAlertSet">AI settings</button></div><pre class="qtest" id="qTestOut" hidden></pre></div>
         <div class="istrip" id="qStrip" aria-hidden="true"></div>
         <div class="ileg" id="qLeg"></div>
         <div class="qtake" id="qTake" hidden></div>
@@ -858,12 +863,14 @@ tbody tr.rv{animation:rise .32s ease both}
         <span class="help" id="aiModelNote"></span>
       </div>
       <div class="aistat" id="aiStat" aria-live="polite"></div>
+      <pre class="qtest" id="aiTestOut" hidden></pre>
     </div>
     <div class="df">
       <button class="btn quiet" id="aiForget">Forget key</button>
       <button class="btn quiet" id="aiClear" title="Drop every cached AI label and go back to keyword rules">Clear AI labels</button>
       <span class="grow"></span>
       <button class="btn" id="aiTest">Check key</button>
+      <button class="btn" id="aiTry" title="Send one small request with the saved key and model">Test AI</button>
       <button class="btn primary" id="aiSave">Save</button>
     </div>
   </div>
@@ -2568,13 +2575,13 @@ const FREE_FALLBACK = 'meta-llama/llama-3.3-70b-instruct:free';
 const FREE_GAP_MS = 3300;            // free models allow 20 requests a minute; stay under it
 const REQ_LS = 'zca.orreq';
 const freeMode = () => prefs.ai.free !== false;   // free models are the default
-const batchSize = () => freeMode() ? 100 : 60;    // bigger batches = fewer of the 50 free daily requests
+const batchSize = () => freeMode() ? 80 : 60;     // big enough to stay inside the 50 free daily requests, small enough not to get cut off
 const par = () => freeMode() ? 2 : 5;
 const freeDaily = () => prefs.ai.freeDaily || 50;
 function utcDay(){ return new Date().toISOString().slice(0, 10); }
 function reqUsed(){ try { const r = JSON.parse(localStorage.getItem(REQ_LS) || '{}'); return r.day === utcDay() ? (+r.n || 0) : 0; } catch(e){ return 0; } }
 function setReqUsed(n){ try { localStorage.setItem(REQ_LS, JSON.stringify({ day:utcDay(), n })); } catch(e){} }
-const dailyMsg = () => `Today’s free limit is used up (${freeDaily()} requests a day on OpenRouter’s free models). Everything sorted so far is saved. Click Sort with AI again after 5:30 AM IST, when the limit resets, to finish the rest.`;
+const dailyMsg = () => `OpenRouter says today’s free limit is used up (${freeDaily()} requests a day on free models). Everything sorted so far is saved. Click Sort with AI again after 5:30 AM IST, when the limit resets, to finish the rest.`;
 const AI = { freeList:[], freeCur:'', freeTried:new Set(), nextSlot:0, items:{}, merges:{}, take:null, cl:{}, running:false, ctl:null, done:0, total:0, phase:'', err:'', models:null, modelsP:null, autoModel:'', open:{}, memKey:'', jsonMode:true };
 prefs.ai = prefs.ai || {};
 (function loadQCache(){ try { const c = JSON.parse(localStorage.getItem(QCACHE_LS) || '{}'); AI.items = c.items || {}; AI.merges = c.merges || {}; if (c.take && Array.isArray(c.take.items)) AI.take = c.take; } catch(e){} })();
@@ -2731,9 +2738,10 @@ function renderQPanel(msgs){
   $('#qClr').hidden = !anySel;
 
   // one line of guidance: error, next step, or what to click
-  const note = $('#qNote'); note.classList.toggle('err', !!AI.err && !AI.running);
-  if (AI.running) note.textContent = '';
-  else if (AI.err) note.textContent = AI.err;
+  const note = $('#qNote'); note.classList.remove('err');
+  $('#qAlert').hidden = !AI.err || AI.running;
+  if (AI.err && !AI.running) $('#qAlertT').textContent = AI.err;
+  if (AI.running || AI.err) note.textContent = '';
   else if (!st.aiN) {
     const est = estimate(pending);
     note.textContent = !aiKey()
@@ -2855,8 +2863,8 @@ async function orChat(messages, opts){
   build();
   for (let attempt = 0; ; attempt++){
     if (outer && outer.aborted) throw aiErr('abort', 'Stopped');
+    AI.stats.sent++;
     if (freeMode()) {
-      if (reqUsed() >= freeDaily()) throw aiErr('fatal', dailyMsg());
       const wait = AI.nextSlot - Date.now();
       AI.nextSlot = Math.max(Date.now(), AI.nextSlot) + FREE_GAP_MS;
       if (wait > 0) await sleep(wait);
@@ -2873,6 +2881,7 @@ async function orChat(messages, opts){
       data = await res.json().catch(() => ({}));
     } catch(e){
       if (outer && outer.aborted) throw aiErr('abort', 'Stopped');
+      AI.stats.why.net = (AI.stats.why.net || 0) + 1; AI.stats.last = 'Could not reach OpenRouter (' + (e.message || 'network error') + ')';
       if (attempt < 2) { await sleep(1500 * (attempt + 1)); continue; }
       throw aiErr('net', 'Could not reach OpenRouter. Check the connection and try again.');
     } finally { clearTimeout(timer); if (outer) outer.removeEventListener('abort', onAbort); }
@@ -2881,11 +2890,15 @@ async function orChat(messages, opts){
       const ch = data.choices && data.choices[0];
       let content = ch && ch.message && ch.message.content;
       if (Array.isArray(content)) content = content.map(c => c.text || '').join('');
-      if (content) return { text:String(content), finish:ch.finish_reason };
+      if (content) { AI.stats.ok++; return { text:String(content), finish:ch.finish_reason }; }
+      AI.stats.why.empty = (AI.stats.why.empty || 0) + 1; AI.stats.last = `${body.model} sent back an empty answer${ch && ch.finish_reason ? ' (finish: ' + ch.finish_reason + ')' : ''}`;
+      if (freeMode() && attempt >= 1 && switchFree(body.model)) { build(); attempt = -1; continue; }
       if (attempt < 2) { await sleep(1000); continue; }
       throw aiErr('empty', 'The model returned an empty answer.');
     }
     const st = (data && data.error && +data.error.code) || res.status;
+    const why = st === 429 ? (/per.?day|daily/i.test(em) ? 'daily' : 'rate') : st >= 500 || st === 408 ? 'server' : 'other';
+    AI.stats.why[why] = (AI.stats.why[why] || 0) + 1; AI.stats.last = `HTTP ${st} from ${body.model}${em ? ': ' + em : ''}`;
     if (st === 401) throw aiErr('fatal', 'OpenRouter rejected the key. Check it in AI settings.');
     if (freeMode()) {
       if (st === 429 && /per.?day|daily/i.test(em)) { setReqUsed(freeDaily()); throw aiErr('fatal', dailyMsg()); }
@@ -2960,13 +2973,31 @@ async function runPool(tasks, n){
   const worker = async () => { while (i < tasks.length) { const t = tasks[i++]; await t(); } };
   await Promise.all(Array.from({ length:Math.min(n, tasks.length) }, worker));
 }
-async function classifyBatch(b, signal){
+// models answer in many shapes: {"r":[...]}, [...], {"1":{...},"2":{...}}, {"results":{...}}
+function itemsOf(obj){
+  if (!obj) return [];
+  if (Array.isArray(obj)) return obj;
+  for (const k of ['r', 'results', 'items', 'data', 'labels', 'answers']) if (obj[k]) return itemsOf(obj[k]);
+  const keys = Object.keys(obj);
+  if (keys.length && keys.every(k => /^\d+$/.test(k) && obj[k] && typeof obj[k] === 'object')) return keys.map(k => ({ i:+k, ...obj[k] }));
+  if (obj.t || obj.type) return [obj];
+  return [];
+}
+async function classifyBatch(b, signal, split){
   const user = b.map((p, i) => `${i + 1}. ${redact(p.text)}${p.screen ? ` [on screen: ${p.screen}]` : ''}`).join('\n');
-  let arr = [];
+  let arr = [], lastText = '';
   for (let attempt = 0; attempt < (freeMode() ? 1 : 2) && !arr.length; attempt++){
     const r = await orChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:user }], { signal, maxTokens:300 + b.length * 70 });
-    const obj = parseLoose(r.text);
-    arr = Array.isArray(obj) ? obj : (obj && (obj.r || obj.results || obj.items || obj.data)) || [];
+    lastText = r.text;
+    arr = itemsOf(parseLoose(r.text));
+  }
+  if (!arr.length) {
+    AI.stats.why.parse = (AI.stats.why.parse || 0) + 1;
+    AI.stats.last = `${model()} answered, but not in the expected format: “${clean(lastText).slice(0, 160)}”`;
+    if (freeMode()) switchFree(model());   // this free model isn't following the format: try the next one
+    // one more go in two smaller halves: long batches are where free models slip
+    if (!split && b.length >= 10) { const h = Math.ceil(b.length / 2); return (await classifyBatch(b.slice(0, h), signal, true)) + (await classifyBatch(b.slice(h), signal, true)); }
+    return 0;
   }
   const byOrder = arr.length === b.length && arr.every(x => x && x.i == null);
   const got = new Set();
@@ -3034,8 +3065,8 @@ async function runAI(){
   if (AI.running) return;
   if (!aiKey()) { openAI(); toast('Add your OpenRouter key first'); return; }
   await loadModels().catch(() => {});
-  if (freeMode() && reqUsed() >= freeDaily()) { AI.err = dailyMsg(); renderQPanel(pool()); return; }
   AI.freeCur = ''; AI.freeTried = new Set(); AI.jsonMode = true; AI.noReasoning = false;
+  AI.stats = { sent:0, ok:0, why:{}, last:'' };
   const pending = collectPending();
   AI.running = true; AI.err = ''; AI.ctl = new AbortController();
   const signal = AI.ctl.signal;
@@ -3043,12 +3074,18 @@ async function runAI(){
   const batches = []; for (let i = 0; i < pending.length; i += B) batches.push(pending.slice(i, i + B));
   AI.total = pending.length; AI.done = 0; AI.phase = pending.length ? 'sort' : 'merge';
   setMascot('think'); renderQPanel(pool());
-  let failed = 0, fatal = null;
+  let failed = 0, fatal = null, dry = 0;
   try {
     await runPool(batches.map(b => async () => {
       if (fatal || signal.aborted) return;
-      try { failed += b.length - await classifyBatch(b, signal); }
-      catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') { fatal = fatal || e; AI.ctl.abort(); } else failed += b.length; }
+      try {
+        const got = await classifyBatch(b, signal);
+        failed += b.length - got;
+        // three batches in a row with nothing usable: stop instead of burning the daily limit
+        dry = got ? 0 : dry + 1;
+        if (dry >= 3 && !fatal) { fatal = aiErr('fatal', 'Stopped early: the AI kept answering in a form the app can’t read, so the rest would only use up requests.'); AI.ctl.abort(); }
+      }
+      catch(e){ failed += b.length; if (e.kind === 'fatal' || e.kind === 'abort') { fatal = fatal || e; AI.ctl.abort(); } }
       AI.done += b.length; applyAll(); scheduleQRender();
     }), par());
     if (fatal) throw fatal;
@@ -3057,20 +3094,59 @@ async function runAI(){
     await mergePhase(signal); applyAll(); saveQCache();
     AI.phase = 'take'; renderProgress();
     try { await takeawaysPhase(signal); saveQCache(); } catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') throw e; }
-    AI.err = failed ? `${fmtN(failed)} questions could not be sorted and kept their keyword-rule type. Run again to retry them.` : '';
+    AI.err = failed ? `${fmtN(pending.length - failed)} of ${fmtN(pending.length)} questions were sorted. ${fmtN(failed)} could not be, and kept their keyword-rule type. ${runReport()}` : '';
     toast(pending.length ? `Sorted ${fmtN(pending.length - failed)} questions with AI` : 'Top questions refreshed');
     setMascot('happy', 1500);
   } catch(e){
     saveQCache();
-    AI.err = e.kind === 'abort' ? 'Stopped. Questions sorted so far are kept; run again to continue.' : (e.message || 'Something went wrong with the AI run.');
+    AI.err = e.kind === 'abort' ? 'Stopped. Questions sorted so far are kept; run again to continue.' : `${e.message || 'Something went wrong with the AI run.'} ${AI.done - failed > 0 ? `${fmtN(AI.done - failed)} questions were sorted before it stopped and are saved. ` : ''}${runReport()}`;
     setMascot('puzzled', 2200);
   } finally {
     AI.running = false; AI.ctl = null;
     applyAll(); refreshOverview(); rerun();
   }
 }
+// what happened, in plain words, so a failed run is never silent
+function runReport(){
+  const st = AI.stats || { sent:0, ok:0, why:{} }, w = st.why, parts = [];
+  if (w.rate) parts.push(`${w.rate} busy (free models rate-limited)`);
+  if (w.daily) parts.push('daily free limit reached');
+  if (w.server) parts.push(`${w.server} server errors`);
+  if (w.empty) parts.push(`${w.empty} empty answers`);
+  if (w.parse) parts.push(`${w.parse} answers in the wrong format`);
+  if (w.net) parts.push(`${w.net} connection failures`);
+  if (w.other) parts.push(`${w.other} other errors`);
+  if (!st.sent) return '';
+  const last = st.last ? ' Last problem: ' + st.last + (/[.!?”"]$/.test(st.last) ? '' : '.') : '';
+  return `Requests: ${st.sent} sent, ${st.ok} answered${parts.length ? '; ' + parts.join(', ') : ''}.${last}`;
+}
+AI.stats = { sent:0, ok:0, why:{}, last:'' };
 $('#qRun').onclick = runAI;
 $('#qStop').onclick = () => { if (AI.ctl) AI.ctl.abort(); };
+async function testAI(out){
+  out.hidden = false;
+  if (!aiKey()) { out.textContent = 'No key saved. Open AI settings, paste your OpenRouter key, then Save.'; return; }
+  out.textContent = 'Sending one small test request…';
+  await loadModels().catch(() => {});
+  AI.freeCur = ''; AI.freeTried = new Set(); AI.jsonMode = true; AI.noReasoning = false;
+  AI.stats = { sent:0, ok:0, why:{}, last:'' };
+  const sample = collectPending().slice(0, 3);
+  const b = sample.length ? sample : [{ k:'__t1', text:'is this tool free?', rule:'free_limits' }, { k:'__t2', text:'how to publish the website', rule:'build_deploy' }];
+  const t0 = Date.now();
+  try {
+    const got = await classifyBatch(b, new AbortController().signal, true);
+    const secs = ((Date.now() - t0) / 1000).toFixed(1);
+    if (!sample.length) b.forEach(p => delete AI.items[p.k]); else { saveQCache(); applyAll(); }
+    out.textContent = got
+      ? `Working. ${model()} answered in ${secs}s and sorted ${got} of ${b.length} questions.${freeMode() ? `\nFree requests used today (counted in this browser): ${reqUsed()}.` : ''}\nIf a full run still stops, the reason is shown above after the run.`
+      : `${model()} answered in ${secs}s but the answer couldn’t be read.\n${AI.stats.last || ''}\nTry another model in AI settings.`;
+  } catch(e){
+    out.textContent = `Not working: ${e.message}\n${AI.stats.last ? 'Details: ' + AI.stats.last : ''}\nModel: ${model()}${freeMode() ? ' (free models only)' : ''}`;
+  }
+}
+$('#qRetry').onclick = () => { AI.err = ''; runAI(); };
+$('#qTest').onclick = () => testAI($('#qTestOut'));
+$('#qAlertSet').onclick = openAI;
 
 /* ---------- AI settings ---------- */
 function setAiStat(kind, text){ const el = $('#aiStat'); el.className = 'aistat' + (kind ? ' ' + kind : ''); el.textContent = text; }
@@ -3148,6 +3224,7 @@ $('#aiTest').onclick = async () => {
     setAiStat('ok', `Key works. ${used}${lim} Free models: ${freeDaily()} requests a day.`);
   } catch(e){ setAiStat('bad', 'Couldn’t reach OpenRouter. Check the connection.'); }
 };
+$('#aiTry').onclick = () => testAI($('#aiTestOut'));
 $('#aiForget').onclick = () => { setAiKey('', false); $('#aiKey').value = ''; setAiStat('ok', 'Key removed from this browser.'); syncAiBtn(); refreshOverview(); };
 $('#aiClear').onclick = () => {
   AI.items = {}; AI.merges = {}; AI.take = null; AI.cl = {}; AI.err = ''; saveQCache();
