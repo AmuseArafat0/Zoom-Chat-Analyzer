@@ -211,7 +211,7 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .qnote:empty{display:none}
 .qnote.err{color:var(--danger);font-weight:600}
 .qalert{border:1px solid #F1C3C9;background:#FDF2F3;border-left:4px solid var(--danger);border-radius:var(--radius-s);padding:10px 12px;margin:0 0 14px}
-.qalert p{margin:0 0 8px;font-size:13.5px;color:#7A1F2B;line-height:1.45}
+.qalert p{margin:0 0 8px;font-size:13.5px;color:#7A1F2B;line-height:1.45;white-space:pre-line}
 .qalert .row{display:flex;gap:8px;flex-wrap:wrap}
 .qtest{margin:10px 0 0;padding:8px 10px;background:#fff;border:1px solid var(--line-2);border-radius:7px;font-size:12px;white-space:pre-wrap;word-break:break-word;max-height:220px;overflow:auto}
 .qprog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
@@ -259,6 +259,18 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .aistat.ok{color:#1F6B47}
 .aistat.bad{color:var(--danger)}
 .dlg .df .grow{flex:1}
+.provs{display:flex;flex-direction:column;gap:8px;margin:10px 0}
+.prov{display:grid;grid-template-columns:150px minmax(0,1fr);gap:4px 12px;align-items:center;border:1px solid var(--line-2);border-radius:var(--radius-s);padding:8px 10px;background:var(--surface-2)}
+.prov .pe{display:flex;align-items:center;gap:7px;font-size:13.5px}
+.prov .pfree{font-size:12px;color:var(--ink-3)}
+.prov .keyrow{grid-column:1 / -1}
+.prov .keyrow input{border:1px solid var(--line);border-radius:var(--radius-s);padding:6px 9px;font:inherit;font-size:13px;background:#fff}
+.prov .pstat{grid-column:1 / -1;font-size:12px;color:var(--ink-3)}
+.prov .pstat:empty{display:none}
+.prov .pstat.ok{color:#1F6B47;font-weight:700}.prov .pstat.bad{color:var(--danger);font-weight:700}
+.ordet{margin-top:10px;font-size:13px}
+.ordet summary{cursor:pointer;font-weight:700;color:var(--ink-2)}
+@media (max-width:560px){.prov{grid-template-columns:1fr}}
 
 /* transcript: tools taught */
 .trhint{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0 0;padding:9px 12px;border:1px dashed var(--line);border-radius:var(--radius-s);font-size:13px;color:var(--ink-2)}
@@ -844,33 +856,30 @@ tbody tr.rv{animation:rise .32s ease both}
 
 <!-- AI settings -->
 <div class="modal" id="mAI" role="dialog" aria-modal="true" aria-labelledby="mAIT">
-  <div class="dlg" style="width:min(580px,100%)">
+  <div class="dlg" style="width:min(640px,100%)">
     <div class="dh"><b id="mAIT">AI question sorting</b><button class="btn quiet sm" data-close>Close</button></div>
     <div class="db">
-      <p>OpenRouter sorts every question into an exact type, merges repeats into top questions and writes takeaways. Only question text is sent: no names, and phone numbers and emails are masked. Labels are cached in this browser, so the same question is never paid for twice.</p>
-      <div class="field">
-        <label for="aiKey">OpenRouter API key</label>
-        <div class="keyrow"><input type="password" id="aiKey" autocomplete="off" spellcheck="false" placeholder="sk-or-v1-…"><button class="btn sm" id="aiKeyShow" type="button">Show</button></div>
-        <span class="help">Make a separate key at openrouter.ai/keys and give it a small credit limit.</span>
-      </div>
-      <label class="check"><input type="checkbox" id="aiRemember" checked> Remember the key in this browser</label>
-      <label class="check"><input type="checkbox" id="aiFree" checked> Free models only: $0, up to 50 requests a day</label>
-      <span class="help" style="display:block;margin:-2px 0 0 24px">A full sort of a two-session chat fits in one day. Free models can be slower or busy at peak hours, and their providers may log prompts.</span>
-      <div class="field" style="margin-top:10px">
-        <label for="aiModel">Model</label>
-        <input type="text" id="aiModel" list="aiModels" spellcheck="false" autocomplete="off">
-        <datalist id="aiModels"></datalist>
-        <span class="help" id="aiModelNote"></span>
-      </div>
+      <p>Add any free keys you have. The app always uses the best model first and moves to the next one by itself when a model is busy, used up for today, or can’t be reached. Only question text is sent: no names, and phone numbers and emails are masked. Keys stay in this browser and are never written into the file.</p>
+      <div class="provs" id="provList"></div>
+      <label class="check"><input type="checkbox" id="aiRemember" checked> Remember the keys in this browser</label>
+      <p class="help" id="aiOrder" style="margin:8px 0 0"></p>
+      <details class="ordet"><summary>OpenRouter options</summary>
+        <label class="check"><input type="checkbox" id="aiFree" checked> Free OpenRouter models only</label>
+        <div class="field" style="margin-top:8px">
+          <label for="aiModel">OpenRouter model (blank picks the best free one)</label>
+          <input type="text" id="aiModel" list="aiModels" spellcheck="false" autocomplete="off">
+          <datalist id="aiModels"></datalist>
+          <span class="help" id="aiModelNote"></span>
+        </div>
+      </details>
       <div class="aistat" id="aiStat" aria-live="polite"></div>
       <pre class="qtest" id="aiTestOut" hidden></pre>
     </div>
     <div class="df">
-      <button class="btn quiet" id="aiForget">Forget key</button>
+      <button class="btn quiet" id="aiForget">Forget all keys</button>
       <button class="btn quiet" id="aiClear" title="Drop every cached AI label and go back to keyword rules">Clear AI labels</button>
       <span class="grow"></span>
-      <button class="btn" id="aiTest">Check key</button>
-      <button class="btn" id="aiTry" title="Send one small request with the saved key and model">Test AI</button>
+      <button class="btn" id="aiTry" title="Save, then send one small request to each provider">Test all</button>
       <button class="btn primary" id="aiSave">Save</button>
     </div>
   </div>
@@ -2575,8 +2584,8 @@ const FREE_FALLBACK = 'meta-llama/llama-3.3-70b-instruct:free';
 const FREE_GAP_MS = 3300;            // free models allow 20 requests a minute; stay under it
 const REQ_LS = 'zca.orreq';
 const freeMode = () => prefs.ai.free !== false;   // free models are the default
-const batchSize = () => freeMode() ? 80 : 60;     // big enough to stay inside the 50 free daily requests, small enough not to get cut off
-const par = () => freeMode() ? 2 : 5;
+const batchSize = () => 80;     // big enough to stay inside the 50 free daily requests, small enough not to get cut off
+const par = () => 2;
 const freeDaily = () => prefs.ai.freeDaily || 50;
 function utcDay(){ return new Date().toISOString().slice(0, 10); }
 function reqUsed(){ try { const r = JSON.parse(localStorage.getItem(REQ_LS) || '{}'); return r.day === utcDay() ? (+r.n || 0) : 0; } catch(e){ return 0; } }
@@ -2691,7 +2700,7 @@ function onlyQ(sel){
 function shortModel(id){ return String(id).split('/').pop(); }
 function fmtUsd(x){ if (x == null || !isFinite(x)) return ''; return x < 0.01 ? 'under $0.01' : '≈ $' + (x < 1 ? x.toFixed(2) : x.toFixed(1)); }
 function estimate(pending){
-  if (freeMode()) {
+  if (true) {
     const big = new Map(); pending.forEach(p => big.set(p.rule, (big.get(p.rule) || 0) + 1));
     const grp = new Map(); allQueryMsgs().forEach(m => { const g = m.atool || m.qtype; grp.set(g, (grp.get(g) || 0) + 1); });
     const merges = Math.min(12, [...grp.values()].filter(n => n >= 15).length);
@@ -2713,7 +2722,7 @@ function renderProgress(){
   const pct = AI.phase === 'sort' && AI.total ? Math.round(100 * AI.done / AI.total) : 100;
   $('#qBar').style.width = pct + '%';
   box.classList.toggle('busy', AI.phase !== 'sort');
-  $('#qProgT').textContent = AI.phase === 'sort' ? `Sorting ${fmtN(AI.done)} of ${fmtN(AI.total)} questions` : AI.phase === 'merge' ? 'Merging repeat questions' : 'Writing takeaways';
+  $('#qProgT').textContent = AI.phase === 'prep' ? 'Checking your AI keys' : AI.phase === 'sort' ? `Sorting ${fmtN(AI.done)} of ${fmtN(AI.total)} questions` : AI.phase === 'merge' ? 'Merging repeat questions' : 'Writing takeaways';
 }
 function renderQPanel(msgs){
   const panel = $('#qPanel');
@@ -2723,14 +2732,14 @@ function renderQPanel(msgs){
   $('#qSub').textContent = `${fmtN(st.qs.length)} questions that fit no other topic, from ${fmtN(st.people)} ${st.people === 1 ? 'person' : 'people'}`;
   const pct = st.qs.length ? Math.round(100 * st.aiN / st.qs.length) : 0;
   const mode = $('#qMode');
-  mode.textContent = !st.aiN ? 'Keyword rules' : pct >= 99 ? `AI · ${shortModel(model())}` : `${pct}% AI-sorted`;
+  mode.textContent = !st.aiN ? 'Keyword rules' : pct >= 99 ? `AI-sorted${AI.lastModel ? ' · ' + AI.lastModel : ''}` : `${pct}% AI-sorted`;
   mode.classList.toggle('ai', st.aiN > 0);
 
   const pending = AI.running ? [] : collectPending();
   const btn = $('#qRun');
   btn.disabled = AI.running || (!pending.length && !st.aiN);
   btn.textContent = AI.running ? 'Sorting…' : !st.aiN ? 'Sort with AI' : pending.length ? `Sort ${fmtN(pending.length)} new with AI` : 'Refresh with AI';
-  btn.title = pending.length ? `Send ${fmtN(pending.length)} unique questions to ${model()}` : 'Re-merge the top questions and rewrite the takeaways';
+  btn.title = pending.length ? `Send ${fmtN(pending.length)} unique questions to your free AI models, best first` : 'Re-merge the top questions and rewrite the takeaways';
   renderProgress();
 
   const sel = selQ();
@@ -2744,14 +2753,14 @@ function renderQPanel(msgs){
   if (AI.running || AI.err) note.textContent = '';
   else if (!st.aiN) {
     const est = estimate(pending);
-    note.textContent = !aiKey()
-      ? 'Sorted by keyword rules, instantly and offline. Add an OpenRouter key in AI settings to sort every question exactly, merge repeats into top questions and get takeaways.'
-      : est.free
-        ? `Sorted by keyword rules. Sort with AI on a free model (${shortModel(model())}) for exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, about ${est.reqs} requests of your ${freeDaily()} free requests a day${reqUsed() ? ` (${reqUsed()} used today)` : ''}. Takes a few minutes.${est.reqs > freeDaily() - reqUsed() ? ' That’s more than today’s limit allows: it sorts what it can, saves it, and you finish tomorrow.' : ''}`
+    note.textContent = !anyKey()
+      ? 'Sorted by keyword rules, instantly and offline. Add a free AI key (Gemini, Groq, OpenRouter…) in AI settings to sort every question exactly, merge repeats into top questions and get takeaways.'
+      : true
+        ? `Sorted by keyword rules. Sort with AI for exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, about ${est.reqs} requests, sent to your best free model first (${PROV_ORDER.filter(provOn).map(p => PROV[p].name).join(', ')}). Takes a few minutes.`
         : `Sorted by keyword rules. Sort with AI to get exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, ${est.reqs} ${est.reqs === 1 ? 'request' : 'requests'}${est.usd != null ? ', ' + fmtUsd(est.usd) : ''}.`;
-    if (aiKey() && !AI.models) loadModels().then(() => scheduleQRender()).catch(() => {});
+
   }
-  else if (pending.length) note.textContent = `${fmtN(pending.length)} questions are not AI-sorted yet and still use keyword rules.${freeMode() ? ` Free requests used today: ${reqUsed()} of ${freeDaily()}.` : ''}`;
+  else if (pending.length) note.textContent = `${fmtN(pending.length)} questions are not AI-sorted yet and still use keyword rules.`;
   else note.textContent = 'Click a question to see who asked it. Tick types or intents to combine them.';
 
   // intent strip + legend
@@ -2985,16 +2994,16 @@ function itemsOf(obj){
 }
 async function classifyBatch(b, signal, split){
   const user = b.map((p, i) => `${i + 1}. ${redact(p.text)}${p.screen ? ` [on screen: ${p.screen}]` : ''}`).join('\n');
-  let arr = [], lastText = '';
+  let arr = [], lastText = '', lastRoute = null;
   for (let attempt = 0; attempt < (freeMode() ? 1 : 2) && !arr.length; attempt++){
-    const r = await orChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:user }], { signal, maxTokens:300 + b.length * 70 });
-    lastText = r.text;
+    const r = await aiChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:user }], { signal, maxTokens:300 + b.length * 70 });
+    lastText = r.text; lastRoute = r.route;
     arr = itemsOf(parseLoose(r.text));
   }
   if (!arr.length) {
     AI.stats.why.parse = (AI.stats.why.parse || 0) + 1;
-    AI.stats.last = `${model()} answered, but not in the expected format: “${clean(lastText).slice(0, 160)}”`;
-    if (freeMode()) switchFree(model());   // this free model isn't following the format: try the next one
+    AI.stats.last = `${lastRoute ? lastRoute.label : 'The model'} answered, but not in the expected format: “${clean(lastText).slice(0, 160)}”`;
+    if (lastRoute) { RT.dead[lastRoute.key] = 'format'; bump(lastRoute, 'format'); }   // this model isn't following the format: use the next one
     // one more go in two smaller halves: long batches are where free models slip
     if (!split && b.length >= 10) { const h = Math.ceil(b.length / 2); return (await classifyBatch(b.slice(0, h), signal, true)) + (await classifyBatch(b.slice(h), signal, true)); }
     return 0;
@@ -3033,7 +3042,7 @@ async function mergePhase(signal){
     jobs.push(async () => {
       if (signal.aborted) return;
       try {
-        const r = await orChat([{ role:'system', content:SYS_MERGE }, { role:'user', content:head + '\n\n' + list.map((e, i) => `${i + 1}. ${e.q} (${e.ppl.size})`).join('\n') }], { signal, maxTokens:6500 });
+        const r = await aiChat([{ role:'system', content:SYS_MERGE }, { role:'user', content:head + '\n\n' + list.map((e, i) => `${i + 1}. ${e.q} (${e.ppl.size})`).join('\n') }], { signal, maxTokens:6500 });
         const obj = parseLoose(r.text);
         const cl = Array.isArray(obj) ? obj : (obj && (obj.c || obj.clusters || obj.groups)) || [];
         for (const c of cl){
@@ -3055,7 +3064,7 @@ async function takeawaysPhase(signal){
     types:st.types.filter(t => t.id !== 'unclear').map(t => ({ type:t.def.label, people:t.p, messages:t.n, top:t.clist.slice(0, 5).map(c => ({ q:c.label, people:c.p })) })),
     moments:(HS.moments || []).slice(0, 6).map(c => ({ what:c.title, when:c.when, during:c.during, evidence:c.head })),
     tools:trStats(pool()).tools.filter(e => e.tool && e.tool !== '__other').slice(0, 10).map(e => ({ tool:e.tool, questions:e.n, people:e.ppl.size, top:mostAsked(e.msgs, 4).map(x => ({ q:x.label, people:x.ppl.size })) })) };
-  const r = await orChat([{ role:'system', content:SYS_TAKE }, { role:'user', content:JSON.stringify(brief) }], { signal, maxTokens:1500 });
+  const r = await aiChat([{ role:'system', content:SYS_TAKE }, { role:'user', content:JSON.stringify(brief) }], { signal, maxTokens:1500 });
   const obj = parseLoose(r.text);
   const k = Array.isArray(obj) ? obj : (obj && (obj.k || obj.takeaways)) || [];
   const items = k.slice(0, 5).map(x => ({ owner:/sales/i.test(x && x.owner) ? 'Sales' : /support|host/i.test(x && x.owner) ? 'Support' : 'Trainer', text:clean(x && x.text).slice(0, 280) })).filter(x => x.text);
@@ -3063,10 +3072,10 @@ async function takeawaysPhase(signal){
 }
 async function runAI(){
   if (AI.running) return;
-  if (!aiKey()) { openAI(); toast('Add your OpenRouter key first'); return; }
-  await loadModels().catch(() => {});
-  AI.freeCur = ''; AI.freeTried = new Set(); AI.jsonMode = true; AI.noReasoning = false;
-  AI.stats = { sent:0, ok:0, why:{}, last:'' };
+  if (!anyKey()) { openAI(); toast('Add at least one free AI key first'); return; }
+  AI.stats = { sent:0, ok:0, why:{}, last:'', by:{} };
+  AI.running = true; AI.err = ''; AI.phase = 'prep'; renderQPanel(pool());
+  rtReset(); await discoverModels();
   const pending = collectPending();
   AI.running = true; AI.err = ''; AI.ctl = new AbortController();
   const signal = AI.ctl.signal;
@@ -3109,7 +3118,10 @@ async function runAI(){
 // what happened, in plain words, so a failed run is never silent
 function runReport(){
   const st = AI.stats || { sent:0, ok:0, why:{} }, w = st.why, parts = [];
-  if (w.rate) parts.push(`${w.rate} busy (free models rate-limited)`);
+  if (w.rate) parts.push(`${w.rate} busy (rate-limited)`);
+  if (w.blocked) parts.push(`${w.blocked} blocked by the browser`);
+  if (w.auth) parts.push(`${w.auth} key rejected`);
+  if (w.model) parts.push(`${w.model} model not available`);
   if (w.daily) parts.push('daily free limit reached');
   if (w.server) parts.push(`${w.server} server errors`);
   if (w.empty) parts.push(`${w.empty} empty answers`);
@@ -3118,114 +3130,299 @@ function runReport(){
   if (w.other) parts.push(`${w.other} other errors`);
   if (!st.sent) return '';
   const last = st.last ? ' Last problem: ' + st.last + (/[.!?”"]$/.test(st.last) ? '' : '.') : '';
-  return `Requests: ${st.sent} sent, ${st.ok} answered${parts.length ? '; ' + parts.join(', ') : ''}.${last}`;
+  const per = routeReport();
+  return `Requests: ${st.sent} sent, ${st.ok} answered${parts.length ? '; ' + parts.join(', ') : ''}.${last}${per ? '\n' + per : ''}`;
 }
 AI.stats = { sent:0, ok:0, why:{}, last:'' };
 $('#qRun').onclick = runAI;
 $('#qStop').onclick = () => { if (AI.ctl) AI.ctl.abort(); };
-async function testAI(out){
-  out.hidden = false;
-  if (!aiKey()) { out.textContent = 'No key saved. Open AI settings, paste your OpenRouter key, then Save.'; return; }
-  out.textContent = 'Sending one small test request…';
-  await loadModels().catch(() => {});
-  AI.freeCur = ''; AI.freeTried = new Set(); AI.jsonMode = true; AI.noReasoning = false;
-  AI.stats = { sent:0, ok:0, why:{}, last:'' };
-  const sample = collectPending().slice(0, 3);
-  const b = sample.length ? sample : [{ k:'__t1', text:'is this tool free?', rule:'free_limits' }, { k:'__t2', text:'how to publish the website', rule:'build_deploy' }];
-  const t0 = Date.now();
-  try {
-    const got = await classifyBatch(b, new AbortController().signal, true);
-    const secs = ((Date.now() - t0) / 1000).toFixed(1);
-    if (!sample.length) b.forEach(p => delete AI.items[p.k]); else { saveQCache(); applyAll(); }
-    out.textContent = got
-      ? `Working. ${model()} answered in ${secs}s and sorted ${got} of ${b.length} questions.${freeMode() ? `\nFree requests used today (counted in this browser): ${reqUsed()}.` : ''}\nIf a full run still stops, the reason is shown above after the run.`
-      : `${model()} answered in ${secs}s but the answer couldn’t be read.\n${AI.stats.last || ''}\nTry another model in AI settings.`;
-  } catch(e){
-    out.textContent = `Not working: ${e.message}\n${AI.stats.last ? 'Details: ' + AI.stats.last : ''}\nModel: ${model()}${freeMode() ? ' (free models only)' : ''}`;
-  }
-}
+async function testAI(out){ if (!anyKey()) { out.hidden = false; out.textContent = 'No keys saved. Open AI settings, paste at least one key, then Save.'; return; } await testProviders(out); }
 $('#qRetry').onclick = () => { AI.err = ''; runAI(); };
 $('#qTest').onclick = () => testAI($('#qTestOut'));
 $('#qAlertSet').onclick = openAI;
 
+/* ---------- several free AI providers, best model first, automatic fallback ----------
+   Keys are typed into AI settings and kept in this browser only, never in this file. */
+const PROV = {
+  gemini:     { name:'Google Gemini', ph:'AIza…', free:'Free tier: about 250 requests a day on 2.5 Flash, more on Flash-Lite', gap:6500, keyRe:/^AIza[\w-]{20,}$/ },
+  groq:       { name:'Groq',          ph:'gsk_…', free:'Free tier: around 1,000 requests a day on Llama 3.3 70B, more on smaller models', gap:2500, keyRe:/^gsk_\w{20,}$/ },
+  mistral:    { name:'Mistral',       ph:'Mistral key', free:'Free “Experiment” plan. Mistral blocks calls from web pages, so it may be skipped', gap:1300, keyRe:/^\w{20,}$/ },
+  cohere:     { name:'Cohere',        ph:'Cohere key', free:'Trial key: 20 requests a minute, 1,000 a month', gap:3300, keyRe:/^\w{20,}$/ },
+  openrouter: { name:'OpenRouter',    ph:'sk-or-v1-…', free:'Free models: 50 requests a day (1,000 after a one-time $10 top-up)', gap:3300, keyRe:/^sk-or-/ }
+};
+const PROV_ORDER = ['gemini', 'groq', 'mistral', 'cohere', 'openrouter'];
+// best to worst across every provider; models a key can't use are skipped automatically
+const ROUTE_RANK = [
+  ['gemini', 'gemini-2.5-flash'], ['groq', 'llama-3.3-70b-versatile'], ['mistral', 'mistral-medium-latest'], ['cohere', 'command-a-03-2025'],
+  ['groq', 'openai/gpt-oss-120b'], ['gemini', 'gemini-2.5-flash-lite'], ['mistral', 'mistral-small-latest'], ['openrouter', '@free1'],
+  ['gemini', 'gemini-2.0-flash'], ['groq', 'meta-llama/llama-4-scout-17b-16e-instruct'], ['openrouter', '@free2'], ['cohere', 'command-r-08-2024'],
+  ['mistral', 'open-mistral-nemo'], ['groq', 'llama-3.1-8b-instant'], ['openrouter', '@free3'], ['cohere', 'command-r7b-12-2024']
+];
+const DEAD_LS = 'zca.dead';
+const RT = { cool:{}, dead:{}, pdead:{}, next:{}, extraGemini:[] };
+prefs.ai.prov = prefs.ai.prov || {};
+function provKey(p){
+  if (p === 'openrouter') return aiKey();
+  let k = ''; try { k = localStorage.getItem('zca.key.' + p) || sessionStorage.getItem('zca.key.' + p) || ''; } catch(e){}
+  return k || (AI.mem && AI.mem[p]) || '';
+}
+function setProvKey(p, k, remember){
+  if (p === 'openrouter') return setAiKey(k, remember);
+  AI.mem = AI.mem || {}; AI.mem[p] = k || '';
+  try { localStorage.removeItem('zca.key.' + p); sessionStorage.removeItem('zca.key.' + p); if (k) (remember ? localStorage : sessionStorage).setItem('zca.key.' + p, k); } catch(e){}
+}
+const provOn = (p) => !!provKey(p) && (prefs.ai.prov[p] || {}).on !== false;
+function anyKey(){ return PROV_ORDER.some(provOn); }
+// models that ran out for today stay skipped until midnight UTC (5:30 AM IST)
+function loadDead(){ try { const d = JSON.parse(localStorage.getItem(DEAD_LS) || '{}'); return d.day === utcDay() ? d.keys || {} : {}; } catch(e){ return {}; } }
+function markDeadToday(key){ const d = loadDead(); d[key] = 1; try { localStorage.setItem(DEAD_LS, JSON.stringify({ day:utcDay(), keys:d })); } catch(e){} }
+function routes(){
+  const out = [];
+  const add = (p, m) => { if (provOn(p) && !out.some(r => r.p === p && r.m === m)) out.push({ p, m, key:p + ':' + m, label:`${PROV[p].name} ${m.replace(/^.*\//, '')}` }); };
+  for (const g of RT.extraGemini) add('gemini', g);      // newer Gemini Flash models found on the key go first
+  for (const [p, m] of ROUTE_RANK){
+    if (p === 'openrouter') {
+      const i = +m.slice(5) - 1;
+      const id = freeMode() ? (i === 0 && prefs.ai.freeModel ? prefs.ai.freeModel : AI.freeList[i] || (i === 0 ? FREE_FALLBACK : '')) : (i === 0 ? model() : '');
+      if (id) add('openrouter', id);
+    } else add(p, m);
+  }
+  return out;
+}
+function rtReset(){ RT.cool = {}; RT.dead = { ...loadDead() }; RT.pdead = {}; }
+function pickRoute(){
+  const now = Date.now();
+  return routes().find(r => !RT.dead[r.key] && !RT.pdead[r.p] && !((RT.cool[r.key] || 0) > now)) || null;
+}
+function soonestCool(){
+  const live = routes().filter(r => !RT.dead[r.key] && !RT.pdead[r.p]);
+  const t = live.map(r => RT.cool[r.key] || 0).filter(x => x > Date.now());
+  return live.length && t.length === live.length ? Math.min(...t) : null;
+}
+function provErr(kind, message, retryAfter){ const e = new Error(message); e.kind = kind; e.retry = retryAfter || 0; return e; }
+function kindOf(st, msg){
+  const m = String(msg || '');
+  if (st === 401 || /api key not valid|invalid api key|invalid_api_key|unauthorized|API_KEY_INVALID/i.test(m)) return 'auth';
+  if (st === 429 || /quota|rate limit|too many requests|RESOURCE_EXHAUSTED/i.test(m)) return /per ?day|daily|RPD|TPD|per month|monthly|1000 api calls/i.test(m) ? 'daily' : 'rate';
+  if (st === 403) return 'auth';
+  if (st === 404 || /model.*(not found|does not exist|decommissioned|not supported|unknown)|no endpoints found|is not found/i.test(m)) return 'model';
+  if (st >= 500 || st === 408) return 'server';
+  return 'other';
+}
+async function doFetch(p, url, init){
+  let res, data;
+  try { res = await fetch(url, init); }
+  catch(e){
+    if (init.signal && init.signal.aborted) throw provErr('abort', 'Stopped');
+    throw provErr('blocked', navigator.onLine === false ? 'You seem to be offline' : `${PROV[p].name} can’t be reached from a web page (the provider blocks browser calls, or the network failed)`);
+  }
+  data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const msg = (data && (data.error && (data.error.message || data.error) || data.message || data.detail)) || res.statusText || '';
+    throw provErr(kindOf(res.status, msg), `${PROV[p].name} said HTTP ${res.status}${msg ? ': ' + String(msg).slice(0, 220) : ''}`, +(res.headers.get('retry-after') || 0));
+  }
+  return data;
+}
+const orInfo = (id) => AI.models && AI.models.find(x => x.id === id);
+async function callRoute(r, messages, opts, signal){
+  const key = provKey(r.p), maxT = Math.min(8000, opts.maxTokens || 4096);
+  if (r.p === 'gemini') {
+    const sys = messages.filter(m => m.role === 'system').map(m => m.content).join('\n\n');
+    const gen = { temperature:0, maxOutputTokens:maxT, responseMimeType:'application/json' };
+    if (/2\.5-flash/.test(r.m) && !RT['nothink:' + r.m]) gen.thinkingConfig = { thinkingBudget:0 };
+    const body = { contents:messages.filter(m => m.role !== 'system').map(m => ({ role:m.role === 'assistant' ? 'model' : 'user', parts:[{ text:m.content }] })), generationConfig:gen };
+    if (sys) body.systemInstruction = { parts:[{ text:sys }] };
+    let data;
+    try { data = await doFetch(r.p, `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(r.m)}:generateContent`, { method:'POST', headers:{ 'Content-Type':'application/json', 'x-goog-api-key':key }, body:JSON.stringify(body), signal }); }
+    catch(e){ if (e.kind === 'other' && /thinking/i.test(e.message) && gen.thinkingConfig) { RT['nothink:' + r.m] = 1; return callRoute(r, messages, opts, signal); } throw e; }
+    const c = (data.candidates || [])[0];
+    const text = c && c.content && (c.content.parts || []).map(x => x.text || '').join('');
+    if (!text) throw provErr('empty', `${r.label} sent back an empty answer${c && c.finishReason ? ' (' + c.finishReason + ')' : ''}`);
+    return text;
+  }
+  if (r.p === 'cohere') {
+    const body = { model:r.m, messages, temperature:0, max_tokens:Math.min(4000, maxT), response_format:{ type:'json_object' } };
+    const data = await doFetch(r.p, 'https://api.cohere.com/v2/chat', { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + key }, body:JSON.stringify(body), signal });
+    const text = data.message && (data.message.content || []).map(x => x.text || '').join('');
+    if (!text) throw provErr('empty', `${r.label} sent back an empty answer`);
+    return text;
+  }
+  // OpenAI-style: Groq, Mistral, OpenRouter
+  const url = r.p === 'groq' ? 'https://api.groq.com/openai/v1/chat/completions' : r.p === 'mistral' ? 'https://api.mistral.ai/v1/chat/completions' : OR_BASE + '/chat/completions';
+  const body = { model:r.m, messages, temperature:0, max_tokens:maxT };
+  const info = r.p === 'openrouter' ? orInfo(r.m) : null;
+  if (!RT['nojson:' + r.key] && (r.p !== 'openrouter' || !info || !info.params || info.params.includes('response_format'))) body.response_format = { type:'json_object' };
+  if (r.p === 'groq' && /gpt-oss/.test(r.m)) body.reasoning_effort = 'low';
+  if (r.p === 'openrouter' && info && info.reasoning && !RT['noreason:' + r.key]) body.reasoning = info.reasoning.mandatory ? { effort:'low' } : { enabled:false };
+  let data;
+  try { data = await doFetch(r.p, url, { method:'POST', headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + key }, body:JSON.stringify(body), signal }); }
+  catch(e){
+    if (e.kind === 'other' && body.response_format && /response_format|json/i.test(e.message)) { RT['nojson:' + r.key] = 1; return callRoute(r, messages, opts, signal); }
+    if (e.kind === 'other' && body.reasoning && /reasoning|thinking|effort/i.test(e.message)) { RT['noreason:' + r.key] = 1; return callRoute(r, messages, opts, signal); }
+    throw e;
+  }
+  const ch = data.choices && data.choices[0];
+  let text = ch && ch.message && ch.message.content;
+  if (Array.isArray(text)) text = text.map(x => x.text || '').join('');
+  if (!text) throw provErr('empty', `${r.label} sent back an empty answer${ch && ch.finish_reason ? ' (' + ch.finish_reason + ')' : ''}`);
+  return String(text);
+}
+function bump(r, what){ const s = AI.stats; s.by = s.by || {}; const b = s.by[r.label] = s.by[r.label] || {}; b[what] = (b[what] || 0) + 1; }
+// one request, sent to the best model that is free to take it right now
+async function aiChat(messages, opts){
+  opts = opts || {};
+  const signal = opts.signal;
+  for (let tries = 0; tries < 24; tries++){
+    if (signal && signal.aborted) throw aiErr('abort', 'Stopped');
+    const r = pickRoute();
+    if (!r) {
+      const t = soonestCool();
+      if (t && t - Date.now() <= 90000) { await sleep(t - Date.now() + 200); continue; }
+      throw aiErr('fatal', anyKey() ? 'Every free model is busy or used up for today. Sorted questions are saved; try again later (daily limits reset at 5:30 AM IST).' : 'Add at least one API key in AI settings.');
+    }
+    const wait = (RT.next[r.p] || 0) - Date.now();
+    RT.next[r.p] = Math.max(Date.now(), RT.next[r.p] || 0) + PROV[r.p].gap;
+    if (wait > 0) await sleep(wait);
+    if (signal && signal.aborted) throw aiErr('abort', 'Stopped');
+    AI.stats.sent++; if (r.p === 'openrouter' && freeMode()) setReqUsed(reqUsed() + 1);
+    const ctl = new AbortController(); const onAbort = () => ctl.abort();
+    if (signal) signal.addEventListener('abort', onAbort, { once:true });
+    const timer = setTimeout(() => ctl.abort(), 120000);
+    try {
+      const text = await callRoute(r, messages, opts, ctl.signal);
+      AI.stats.ok++; bump(r, 'answered'); AI.lastModel = r.label;
+      return { text, route:r };
+    } catch(e){
+      if (signal && signal.aborted) throw aiErr('abort', 'Stopped');
+      const k = e.kind === 'abort' ? 'server' : e.kind || 'other';     // our own 2-minute timeout counts as a server problem
+      AI.stats.why[k] = (AI.stats.why[k] || 0) + 1; AI.stats.last = e.message; bump(r, k);
+      if (k === 'auth' || k === 'blocked') RT.pdead[r.p] = k;
+      else if (k === 'daily') { RT.dead[r.key] = 'daily'; markDeadToday(r.key); }
+      else if (k === 'model') { RT.dead[r.key] = 'model'; markDeadToday(r.key); }
+      else if (k === 'rate') RT.cool[r.key] = Date.now() + Math.min(120, e.retry || 60) * 1000;
+      else if (k === 'server' || k === 'empty') RT.cool[r.key] = Date.now() + 30000;
+      else RT.dead[r.key] = 'other';
+    } finally { clearTimeout(timer); if (signal) signal.removeEventListener('abort', onAbort); }
+  }
+  throw aiErr('fatal', 'Too many failed attempts in a row. ' + (AI.stats.last || ''));
+}
+// what each key can actually use (newer Gemini Flash models are added on top)
+async function discoverModels(){
+  const tasks = [];
+  if (provOn('gemini')) tasks.push(fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200', { headers:{ 'x-goog-api-key':provKey('gemini') } }).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || !j.models) return;
+    const ids = j.models.filter(m => (m.supportedGenerationMethods || []).includes('generateContent')).map(m => m.name.replace(/^models\//, ''));
+    const ver = (id) => parseFloat((id.match(/gemini-([\d.]+)/) || [])[1] || 0);
+    RT.extraGemini = ids.filter(id => /^gemini-[\d.]+-flash$/.test(id) && ver(id) > 2.5).sort((a, b) => ver(b) - ver(a)).slice(0, 2);
+    for (const [p, m] of ROUTE_RANK) if (p === 'gemini' && !ids.includes(m)) RT.dead[p + ':' + m] = 'model';
+  }).catch(() => {}));
+  if (freeMode() && provOn('openrouter')) tasks.push(loadModels().catch(() => {}));
+  await Promise.all(tasks);
+}
+function routeReport(){
+  const by = (AI.stats && AI.stats.by) || {};
+  const words = { answered:'answered', rate:'busy', daily:'used up for today', model:'not available', server:'server errors', empty:'empty answers', format:'unreadable answers', auth:'key rejected', blocked:'blocked by the browser', other:'other errors' };
+  return Object.entries(by).map(([label, c]) => `${label}: ${Object.entries(c).map(([k, n]) => k === 'auth' || k === 'blocked' ? words[k] : `${n} ${words[k] || k}`).join(', ')}`).join('\n');
+}
+
 /* ---------- AI settings ---------- */
 function setAiStat(kind, text){ const el = $('#aiStat'); el.className = 'aistat' + (kind ? ' ' + kind : ''); el.textContent = text; }
-function priceStr(m){
-  const p = +m.pricing.prompt || 0, c = +m.pricing.completion || 0;
-  if (!p && !c) return 'free';
-  return `$${(p * 1e6).toFixed(2)} in, $${(c * 1e6).toFixed(2)} out per million tokens`;
-}
+function priceStr(m){ const p = +m.pricing.prompt || 0, c = +m.pricing.completion || 0; return !p && !c ? 'free' : `$${(p * 1e6).toFixed(2)} in, $${(c * 1e6).toFixed(2)} out per million tokens`; }
 function noteModel(){
   const id = $('#aiModel').value.trim(), m = AI.models && AI.models.find(x => x.id === id);
-  const free = $('#aiFree').checked;
-  if (!AI.models) { $('#aiModelNote').textContent = ''; return; }
-  if (!m) { $('#aiModelNote').textContent = 'Not in OpenRouter’s model list. Check the id.'; return; }
-  if (free && !isFree(m)) { $('#aiModelNote').textContent = `${m.name} is a paid model. Pick one ending in :free, or untick “Free models only”.`; return; }
-  $('#aiModelNote').textContent = free ? `${m.name}: free. If it’s busy, the app moves to the next free model.` : `${m.name}: ${priceStr(m)}`;
+  $('#aiModelNote').textContent = !id ? `Automatic: ${AI.freeList.slice(0, 3).join(', ') || FREE_FALLBACK}` : !AI.models ? '' : !m ? 'Not in OpenRouter’s model list. Check the id.' : $('#aiFree').checked && !isFree(m) ? `${m.name} is paid. Pick one ending in :free.` : `${m.name}: ${priceStr(m)}`;
 }
-function fillModelList(){
-  if (!AI.models) return;
-  const free = $('#aiFree').checked;
-  $('#aiModels').innerHTML = AI.models.filter(m => !free || isFree(m)).map(m => `<option value="${escH(m.id)}">${escH(m.name)}</option>`).join('');
+function fillModelList(){ if (AI.models) $('#aiModels').innerHTML = AI.models.filter(m => !$('#aiFree').checked || isFree(m)).map(m => `<option value="${escH(m.id)}">${escH(m.name)}</option>`).join(''); }
+function renderProvRows(){
+  $('#provList').innerHTML = PROV_ORDER.map(p => {
+    const v = PROV[p], k = provKey(p), on = (prefs.ai.prov[p] || {}).on !== false;
+    return `<div class="prov" data-p="${p}">
+      <label class="pe"><input type="checkbox" data-en ${on ? 'checked' : ''}><b>${escH(v.name)}</b></label>
+      <span class="pfree">${escH(v.free)}</span>
+      <div class="keyrow"><input type="password" data-key value="${escH(k)}" placeholder="${escH(v.ph)}" autocomplete="off" spellcheck="false" aria-label="${escH(v.name)} API key"><button class="btn sm" data-show type="button">Show</button></div>
+      <span class="pstat" data-stat></span>
+    </div>`;
+  }).join('');
+  $('#provList').querySelectorAll('[data-show]').forEach(b => b.onclick = () => { const i = b.previousElementSibling; const sh = i.type === 'password'; i.type = sh ? 'text' : 'password'; b.textContent = sh ? 'Hide' : 'Show'; });
 }
-function modeDefault(free){ return free ? (prefs.ai.freeModel || freeDefault()) : (prefs.ai.model || AI.autoModel || MODEL_FALLBACK); }
+function orderLine(){ const r = routes().filter(x => !RT.dead[x.key] && !(RT.tested || {})[x.p]); $('#aiOrder').textContent = r.length ? 'Order used, best first: ' + r.map(x => x.label).join(' → ') : 'Add at least one key to use AI sorting.'; }
+function readProvRows(){
+  const remember = $('#aiRemember').checked;
+  $('#provList').querySelectorAll('.prov').forEach(row => {
+    const p = row.dataset.p, k = row.querySelector('[data-key]').value.trim();
+    prefs.ai.prov[p] = { on:row.querySelector('[data-en]').checked };
+    setProvKey(p, k, remember);
+  });
+  prefs.ai.remember = remember;
+  prefs.ai.free = $('#aiFree').checked;
+  prefs.ai.freeModel = prefs.ai.free ? $('#aiModel').value.trim() : prefs.ai.freeModel;
+  if (!prefs.ai.free) prefs.ai.model = $('#aiModel').value.trim();
+  savePrefs();
+}
 function openAI(){
-  $('#aiKey').value = aiKey(); $('#aiKey').type = 'password'; $('#aiKeyShow').textContent = 'Show';
+  renderProvRows();
   $('#aiRemember').checked = prefs.ai.remember !== false;
   $('#aiFree').checked = freeMode();
-  AI.freeCur = '';
-  $('#aiModel').value = model();
-  setAiStat('', '');
+  $('#aiModel').value = freeMode() ? (prefs.ai.freeModel || '') : (prefs.ai.model || '');
+  setAiStat('', ''); $('#aiTestOut').hidden = true;
+  orderLine();
   $('#mAI').classList.add('open');
-  setTimeout(() => $('#aiKey').focus(), 30);
-  $('#aiModelNote').textContent = AI.models ? '' : 'Loading OpenRouter’s model list…';
-  loadModels().then(list => {
-    fillModelList();
-    $('#aiModel').value = modeDefault($('#aiFree').checked);
-    noteModel();
-  }).catch(() => { $('#aiModelNote').textContent = 'Couldn’t load the model list. Type a model id from openrouter.ai/models.'; });
+  setTimeout(() => { const f = $('#provList [data-key]'); if (f) f.focus(); }, 30);
+  loadModels().then(() => { fillModelList(); noteModel(); orderLine(); }).catch(() => {});
 }
 $('#qSet').onclick = openAI;
 $('#btnAI').onclick = openAI;
-function syncAiBtn(){ const b = $('#btnAI'); const on = !!aiKey(); b.classList.toggle('on', on); b.title = on ? `AI is set up (${freeMode() ? 'free models' : shortModel(model())}). Click to change.` : 'Add your OpenRouter key to sort questions with AI'; }
+function syncAiBtn(){
+  const b = $('#btnAI'), n = PROV_ORDER.filter(provOn).length;
+  b.classList.toggle('on', n > 0);
+  b.title = n ? `AI is set up with ${n} ${n === 1 ? 'provider' : 'providers'}. Click to change.` : 'Add free AI keys to sort questions with AI';
+}
 syncAiBtn();
 $('#aiModel').addEventListener('input', noteModel);
-$('#aiFree').addEventListener('change', () => { $('#aiModel').value = modeDefault($('#aiFree').checked); fillModelList(); noteModel(); });
-$('#aiKeyShow').onclick = () => { const k = $('#aiKey'); const show = k.type === 'password'; k.type = show ? 'text' : 'password'; $('#aiKeyShow').textContent = show ? 'Hide' : 'Show'; };
+$('#aiFree').addEventListener('change', () => { $('#aiModel').value = ''; fillModelList(); noteModel(); });
+$('#provList').addEventListener('input', () => { readProvRowsSoft(); });
+function readProvRowsSoft(){ /* keep the order line honest while typing */
+  const tmp = {};
+  $('#provList').querySelectorAll('.prov').forEach(row => { tmp[row.dataset.p] = row.querySelector('[data-key]').value.trim(); });
+  const r = PROV_ORDER.filter(p => tmp[p]).map(p => PROV[p].name);
+  $('#aiOrder').textContent = r.length ? 'Providers with a key: ' + r.join(', ') + '. Save to use them.' : 'Add at least one key to use AI sorting.';
+}
 $('#aiSave').onclick = () => {
-  const k = $('#aiKey').value.trim();
-  if (k && !/^sk-or-/.test(k)) { setAiStat('bad', 'That doesn’t look like an OpenRouter key. They start with sk-or-.'); return; }
-  prefs.ai.remember = $('#aiRemember').checked;
-  prefs.ai.free = $('#aiFree').checked;
-  const mv = $('#aiModel').value.trim();
-  // keep "auto" when the pick equals the automatic one, so a retired model gets replaced on its own
-  if (prefs.ai.free) prefs.ai.freeModel = mv === freeDefault() ? '' : mv;
-  else prefs.ai.model = mv === AI.autoModel ? '' : mv;
-  AI.freeCur = '';
-  savePrefs(); setAiKey(k, prefs.ai.remember);
+  readProvRows();
   $('#mAI').classList.remove('open');
-  toast(k ? 'AI settings saved' : 'AI settings saved, no key');
+  toast(anyKey() ? 'AI settings saved' : 'Saved, but no key added yet');
   syncAiBtn(); refreshOverview();
 };
-$('#aiTest').onclick = async () => {
-  const k = $('#aiKey').value.trim();
-  if (!k) { setAiStat('bad', 'Paste a key first.'); return; }
-  setAiStat('', 'Checking the key…');
-  try {
-    const r = await fetch(OR_BASE + '/key', { headers:{ 'Authorization':'Bearer ' + k } });
-    const j = await r.json().catch(() => ({}));
-    if (r.status === 401) { setAiStat('bad', 'OpenRouter rejected this key.'); return; }
-    if (!r.ok || !j.data) { setAiStat('bad', `Couldn’t check the key (HTTP ${r.status}).`); return; }
-    const d = j.data;
-    const used = d.usage != null ? `$${(+d.usage).toFixed(2)} used` : 'Usage unknown';
-    const lim = d.limit != null ? ` of a $${(+d.limit).toFixed(2)} limit.` : '. This key has no credit limit; consider setting one on openrouter.ai.';
-    if (d.is_free_tier === true) prefs.ai.freeDaily = 50; else if (d.is_free_tier === false) prefs.ai.freeDaily = 1000;
-    savePrefs();
-    setAiStat('ok', `Key works. ${used}${lim} Free models: ${freeDaily()} requests a day.`);
-  } catch(e){ setAiStat('bad', 'Couldn’t reach OpenRouter. Check the connection.'); }
-};
-$('#aiTry').onclick = () => testAI($('#aiTestOut'));
-$('#aiForget').onclick = () => { setAiKey('', false); $('#aiKey').value = ''; setAiStat('ok', 'Key removed from this browser.'); syncAiBtn(); refreshOverview(); };
+// one tiny request per provider, so each row says exactly what works
+async function testProviders(out){
+  if (out) { out.hidden = false; out.textContent = 'Testing each provider…'; }
+  rtReset(); AI.stats = { sent:0, ok:0, why:{}, last:'', by:{} };
+  await discoverModels();
+  const sample = [{ k:'__t1', text:'is this tool free?', rule:'free_limits' }, { k:'__t2', text:'how to publish the website', rule:'build_deploy' }];
+  const lines = [];
+  for (const p of PROV_ORDER){
+    const row = document.querySelector(`.prov[data-p="${p}"] [data-stat]`);
+    if (!provKey(p)) { if (row) row.textContent = ''; continue; }
+    if (!provOn(p)) { if (row) { row.textContent = 'Switched off'; row.className = 'pstat'; } continue; }
+    if (row) { row.textContent = 'Testing…'; row.className = 'pstat'; }
+    const saved = RT.pdead; RT.pdead = {}; PROV_ORDER.forEach(o => { if (o !== p) RT.pdead[o] = 'test'; });
+    const t0 = Date.now(); let msg, ok = false;
+    try {
+      const r = await aiChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:sample.map((x, i) => `${i + 1}. ${x.text}`).join('\n') }], { maxTokens:400 });
+      ok = itemsOf(parseLoose(r.text)).length > 0;
+      msg = ok ? `Working: ${r.route.label}, ${((Date.now() - t0) / 1000).toFixed(1)}s` : `Answered but unreadable (${r.route.label})`;
+    } catch(e){ msg = 'Not working: ' + (AI.stats.last || e.message); }
+    RT.pdead = saved;
+    RT.tested = RT.tested || {}; if (ok) delete RT.tested[p]; else RT.tested[p] = 1;
+    if (row) { row.textContent = msg; row.className = 'pstat ' + (ok ? 'ok' : 'bad'); }
+    lines.push(`${PROV[p].name}: ${msg}`);
+  }
+  if (out) out.textContent = lines.length ? lines.join('\n') : 'No keys saved yet. Open AI settings and paste at least one.';
+  orderLine();
+  return lines;
+}
+$('#aiTry').onclick = async () => { readProvRows(); syncAiBtn(); await testProviders($('#aiTestOut')); };
+$('#aiForget').onclick = () => { PROV_ORDER.forEach(p => setProvKey(p, '', false)); renderProvRows(); orderLine(); setAiStat('ok', 'All keys removed from this browser.'); syncAiBtn(); refreshOverview(); };
 $('#aiClear').onclick = () => {
   AI.items = {}; AI.merges = {}; AI.take = null; AI.cl = {}; AI.err = ''; saveQCache();
   retag(); refreshOverview(); rerun();
