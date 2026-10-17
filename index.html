@@ -663,6 +663,8 @@ tbody tr.rv{animation:rise .32s ease both}
         <span class="help">Make a separate key at openrouter.ai/keys and give it a small credit limit.</span>
       </div>
       <label class="check"><input type="checkbox" id="aiRemember" checked> Remember the key in this browser</label>
+      <label class="check"><input type="checkbox" id="aiFree" checked> Free models only: $0, up to 50 requests a day</label>
+      <span class="help" style="display:block;margin:-2px 0 0 24px">A full sort of a two-session chat fits in one day. Free models can be slower or busy at peak hours, and their providers may log prompts.</span>
       <div class="field" style="margin-top:10px">
         <label for="aiModel">Model</label>
         <input type="text" id="aiModel" list="aiModels" spellcheck="false" autocomplete="off">
@@ -1874,8 +1876,18 @@ const QT = Z.QTYPE_BY_ID, QI_BY = Z.QINTENT_BY_ID;
 const QCACHE_LS = 'zca.qai.v1', KEY_LS = 'zca.orkey';
 const OR_BASE = 'https://openrouter.ai/api/v1';
 const MODEL_FALLBACK = 'google/gemini-2.5-flash';
-const BATCH = 60, PAR = 5;
-const AI = { items:{}, merges:{}, take:null, cl:{}, running:false, ctl:null, done:0, total:0, phase:'', err:'', models:null, modelsP:null, autoModel:'', open:{}, memKey:'', jsonMode:true };
+const FREE_FALLBACK = 'meta-llama/llama-3.3-70b-instruct:free';
+const FREE_GAP_MS = 3300;            // free models allow 20 requests a minute; stay under it
+const REQ_LS = 'zca.orreq';
+const freeMode = () => prefs.ai.free !== false;   // free models are the default
+const batchSize = () => freeMode() ? 100 : 60;    // bigger batches = fewer of the 50 free daily requests
+const par = () => freeMode() ? 2 : 5;
+const freeDaily = () => prefs.ai.freeDaily || 50;
+function utcDay(){ return new Date().toISOString().slice(0, 10); }
+function reqUsed(){ try { const r = JSON.parse(localStorage.getItem(REQ_LS) || '{}'); return r.day === utcDay() ? (+r.n || 0) : 0; } catch(e){ return 0; } }
+function setReqUsed(n){ try { localStorage.setItem(REQ_LS, JSON.stringify({ day:utcDay(), n })); } catch(e){} }
+const dailyMsg = () => `Today’s free limit is used up (${freeDaily()} requests a day on OpenRouter’s free models). Everything sorted so far is saved. Click Sort with AI again after 5:30 AM IST, when the limit resets, to finish the rest.`;
+const AI = { freeList:[], freeCur:'', freeTried:new Set(), nextSlot:0, items:{}, merges:{}, take:null, cl:{}, running:false, ctl:null, done:0, total:0, phase:'', err:'', models:null, modelsP:null, autoModel:'', open:{}, memKey:'', jsonMode:true };
 prefs.ai = prefs.ai || {};
 (function loadQCache(){ try { const c = JSON.parse(localStorage.getItem(QCACHE_LS) || '{}'); AI.items = c.items || {}; AI.merges = c.merges || {}; if (c.take && Array.isArray(c.take.items)) AI.take = c.take; } catch(e){} })();
 function saveQCache(){
@@ -1890,7 +1902,11 @@ function setAiKey(k, remember){
   AI.memKey = k || '';
   try { localStorage.removeItem(KEY_LS); sessionStorage.removeItem(KEY_LS); if (k) (remember ? localStorage : sessionStorage).setItem(KEY_LS, k); } catch(e){}
 }
-function model(){ return String(prefs.ai.model || AI.autoModel || MODEL_FALLBACK).trim(); }
+function freeDefault(){ return AI.freeList[0] || FREE_FALLBACK; }
+function model(){
+  if (freeMode()) return String(AI.freeCur || prefs.ai.freeModel || freeDefault()).trim();
+  return String(prefs.ai.model || AI.autoModel || MODEL_FALLBACK).trim();
+}
 const fmtN = (n) => Number(n).toLocaleString('en-IN');
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const clean = (s) => String(s == null ? '' : s).replace(/\s+/g,' ').trim();
@@ -1972,7 +1988,12 @@ function onlyQ(sel){
 function shortModel(id){ return String(id).split('/').pop(); }
 function fmtUsd(x){ if (x == null || !isFinite(x)) return ''; return x < 0.01 ? 'under $0.01' : '≈ $' + (x < 1 ? x.toFixed(2) : x.toFixed(1)); }
 function estimate(pending){
-  const reqs = Math.ceil(pending.length / BATCH);
+  if (freeMode()) {
+    const big = new Map(); pending.forEach(p => big.set(p.rule, (big.get(p.rule) || 0) + 1));
+    const merges = Math.min(8, [...big.values()].filter(n => n >= 10).length);
+    return { reqs:Math.ceil(pending.length / batchSize()) + merges + 1, usd:0, free:true };
+  }
+  const reqs = Math.ceil(pending.length / 60);
   const m = AI.models && AI.models.find(x => x.id === model());
   const chars = pending.reduce((a, p) => a + Math.min(400, p.text.length) + 6, 0);
   const inTok = (chars + reqs * 2600) / 3.6 + pending.length * 16 + 2500;
@@ -2020,10 +2041,12 @@ function renderQPanel(msgs){
     const est = estimate(pending);
     note.textContent = !aiKey()
       ? 'Sorted by keyword rules, instantly and offline. Add an OpenRouter key in AI settings to sort every question exactly, merge repeats into top questions and get takeaways.'
-      : `Sorted by keyword rules. Sort with AI to get exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, ${est.reqs} ${est.reqs === 1 ? 'request' : 'requests'}${est.usd != null ? ', ' + fmtUsd(est.usd) : ''}.`;
+      : est.free
+        ? `Sorted by keyword rules. Sort with AI on a free model (${shortModel(model())}) for exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, about ${est.reqs} requests of your ${freeDaily()} free requests a day${reqUsed() ? ` (${reqUsed()} used today)` : ''}. Takes a few minutes.${est.reqs > freeDaily() - reqUsed() ? ' That’s more than today’s limit allows: it sorts what it can, saves it, and you finish tomorrow.' : ''}`
+        : `Sorted by keyword rules. Sort with AI to get exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, ${est.reqs} ${est.reqs === 1 ? 'request' : 'requests'}${est.usd != null ? ', ' + fmtUsd(est.usd) : ''}.`;
     if (aiKey() && !AI.models) loadModels().then(() => scheduleQRender()).catch(() => {});
   }
-  else if (pending.length) note.textContent = `${fmtN(pending.length)} questions are new since the last AI run and still use keyword rules.`;
+  else if (pending.length) note.textContent = `${fmtN(pending.length)} questions are not AI-sorted yet and still use keyword rules.${freeMode() ? ` Free requests used today: ${reqUsed()} of ${freeDaily()}.` : ''}`;
   else note.textContent = 'Click a question to see who asked it. Tick types or intents to combine them.';
 
   // intent strip + legend
@@ -2075,12 +2098,33 @@ function loadModels(){
   if (AI.modelsP) return AI.modelsP;
   AI.modelsP = fetch(OR_BASE + '/models').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(j => {
-      AI.models = (j.data || []).map(m => ({ id:m.id, name:m.name || m.id, created:m.created || 0, pricing:m.pricing || {}, params:Array.isArray(m.supported_parameters) ? m.supported_parameters : null, reasoning:m.reasoning || null }));
+      AI.models = (j.data || []).map(m => ({ id:m.id, name:m.name || m.id, created:m.created || 0, ctx:m.context_length || 0, pricing:m.pricing || {}, params:Array.isArray(m.supported_parameters) ? m.supported_parameters : null, reasoning:m.reasoning || null }));
       AI.autoModel = pickModel(AI.models);
+      AI.freeList = pickFree(AI.models);
       return AI.models;
     })
     .catch(e => { AI.modelsP = null; throw e; });
   return AI.modelsP;
+}
+function isFree(m){ return /:free$/.test(m.id) || (!/^openrouter\//.test(m.id) && +m.pricing.prompt === 0 && +m.pricing.completion === 0); }
+function thinks(m){ const r = m.reasoning; return !!(r && (r.mandatory || r.default_enabled || r.defaultEnabled)); }
+// free text models good at following a JSON format, non-thinking ones first, newest first
+function pickFree(list){
+  const ok = list.filter(m => isFree(m) && (!m.ctx || m.ctx >= 16000) && !/vision|image|embed|audio|tts|guard|coder|math/i.test(m.id));
+  const prefer = [/gemini[\w.-]*flash/i, /deepseek-(chat|v3)/i, /llama-3\.3-70b/i, /llama-4/i, /qwen/i, /mistral/i, /gemma/i, /./];
+  const ranked = [];
+  for (const re of prefer) ok.filter(m => re.test(m.id) && !ranked.includes(m)).sort((a,b) => b.created - a.created).forEach(m => ranked.push(m));
+  return ranked.filter(m => !thinks(m)).concat(ranked.filter(thinks)).map(m => m.id);
+}
+// on a busy or vanished free model, move to the next free one (max 4 tried per run)
+function switchFree(failed){
+  if (!freeMode()) return false;
+  AI.freeTried.add(failed);
+  if (model() !== failed && !AI.freeTried.has(model())) return true;   // another request already moved on
+  const next = AI.freeList.find(id => !AI.freeTried.has(id));
+  if (!next || AI.freeTried.size >= 4) return false;
+  AI.freeCur = next; AI.jsonMode = true; AI.noReasoning = false;
+  return true;
 }
 // cheapest dependable family available today, newest first
 function pickModel(list){
@@ -2103,13 +2147,25 @@ async function orChat(messages, opts){
   opts = opts || {};
   const key = aiKey();
   if (!key) throw aiErr('fatal', 'Add your OpenRouter key in AI settings.');
-  const body = { model:model(), messages, temperature:0, max_tokens:opts.maxTokens || 4096 };
-  const info = modelInfo();
-  if (AI.jsonMode && (!info || !info.params || info.params.includes('response_format'))) body.response_format = { type:'json_object' };
-  const rp = reasoningParam(); if (rp) body.reasoning = rp;
   const outer = opts.signal;
+  let body;
+  const build = () => {
+    body = { model:model(), messages, temperature:0, max_tokens:Math.min(8000, opts.maxTokens || 4096) };
+    const info = modelInfo();
+    if (AI.jsonMode && (!info || !info.params || info.params.includes('response_format'))) body.response_format = { type:'json_object' };
+    const rp = reasoningParam(); if (rp) body.reasoning = rp;
+  };
+  build();
   for (let attempt = 0; ; attempt++){
     if (outer && outer.aborted) throw aiErr('abort', 'Stopped');
+    if (freeMode()) {
+      if (reqUsed() >= freeDaily()) throw aiErr('fatal', dailyMsg());
+      const wait = AI.nextSlot - Date.now();
+      AI.nextSlot = Math.max(Date.now(), AI.nextSlot) + FREE_GAP_MS;
+      if (wait > 0) await sleep(wait);
+      if (outer && outer.aborted) throw aiErr('abort', 'Stopped');
+      setReqUsed(reqUsed() + 1);
+    }
     const ctl = new AbortController();
     const onAbort = () => ctl.abort();
     if (outer) outer.addEventListener('abort', onAbort, { once:true });
@@ -2134,11 +2190,21 @@ async function orChat(messages, opts){
     }
     const st = (data && data.error && +data.error.code) || res.status;
     if (st === 401) throw aiErr('fatal', 'OpenRouter rejected the key. Check it in AI settings.');
-    if (st === 402) throw aiErr('fatal', 'This OpenRouter key is out of credits. Add credits or raise the key’s limit on openrouter.ai.');
+    if (freeMode()) {
+      if (st === 429 && /per.?day|daily/i.test(em)) { setReqUsed(freeDaily()); throw aiErr('fatal', dailyMsg()); }
+      if (/data policy|privacy|train/i.test(em)) throw aiErr('fatal', 'OpenRouter is blocking free models for this account’s privacy setting. In OpenRouter’s privacy settings, allow free model endpoints (their providers may log prompts), then run again.');
+      if (st === 429 && attempt < 1) { await sleep(20000); continue; }
+      if (st === 429 || st >= 500 || st === 408 || ((st === 400 || st === 404) && /model|endpoint|provider/i.test(em))) {
+        if (switchFree(body.model)) { build(); attempt = -1; continue; }
+        throw aiErr('fatal', st === 429 ? 'The free models are busy right now (rate-limited). Sorted questions are saved; try again in a few minutes.' : `The free model isn’t responding${em ? ': ' + em : '.'} Try again later or pick another free model in AI settings.`);
+      }
+    }
+    if (st === 402) throw aiErr('fatal', freeMode() ? 'OpenRouter returned “payment required”. Free models stop working when the account balance is negative; check your balance on openrouter.ai.' : 'This OpenRouter key is out of credits. Add credits or raise the key’s limit on openrouter.ai.');
     if (st === 403) throw aiErr('fatal', 'OpenRouter blocked the request' + (em ? ': ' + em : '.'));
     if (st === 400 && body.response_format && /response_format|json/i.test(em)) { AI.jsonMode = false; delete body.response_format; continue; }
     if (st === 400 && body.reasoning && /reasoning|thinking|effort/i.test(em)) { AI.noReasoning = true; delete body.reasoning; continue; }
     if ((st === 400 || st === 404) && /model/i.test(em)) throw aiErr('fatal', `The model “${body.model}” isn’t available on OpenRouter. Pick another in AI settings.`);
+    if (st === 400 && /max_tokens|context|too long|maximum/i.test(em) && body.max_tokens > 2000) { body.max_tokens = 2000; continue; }
     if ((st === 429 || st === 408 || st >= 500) && attempt < 3) { await sleep(2000 * Math.pow(2, attempt)); continue; }
     throw aiErr('http', `OpenRouter error ${st}${em ? ': ' + em : ''}`);
   }
@@ -2199,7 +2265,7 @@ async function runPool(tasks, n){
 async function classifyBatch(b, signal){
   const user = b.map((p, i) => `${i + 1}. ${redact(p.text)}`).join('\n');
   let arr = [];
-  for (let attempt = 0; attempt < 2 && !arr.length; attempt++){
+  for (let attempt = 0; attempt < (freeMode() ? 1 : 2) && !arr.length; attempt++){
     const r = await orChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:user }], { signal, maxTokens:300 + b.length * 70 });
     const obj = parseLoose(r.text);
     arr = Array.isArray(obj) ? obj : (obj && (obj.r || obj.results || obj.items || obj.data)) || [];
@@ -2227,9 +2293,9 @@ async function mergePhase(signal){
   }
   const merges = { ...AI.merges };
   const jobs = [];
-  for (const [tid, map] of byType){
+  for (const [tid, map] of [...byType.entries()].sort((a,b) => b[1].size - a[1].size)){
     const list = [...map.values()].sort((a,b) => b.ppl.size - a.ppl.size).slice(0, 160);
-    if (list.length < 3) continue;
+    if (list.length < (freeMode() ? 10 : 3)) continue;
     jobs.push(async () => {
       if (signal.aborted) return;
       try {
@@ -2243,7 +2309,8 @@ async function mergePhase(signal){
       } catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') throw e; /* keep last merge for this type */ }
     });
   }
-  await runPool(jobs, PAR);
+  // free: merge only the 8 biggest types (jobs are built biggest-first) to protect the daily limit
+  await runPool(freeMode() ? jobs.slice(0, 8) : jobs, par());
   AI.merges = merges;
 }
 async function takeawaysPhase(signal){
@@ -2262,10 +2329,13 @@ async function runAI(){
   if (AI.running) return;
   if (!aiKey()) { openAI(); toast('Add your OpenRouter key first'); return; }
   await loadModels().catch(() => {});
+  if (freeMode() && reqUsed() >= freeDaily()) { AI.err = dailyMsg(); renderQPanel(pool()); return; }
+  AI.freeCur = ''; AI.freeTried = new Set(); AI.jsonMode = true; AI.noReasoning = false;
   const pending = collectPending();
   AI.running = true; AI.err = ''; AI.ctl = new AbortController();
   const signal = AI.ctl.signal;
-  const batches = []; for (let i = 0; i < pending.length; i += BATCH) batches.push(pending.slice(i, i + BATCH));
+  const B = batchSize();
+  const batches = []; for (let i = 0; i < pending.length; i += B) batches.push(pending.slice(i, i + B));
   AI.total = pending.length; AI.done = 0; AI.phase = pending.length ? 'sort' : 'merge';
   setMascot('think'); renderQPanel(pool());
   let failed = 0, fatal = null;
@@ -2275,7 +2345,7 @@ async function runAI(){
       try { failed += b.length - await classifyBatch(b, signal); }
       catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') { fatal = fatal || e; AI.ctl.abort(); } else failed += b.length; }
       AI.done += b.length; applyAll(); scheduleQRender();
-    }), PAR);
+    }), par());
     if (fatal) throw fatal;
     saveQCache();
     AI.phase = 'merge'; renderProgress();
@@ -2306,30 +2376,48 @@ function priceStr(m){
 }
 function noteModel(){
   const id = $('#aiModel').value.trim(), m = AI.models && AI.models.find(x => x.id === id);
-  $('#aiModelNote').textContent = !AI.models ? '' : m ? `${m.name}: ${priceStr(m)}` : 'Not in OpenRouter’s model list. Check the id.';
+  const free = $('#aiFree').checked;
+  if (!AI.models) { $('#aiModelNote').textContent = ''; return; }
+  if (!m) { $('#aiModelNote').textContent = 'Not in OpenRouter’s model list. Check the id.'; return; }
+  if (free && !isFree(m)) { $('#aiModelNote').textContent = `${m.name} is a paid model. Pick one ending in :free, or untick “Free models only”.`; return; }
+  $('#aiModelNote').textContent = free ? `${m.name}: free. If it’s busy, the app moves to the next free model.` : `${m.name}: ${priceStr(m)}`;
 }
+function fillModelList(){
+  if (!AI.models) return;
+  const free = $('#aiFree').checked;
+  $('#aiModels').innerHTML = AI.models.filter(m => !free || isFree(m)).map(m => `<option value="${escH(m.id)}">${escH(m.name)}</option>`).join('');
+}
+function modeDefault(free){ return free ? (prefs.ai.freeModel || freeDefault()) : (prefs.ai.model || AI.autoModel || MODEL_FALLBACK); }
 function openAI(){
   $('#aiKey').value = aiKey(); $('#aiKey').type = 'password'; $('#aiKeyShow').textContent = 'Show';
   $('#aiRemember').checked = prefs.ai.remember !== false;
+  $('#aiFree').checked = freeMode();
+  AI.freeCur = '';
   $('#aiModel').value = model();
   setAiStat('', '');
   $('#mAI').classList.add('open');
   setTimeout(() => $('#aiKey').focus(), 30);
   $('#aiModelNote').textContent = AI.models ? '' : 'Loading OpenRouter’s model list…';
   loadModels().then(list => {
-    $('#aiModels').innerHTML = list.map(m => `<option value="${escH(m.id)}">${escH(m.name)}</option>`).join('');
-    if (!prefs.ai.model) $('#aiModel').value = AI.autoModel;
+    fillModelList();
+    $('#aiModel').value = modeDefault($('#aiFree').checked);
     noteModel();
   }).catch(() => { $('#aiModelNote').textContent = 'Couldn’t load the model list. Type a model id from openrouter.ai/models.'; });
 }
 $('#qSet').onclick = openAI;
 $('#aiModel').addEventListener('input', noteModel);
+$('#aiFree').addEventListener('change', () => { $('#aiModel').value = modeDefault($('#aiFree').checked); fillModelList(); noteModel(); });
 $('#aiKeyShow').onclick = () => { const k = $('#aiKey'); const show = k.type === 'password'; k.type = show ? 'text' : 'password'; $('#aiKeyShow').textContent = show ? 'Hide' : 'Show'; };
 $('#aiSave').onclick = () => {
   const k = $('#aiKey').value.trim();
   if (k && !/^sk-or-/.test(k)) { setAiStat('bad', 'That doesn’t look like an OpenRouter key. They start with sk-or-.'); return; }
   prefs.ai.remember = $('#aiRemember').checked;
-  prefs.ai.model = $('#aiModel').value.trim();
+  prefs.ai.free = $('#aiFree').checked;
+  const mv = $('#aiModel').value.trim();
+  // keep "auto" when the pick equals the automatic one, so a retired model gets replaced on its own
+  if (prefs.ai.free) prefs.ai.freeModel = mv === freeDefault() ? '' : mv;
+  else prefs.ai.model = mv === AI.autoModel ? '' : mv;
+  AI.freeCur = '';
   savePrefs(); setAiKey(k, prefs.ai.remember);
   $('#mAI').classList.remove('open');
   toast(k ? 'AI settings saved' : 'AI settings saved, no key');
@@ -2347,7 +2435,9 @@ $('#aiTest').onclick = async () => {
     const d = j.data;
     const used = d.usage != null ? `$${(+d.usage).toFixed(2)} used` : 'Usage unknown';
     const lim = d.limit != null ? ` of a $${(+d.limit).toFixed(2)} limit.` : '. This key has no credit limit; consider setting one on openrouter.ai.';
-    setAiStat('ok', `Key works. ${used}${lim}`);
+    if (d.is_free_tier === true) prefs.ai.freeDaily = 50; else if (d.is_free_tier === false) prefs.ai.freeDaily = 1000;
+    savePrefs();
+    setAiStat('ok', `Key works. ${used}${lim} Free models: ${freeDaily()} requests a day.`);
   } catch(e){ setAiStat('bad', 'Couldn’t reach OpenRouter. Check the connection.'); }
 };
 $('#aiForget').onclick = () => { setAiKey('', false); $('#aiKey').value = ''; setAiStat('ok', 'Key removed from this browser.'); refreshOverview(); };
