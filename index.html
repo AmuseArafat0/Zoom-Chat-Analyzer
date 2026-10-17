@@ -41,6 +41,7 @@ a{color:var(--accent-ink)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 mark{background:var(--mark);color:inherit;padding:0 1px;border-radius:2px}
 .sr{position:absolute;left:-9999px}
+[hidden]{display:none!important}
 
 /* top bar */
 .top{display:flex;align-items:center;gap:14px;padding:12px 22px;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid rgba(214,227,238,.9);position:sticky;top:0;z-index:5}
@@ -196,6 +197,59 @@ td.dmtag{color:var(--ink-3);font-size:12px}
 .bcard.sel{outline:2px solid var(--bc);outline-offset:-1px;background:#fff}
 .bonly{align-self:flex-start;padding:2px 0;font-weight:700;color:var(--bc)!important;font-size:12.5px}
 .bonly:hover{text-decoration:underline;background:transparent}
+
+/* question breakdown */
+.qp .ph{flex-wrap:wrap;gap:8px}
+.qmode{font-size:12px;font-weight:700;color:var(--ink-2);background:var(--surface-2);border:1px solid var(--line-2);border-radius:999px;padding:3px 9px;white-space:nowrap}
+.qmode.ai{background:#E5F4EC;border-color:#BCE2CC;color:#1F6B47}
+.qnote{font-size:13px;color:var(--ink-2);margin:0 0 12px;max-width:80ch}
+.qnote:empty{display:none}
+.qnote.err{color:var(--danger);font-weight:600}
+.qprog{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:13px;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.qbar{flex:1;height:6px;border-radius:3px;background:var(--line-2);overflow:hidden;min-width:80px}
+.qbar i{display:block;height:100%;width:0;background:var(--accent);border-radius:3px;transition:width .3s ease}
+.qprog.busy .qbar i{background:linear-gradient(90deg,var(--accent-soft),var(--accent),var(--accent-soft));background-size:200% 100%;animation:qslide 1.2s linear infinite}
+@keyframes qslide{from{background-position:200% 0}to{background-position:0 0}}
+.istrip{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line-2);gap:2px}
+.istrip i{display:block;height:100%}
+.ileg{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}
+.ileg button{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:12.5px;font-weight:600;color:var(--ink-2);cursor:pointer}
+.ileg button:hover{border-color:var(--ink-3);color:var(--ink)}
+.ileg button.on{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-ink)}
+.ileg button i{width:9px;height:9px;border-radius:50%;flex:none}
+.ileg button b{color:var(--ink);font-variant-numeric:tabular-nums}
+.qtake{border:1px solid var(--line-2);border-radius:var(--radius-s);background:var(--surface-2);padding:10px 12px;margin:0 0 14px}
+.qtake h4{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--ink)}
+.qtake ul{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:7px}
+.qtake li{font-size:13.5px;line-height:1.4;display:flex;gap:9px;align-items:baseline;max-width:90ch}
+.own{flex:none;font-size:11px;font-weight:700;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent-ink);min-width:58px;text-align:center}
+.own.sales{background:#E3F3EA;color:#1F6B47}
+.own.support{background:#FCEBDC;color:#8F4210}
+.qtake small{display:block;margin-top:8px;color:var(--ink-3);font-size:11.5px}
+.faq{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.faq button{display:flex;gap:10px;align-items:baseline;width:calc(100% + 12px);text-align:left;border:0;background:transparent;padding:5px 6px;margin:0 -6px;border-radius:6px;cursor:pointer;font-size:12.5px;line-height:1.35;color:var(--ink)}
+.faq button:hover{background:#fff}
+.faq button.on{background:#fff;box-shadow:inset 0 0 0 1.5px var(--bc)}
+.faq .fq{flex:1;min-width:0}
+.faq .fx{flex:none;font-weight:800;color:var(--bc);font-variant-numeric:tabular-nums}
+.qmore{align-self:flex-start;border:0;background:transparent;padding:0;font-size:12px;font-weight:700;color:var(--ink-3);cursor:pointer}
+.qmore:hover{color:var(--ink)}
+.qtools{font-size:11.5px;color:var(--ink-3)}
+.qint{font-size:11px;font-weight:700;color:var(--bc);margin-left:6px}
+.qcard .bpick{align-items:flex-start}
+.qcard .bpick input,.qcard .bpick .bdot{margin-top:4px}
+.qcard .bpick b{white-space:normal;line-height:1.3}
+.qnorm{display:block;color:var(--ink-3);font-size:12px;margin-top:2px}
+.keyrow{display:flex;gap:6px}
+.keyrow input{flex:1;min-width:0}
+.field input[type=password],.field input[type=text]{width:100%}
+.field input[type=password]{border:1px solid var(--line);border-radius:var(--radius-s);padding:7px 9px;font-size:13.5px;background:var(--surface)}
+.field input[type=password]:focus{border-color:var(--accent);outline:none}
+.help{color:var(--ink-3);font-size:12px}
+.aistat{font-size:13px;margin-top:6px;min-height:18px;color:var(--ink-2)}
+.aistat.ok{color:#1F6B47}
+.aistat.bad{color:var(--danger)}
+.dlg .df .grow{flex:1}
 
 /* timeline */
 .tlchart svg{width:100%;height:auto;display:block}
@@ -430,7 +484,7 @@ tbody tr.rv{animation:rise .32s ease both}
 
 <header class="top">
   <div class="brand"><span class="glyph">?</span> Zoom Chat Analyzer</div>
-  <span class="hint">Everything runs in your browser. Nothing is uploaded.</span>
+  <span class="hint">Runs in your browser. AI sorting is optional and sends only question text.</span>
   <span class="spacer"></span>
   <button class="btn primary sm" id="btnReport" title="One Excel file: a summary sheet plus one sheet per topic (refund, LMS, WhatsApp group...) with names and messages">Download full report</button>
   <button class="btn sm" id="btnOneSheet" title="One sheet: the whole chat (every message), with its date and the auto-detected issue beside any message that has one, grouped under each dated chat">Whole chat + issues</button>
@@ -513,6 +567,19 @@ tbody tr.rv{animation:rise .32s ease both}
       <div class="pb"><div class="bgrid" id="bgrid"></div></div>
     </section>
 
+    <section class="panel qp" id="qPanel" hidden>
+      <div class="ph"><span>Questions, broken down <span class="sub" id="qSub"></span></span>
+        <span class="tools"><span class="qmode" id="qMode"></span><button class="btn quiet sm" id="qClr" hidden>Clear</button><button class="btn quiet sm" id="qSet">AI settings</button><button class="btn quiet sm" id="qDl" title="Excel file: question types, top questions with names, buying-signal people, every question">Download questions</button><button class="btn primary sm" id="qRun">Sort with AI</button></span></div>
+      <div class="pb">
+        <div class="qprog" id="qProg" hidden><div class="qbar"><i id="qBar"></i></div><span id="qProgT" aria-live="polite"></span><button class="btn quiet sm" id="qStop">Stop</button></div>
+        <p class="qnote" id="qNote"></p>
+        <div class="istrip" id="qStrip" aria-hidden="true"></div>
+        <div class="ileg" id="qLeg"></div>
+        <div class="qtake" id="qTake" hidden></div>
+        <div class="bgrid" id="qGrid"></div>
+      </div>
+    </section>
+
     <section class="panel tl" id="tlPanel" hidden>
       <div class="ph"><span>Sentiment timeline <span class="sub" id="tlSub"></span></span></div>
       <div class="pb">
@@ -581,6 +648,36 @@ tbody tr.rv{animation:rise .32s ease both}
       <div class="preview" id="mapPreview"></div>
     </div>
     <div class="df"><button class="btn primary" id="mapApply">Apply</button></div>
+  </div>
+</div>
+
+<!-- AI settings -->
+<div class="modal" id="mAI" role="dialog" aria-modal="true" aria-labelledby="mAIT">
+  <div class="dlg" style="width:min(580px,100%)">
+    <div class="dh"><b id="mAIT">AI question sorting</b><button class="btn quiet sm" data-close>Close</button></div>
+    <div class="db">
+      <p>OpenRouter sorts every question into an exact type, merges repeats into top questions and writes takeaways. Only question text is sent: no names, and phone numbers and emails are masked. Labels are cached in this browser, so the same question is never paid for twice.</p>
+      <div class="field">
+        <label for="aiKey">OpenRouter API key</label>
+        <div class="keyrow"><input type="password" id="aiKey" autocomplete="off" spellcheck="false" placeholder="sk-or-v1-…"><button class="btn sm" id="aiKeyShow" type="button">Show</button></div>
+        <span class="help">Make a separate key at openrouter.ai/keys and give it a small credit limit.</span>
+      </div>
+      <label class="check"><input type="checkbox" id="aiRemember" checked> Remember the key in this browser</label>
+      <div class="field" style="margin-top:10px">
+        <label for="aiModel">Model</label>
+        <input type="text" id="aiModel" list="aiModels" spellcheck="false" autocomplete="off">
+        <datalist id="aiModels"></datalist>
+        <span class="help" id="aiModelNote"></span>
+      </div>
+      <div class="aistat" id="aiStat" aria-live="polite"></div>
+    </div>
+    <div class="df">
+      <button class="btn quiet" id="aiForget">Forget key</button>
+      <button class="btn quiet" id="aiClear" title="Drop every cached AI label and go back to keyword rules">Clear AI labels</button>
+      <span class="grow"></span>
+      <button class="btn" id="aiTest">Check key</button>
+      <button class="btn primary" id="aiSave">Save</button>
+    </div>
   </div>
 </div>
 
@@ -895,6 +992,7 @@ function tagMessages(msgs, cdict){
     }
     // "can't join the WhatsApp group" is a group problem, not a Zoom problem
     if (m.cats.whatsapp && m.cats.join && !/\b(zoom|meeting|session|class|webinar|call)\b/i.test(m.text)) delete m.cats.join;
+    applyQType(m);
   }
   return msgs;
 }
@@ -910,9 +1008,141 @@ const TROUBLE = [
 ].map(compilePattern).filter(Boolean);
 const TROUBLE_ASK_RE = /\b(unable|can'?t|cant|cannot|can not|not able|couldn'?t|not work|not working|not added|not part|not in|not get|not getting|not receiv|missing|full|expired|error|errors|problem|problems|issue|issues|trouble|facing|stuck|fail|failed|failing|broken|wrong|complain|help|denied|locked|no link|no access|no recording|didn'?t get|not opening|not loading|not showing|not visible|not available|not uploaded|not updated|not coming|not reflecting|not yet|still not|haven'?t|havent)\b/i;
 
+/* ---------- Query / question breakdown (rules layer) ----------
+   A message whose only topic is "Query / question" gets a sub-type (m.qtype).
+   Rules run instantly and offline; the optional AI pass (UI) overrides them. */
+const META = { question:1, phone:1, email:1, link:1 };
+const PRIMARY_ORDER = ['refund','payment','certificate','lms','login','join','recording','whatsapp','av','stream_quality','trust','negative','support','tools','tool_questions','job_career','curriculum_fit','materials','pace','schedule','assignment','getting_started','positive','query'];
+function primaryCat(ids){ for (const id of PRIMARY_ORDER){ if (ids.includes(id)) return id; } return ids[0] || ''; }
+
+const QINTENTS = [
+  { id:'learn',    label:'Learning',        color:'#2F6E9E', hint:'About tools, steps and concepts. Trainer can answer.', ask:['learning questions','learning doubts','content doubts','tool doubts'] },
+  { id:'buy',      label:'Buying signal',   color:'#0E7A3F', hint:'Selection, seats, program details, earning, fit. Hand to sales.', ask:['buying signal','buying signals','buying intent','hot lead','hot leads','sales intent','sales questions','purchase intent'] },
+  { id:'live',     label:'Live session',    color:'#B54708', hint:'Time left, can you see me, replay. Host can answer live.', ask:['live session questions','session logistics'] },
+  { id:'friction', label:'Frustration',     color:'#B42318', hint:'Complaints phrased as questions.', ask:['frustration','frustrated questions','rhetorical'] },
+  { id:'noise',    label:'Unclear / other', color:'#5F6E86', hint:'Fragments and questions that fit nothing else.', ask:['noise'] }
+];
+
+const QTYPES = [
+  { id:'frustration', intent:'friction', label:'Frustrated / rhetorical',
+    desc:'complaint or sarcasm phrased as a question (too much selling, nothing taught yet, should I leave)',
+    ask:['sarcasm','rhetorical questions'],
+    re:[/what the hell|\bwtf\b|wasting (our|my|everyone'?s) time|waste of (time|money)|time ?waste|\b(selling|sell|marketing|promot\w*|pitch\w*)\b.{0,12}\b(your|ur|next|us|course|program|product)\b|only (selling|marketing|promotion|sales)|(anything|something|nothing) (left|remain\w*|else) (to (learn|teach)|in (the )?class|other ?th[ae]n)|(or|should) i leave|why (are|r) (you|u) (selling|wasting|doing this|dragging)|when will you (start|actually|really) (teach|start)|is this (a )?(scam|joke|fraud)|are (you|u) (kidding|serious|joking)|\bbakwas\b|\bfaltu\b/i] },
+  { id:'seat_status', intent:'buy', label:'Am I selected / is my seat booked?',
+    desc:'their own registration, selection, seat or slot, booking confirmation, or their name being called',
+    ask:['selected','selection','seat','seats','booking status','booked','shortlisted','am i in','name called','slot','slots'],
+    re:[/\bam i (selected|registered|confirmed|in\b|part|eligible|enrolled|shortlisted|included|on the list|qualif|chosen|within|among|one of|there in)|after (booking|registering|registration|paying|payment|selection)\b/i,
+        /\b(my|is my|was my) (seat|booking|registration|slot|enrol\w*|application|form|name)\b/i,
+        /\bconfirm (my|the|me|if|whether|it|booking|seat)\b|^\W*(sir|mam|ma'?am|prakhar|team)?\W*(can|could|will) (you|u) (please |pls |plz |kindly )?confirm|^\W*(please |pls |plz |kindly )?confirm\b/i,
+        /part of (the )?(30|thirty|program|programme|batch|selected|list)|within (the )?(30|thirty|first|top)|\b(30|thirty) (participants|people|seats|members|slots|students)/i,
+        /(called|call|calling|said|read|announce\w*|mention\w*) (out )?my name|names? (is |was )?(not )?(being |getting )?(called|said|announced|read)|(list|read|show) (out )?(all )?(the )?names|\b(did|have) i (get|got|make|made) (it|selected|in)|\b(slots?|seats?) (still )?(left|available|remaining|full|booked|open)|(havent|haven'?t|not|already) booked|is there (any )?(slot|seat)/i] },
+  { id:'session_live', intent:'live', label:'Session logistics',
+    desc:'time left, when the session ends, are you there, can you see my message, is it recorded, replay',
+    ask:['time left','session end','ending time','when ending','are you there','can you see my'],
+    re:[/how long (is |will |does )?(this |the )?(session|class|webinar|workshop)|how long (will )?(it|this) (go on|last|run|continue)\b|how (much|many) (more )?(time|session|minutes|mins|hours|hrs|of (the )?(workshop|session|webinar|class))|(time|minutes|session|workshop|webinar|class).{0,15}\b(left|remain\w*)\b/i,
+        /(when|what time) (are we|will we|will it|will this|is it|is this|does it|it|this|the session|session) (be )?(end|ending|over|finish|done|close)|when (it|is it|will it|this|session) (is )?(over|end)|\bending\b|end the (session|class|webinar)|(can|should) we end/i,
+        /\b(can|may|should|shall) (i|we) (leave|exit|go|drop|log ?off)\b|\bleave (now|the session|the class|the webinar)\b|\bis (the |this )?(webinar|session|class|workshop|season) over\b|\b(webinar|session|class|season|workshop) (will )?(end|over)\b|\b(is|this is) (this |it |the )?(a )?(live|recorded) (session|class|webinar)?|(able|unable|can'?t|cannot) (to )?(see|hear) my|(speak|explain|teach|talk)( it)? (in|also in) (hindi|english|marathi|tamil|telugu|bengali|gujarati|kannada|malayalam)|\b(in|me) hindi\b|speak (slow|slowly|louder|loud|clearly)|\bfasten up\b|from our side|(session|webinar|class) (will )?start|\b(webinar|session|class) (is )?finish|when (this|it) will be|did i miss (anything|something)|pinged you|\bam i (the only one|audible)/i,
+        /are (you|u) (there|live|online)|can (you|u|anyone) (see|hear|read) (my|me|our|the) (comment|message|chat|msg|question|text)|(able|unable) to see my (comment|message|chat)|\brewatch|re-watch|\breplay\b|is (it|this|the session|the class|this session) (live|recorded|interactive|being recorded)|\bbreak\b|kab (khatam|end)|kitna (time|der)|kitni der/i] },
+  { id:'program_info', intent:'buy', label:'Program details',
+    desc:'the paid program or course: start date, schedule, duration, fees or EMI, bonuses, what is covered, batches',
+    ask:['program details','programme details','bonus','bonuses','start date','batch details','program questions'],
+    re:[/\b(program|programme|course|batch|accelerator|aica|cohort|mentorship|live classes?|classes)\b.{0,40}\b(start|date|duration|month|week|weekend|sunday|saturday|include|cover|teach|syllabus|curriculum|module|mentor|access|fee|price|cost|charge|emi|bonus|validity|live|every year|offline|online|hindi|recorded|regarding)/i,
+        /\b(start|starting|joining|commencement) date|\bbonus(es)?\b|classes? (on|in) (saturday|sunday|weekend)|(saturday|sunday|weekends?) (only|or)|only on (saturday|sunday|weekend)/i,
+        /what (will|do|would|are) (you|u) (teach|going to teach|cover)|what (all )?(is|are|will be) (included|covered|taught)|(your|course|program|programme) (fee|fees|charge|charges|price|cost)|what is your (charge|fee|price)|why .{0,30}(cheap|so less|low price|for free)|lifetime access|\b(13|12|6|3) months\b|\bper month\b|every month|\bmonthly\b|\bemi\b|next batch|access (will be |be |is )?(given|provided)|(will|do) (we|i) get (the )?access|provide (the |us )?access|more programs|\boto\b|first (class|session)|(which|what) (day|days|time) (it|will|is|are|the)|day (&|and) time|\bweekends?\b|\bweekdays?\b/i] },
+  { id:'earning', intent:'buy', label:'Earning & finding clients',
+    desc:'making money, finding clients, freelancing, selling what they build, side income',
+    ask:['client','clients','earning','earnings','earn','income','freelancing','freelance','side income','make money','monetize','monetise'],
+    re:[/\bclients?\b|\b(get|find|getting|finding) (the )?customers\b|\bearn\w*|\bmoney\b|\bincome\b|freelanc\w*|monetiz\w*|monetis\w*/i,
+        /\bsell(ing)? (it|this|these|them|the|my|our|websites?|apps?|services?|videos?|agents?)\b|side (income|hustle|business)|make money|\bkama\w*|\bpaisa\b|\bprofit|\bbusiness (from|with|using|idea)|start (a|my|our) business|\bupwork\b|\bfiverr\b|(youtube|instagram|insta) (is )?pay|get paid|\bhire (us|me|you)\b|how much (can|will|could|should) (i|we|one|u|you) (earn|make|charge|get)|what (should|to) (i|we) charge|job opportunit/i] },
+  { id:'free_limits', intent:'learn', label:'Is it free? Limits?',
+    desc:'tool pricing, free tier, credits, usage limits, paid plans of a tool',
+    ask:['free tier','free limit','free limits','is it free','tool limits'],
+    re:[/\bfree\b|\bpaid\b|\bunlimited\b|\blimit\w*|\blimited\b|\bcredits?\b|\btrial\b|subscription|\bpremium\b|\bpro (plan|version)|how much (does|is|will) (it|this|the tool|that) (cost|charge)|chargeable|\bcost (of|for) (the |this |that )?(tool|app|website|platform|api)|\bpricing\b|\bkitna (paisa|charge)|tokens? (limit|cost)/i] },
+  { id:'prompts', intent:'learn', label:'Share the prompt',
+    desc:'asks for the prompt that was used, or how to write prompts',
+    ask:['prompt','prompts','prompt sharing'],
+    re:[/\bprompts?\b|\bprompting\b|\bprmpt/i] },
+  { id:'build_deploy', intent:'learn', label:'Hosting, domain & integrations',
+    desc:'publishing or hosting, domains, databases, APIs, connecting to Drive, Excel, Tally, CRM, WhatsApp, payment gateways',
+    ask:['hosting','domain','domains','deploy','deployment','integration','integrations','database','backend','go live'],
+    re:[/\bhost(ed|ing)?\b|\bdomain\b|\bdeploy\w*|\bpublish\w*|\b(go|take|make|making|made|put|goes) (it |this |the (website|site|app) )?live\b|\blocalhost\b|\bserver\b|\bdatabase\b|\bdb\b|\bback ?end\b|\bapis?\b|integrat\w*|\bconnect(ed|ing|or|ors|ion)?\b|\blink (it|this|the|with|to)\b/i,
+        /\bgithub\b|\bvercel\b|\bnetlify\b|\bwordpress\b|\bshopify\b|\bwix\b|\btally\b|\bexcel\b|\bspreadsheet\b|google (drive|sheets?|forms?)|\bdrive\b|\bcrm\b|payment gateway|\brazorpay\b|\bsql\b|\bsupabase\b|\bfirebase\b|\bupload (it|this|the|on|to)\b|play ?store|app ?store|whatsapp (api|integration|bot)|\bwebhook|\bembed\b|source code|\bbackend\b|\bcode\b/i] },
+  { id:'trust_data', intent:'learn', label:'Privacy, accuracy & legality',
+    desc:'data privacy, accuracy or verification of AI output, copyright, plagiarism, legality, safety',
+    ask:['privacy','data privacy','data safety','copyright','plagiarism','accuracy','legal','legality'],
+    re:[/privacy|\bprivate\b|confidential|personal (data|info\w*|details)|\bsecur\w*|\bsafe\b|\bsafety\b|data (integrity|leak|theft|protection|security|privacy)|\baccura\w*|\bverif\w*|\bvalidat\w*|\breliab\w*|authentic|\btruth\w*|hallucinat\w*|copy ?(right|write)|plagiar\w*|encrypt\w*|data (is |will be |gets )?stor\w*|where (is )?(the |our |my )?data|\blegal\b|\billegal\b|\bbann?ed\b|\bpolicy\b|\bsanctity\b|\bethic\w*|deepfake|\bmisuse|fake (videos?|news|data)|(is|are) (it|this|they|these) (true|correct|real|right)\b/i] },
+  { id:'fit', intent:'buy', label:'Is this for me?',
+    desc:'whether it suits their profile: student, teacher, housewife, age, background, profession',
+    ask:['for teachers','for students','housewife','house wife','is it for me','my background','age limit'],
+    re:[/\bfor (a |an )?(teachers?|educators?|students?|housewi\w*|homemakers?|beginners?|freshers?|doctors?|lawyers?|ca\b|accountants?|business ?(men|owners?|people)?|retired|seniors?|kids|children|non ?tech\w*|engineers?|my (profession|field|job|business))\b/i,
+        /\b(kids|children|child)\b|business owners?|(effective|useful|helpful|suitable|relevant|beneficial|applicable) (for|to)|(high school|school|college|10th|12th) (students?|kids)|house ?wi(fe|ves)|home ?maker|\bmy (age|background|field|profession|qualification|degree)\b|at (my|this) age|\bage (limit|bar|group)\b|can (a|an|someone|anyone|non) .{0,25}(learn|do|use|join)|\bi(?: am|'?m) (a|an|from) |without (any )?(coding|tech|technical)|no (coding|tech|technical) (background|knowledge)/i] },
+  { id:'tool_reco', intent:'learn', label:'Which tool should I use for X?',
+    desc:'wants a tool recommended for their own task (best app for X, any tool that can do Y)',
+    ask:['tool recommendation','tool recommendations','best tool','suggest a tool','recommend a tool'],
+    re:[/\bbest (ai |free )?(app|apps|tool|tools|website|platform|software|ai)\b|\b(any|which|what) (ai |free |other )?(tool|tools|app|apps|website|platform|software|plugin) (for|to|that|which|can|we can|i can)\b|\b(suggest|recommend)\w* (a |an |some |any )?(good )?(ai )?(tool|app|ai|platform|website)|is there (any|an?) (ai |free |other )?(tool|app|website|platform|plugin|software)|\bany (ai |free |other )?(tool|app|website|platform|plugin)\b|do (you|u) have any (ai )?(tool|app)/i] },
+  { id:'tool_name', intent:'learn', label:'Which tool is this?',
+    desc:'asks the name, URL or link of the tool, website or app being shown',
+    ask:['tool name','tool names','name of the tool','which website','which app'],
+    re:[/\b(which|what|wich|konsa|kaunsa|kon sa|kaun sa)\s+(is\s+)?(the\s+|this\s+|that\s+|ur\s+|your\s+)?(ai|tool|tools|app|application|website|web ?site|site|platform|software|extension|model|plugin|llm|link)\b/i,
+        /which (is )?the (first|second|third|last|1st|2nd|3rd|previous) (app|tool|website|ai|site|platform)|\blink (for|of) (the )?(ai|tool|app|website|site)|name of (the |this |that |your )?(tool|app|website|site|ai|platform|software|extension)|(tool|app|website|site|platform|software)('?s|s)? name|\burl\b|link (of|for|to) (the |this |that )?(tool|website|site|app|platform)|what (is|was) (this|that|the) (tool|app|website|site|platform|ai|software)\b/i,
+        /^\W*(what|wat) (is|was) (this|that|it)\W*$|^\W*(is it|is this|is that) (a |an |from )?(?!(you|u|ok|okay|right|true|live|correct|possible|free|so|it|real|safe|necessary|done|over|recorded|paid|fine|good|same|mandatory|compulsory)\b)[\w.-]+\W*$|^\W*ye(h)? (kya|konsa|kaunsa)|tool ka naam|\bwhich one\b|ye(h)? kya hai/i] },
+  { id:'how_to', intent:'learn', label:'Stuck on a step / how-to',
+    desc:'wants a step, command or click path explained or the demo shown again, or is stuck because the tool errors',
+    ask:['how to questions','show again','step by step','which button','what command'],
+    re:[/^\W*(how|hw|hou)\b|\bhow (to|do|can|did|does|will|should|would|we|i|you|u)\b|show (it |that |this |me )?(again|once more)|(again|repeat).{0,10}(show|step|explain)/i,
+        /\brepeat\b|show (us |me |it |that |this |the \w+ )?(again|once|one more)|\bonce again\b|\bdo show\b|what should (i|we) (select|do|click|choose|type|write|put|enter)|service unavailable|\bnot (working|loading|opening|responding)\b|\berror\b|\bstuck\b/i,
+        /what (command|prompt|input|button|option|steps?|settings?|did you (type|write|enter|click|use|give))|\b(where|which) (is |do i |to )?(click|button|option|tab|setting|key|icon|menu)\b|\bsteps?\b|\bkaise\b|\bkese\b|\bwhere (is|are|do|to|can)\b|from where/i] },
+  { id:'capability', intent:'learn', label:'Can the tool do X?',
+    desc:'whether a tool can do a specific task, use case or language',
+    ask:['capability','capabilities','can it do','can the tool'],
+    re:[/^\W*(?:(?:sir|mam|ma'?am|maam|bro|hi|hello|hey|team|dear|ok|okay|so|and|but|also|then)\W+){0,2}(can|could|will|would|does|do|is|are|cam|cn)\s+(it|this|that|they|these|the tool|this tool|that tool|we|i|u|you|one|this ai|the ai|the app|this app|the website|this website)\b/i,
+        /\bpossible\b|\bwe can (make|create|do|use|add|build|generate|put|change)\b|\bcan (you|u|we|i) (change|make|create|add|put|use|generate|edit|remove|translate|convert)\b|^\W*(doesn'?t|don'?t|isn'?t|won'?t|wouldn'?t)\b|\bsame (thing|as)\b|better than|is (it|that|this) possible|possible (hai|h)?\W*$|does (it|this|that) (support|work|handle|allow)|\b(ho sakta|kar sakte|kar sakta|bana sakte|ban sakta)|\bwhat if\b|\bwhat about\b|\binstead of\b/i] },
+  { id:'concept', intent:'learn', label:'Explain a concept',
+    desc:'what something means, why something works, differences between things',
+    ask:['concept','concepts','meaning','explain'],
+    re:[/^\W*(what|wat|wht|whats|what's)\b|meaning of|difference between|\bvs\.?\b|\bexplain\b|^\W*why\b|\bwhy (is|are|do|does|did|we|should|would)\b|kya (hota|hai|hain)\b|\bmatlab\b|\bmeans\b/i] },
+  { id:'unclear', intent:'noise', label:'Unclear / fragment',
+    desc:'too short or vague to know what they want (?, "how", "what")',
+    ask:['unclear','unclear questions','fragments'], re:[] },
+  { id:'other', intent:'noise', label:'Other question',
+    desc:'a real question that fits none of the types above',
+    ask:['other questions'], re:[] }
+];
+const normAsk = (a) => ' ' + String(a).toLowerCase().replace(/[^a-z0-9\s'?]/g,' ').replace(/\s+/g,' ').trim() + ' ';
+QTYPES.forEach(t => { t.askN = (t.ask||[]).map(normAsk); });
+QINTENTS.forEach(i => { i.askN = (i.ask||[]).map(normAsk); });
+const QTYPE_BY_ID = Object.fromEntries(QTYPES.map(t => [t.id, t]));
+const QINTENT_BY_ID = Object.fromEntries(QINTENTS.map(i => [i.id, i]));
+const UNCLEAR_RE = /^\W*((what|wat|how|why|where|who|which|when|kya|kaise|kyu|kyun|haan|ha|ok|okay|hello|hi|sir|bro|huh|same|yes|no|really|seriously|hmm+|accha|acha|hn|h)\W*){1,4}$/i;
+
+function qWords(t){ return String(t).split(/\s+/).filter(w => /[a-z0-9\u0900-\u097F]/i.test(w)); }
+function classifyQuestion(text){
+  const t = String(text||'').replace(/\s+/g,' ').trim();
+  const letters = (t.match(/[a-z\u0900-\u097F]/gi) || []).length;
+  if (letters < 3 || UNCLEAR_RE.test(t)) return 'unclear';
+  const nw = qWords(t).length;
+  for (const q of QTYPES){
+    if (!q.re.length || !q.re.some(r => r.test(t))) continue;
+    if (nw <= 2 && (q.id === 'how_to' || q.id === 'concept' || q.id === 'capability')) return 'unclear';
+    return q.id;
+  }
+  return nw <= 2 ? 'unclear' : 'other';
+}
+// cache key for a message text: identical asks share one AI label
+function qKey(text){ return String(text||'').toLowerCase().replace(/\s+/g,' ').trim().replace(/[\s?!.。]+$/,'').slice(0, 300); }
+// key for a normalized question, used to group them
+function faqKey(s){ return String(s||'').toLowerCase().replace(/[^a-z0-9\u0900-\u097F]+/g,' ').replace(/\s+/g,' ').trim(); }
+
+function applyQType(m){
+  const ids = Object.keys(m.cats || {}).filter(id => !META[id]);
+  if (ids.length && primaryCat(ids) === 'query') { m.qtype = classifyQuestion(m.text); m.qsrc = 'rule'; }
+  else { delete m.qtype; delete m.qsrc; }
+  delete m.qfaq; delete m.qfaqKey; delete m.qtool; delete m.qcluster; delete m.qclusterKey;
+}
+
 /* ---------- Ask interpretation ---------- */
 function interpret(cmd, cdict){
-  const out = { cats:[], keywords:[], filters:{}, all:false, raw:cmd, view:null, trouble:false };
+  const out = { cats:[], keywords:[], filters:{}, all:false, raw:cmd, view:null, trouble:false, qtypes:[], intents:[], clusters:[] };
   let s = String(cmd||'').trim();
   if (!s) return out;
   s = s.replace(/"([^"]+)"|“([^”]+)”|'([^']{2,})'/g, (m, a, b, c) => { out.keywords.push((a||b||c).trim()); return ' '; });
@@ -939,6 +1169,10 @@ function interpret(cmd, cdict){
   for (const c of cdict){
     for (const t of c.ask){ if (t.trim() && low.includes(t)) { out.cats.push(c.id); break; } }
   }
+  for (const t of QTYPES){ for (const a of t.askN){ if (low.includes(a)) { out.qtypes.push(t.id); break; } } }
+  for (const it of QINTENTS){ for (const a of it.askN){ if (low.includes(a)) { out.intents.push(it.id); break; } } }
+  // "earning questions" means that sub-type, not every question
+  if (out.qtypes.length || out.intents.length) out.cats = out.cats.filter(c => c !== 'question' && c !== 'query');
   if (out.cats.includes('whatsapp') && out.cats.includes('join') && !/\b(zoom|meeting|session|class|webinar|call)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'join');
   if (out.cats.length && TROUBLE_ASK_RE.test(s)) out.trouble = true;
   if (out.cats.includes('phone') && out.cats.length > 1 && !/\b(phone|mobile|contact number)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'phone');
@@ -946,7 +1180,7 @@ function interpret(cmd, cdict){
   if (out.cats.includes('question') && out.cats.length > 1) out.cats = out.cats.filter(c => c !== 'question');
   if (out.cats.includes('support') && out.cats.length > 1 && !/\b(support|helpline|ticket|complain|escalat|callback|call back|no response|not responding|contact)\b/i.test(s)) out.cats = out.cats.filter(c => c !== 'support');
 
-  if (!out.cats.length && !out.keywords.length && !out.all){
+  if (!out.cats.length && !out.qtypes.length && !out.intents.length && !out.keywords.length && !out.all){
     const words = low.trim().split(/\s+/).filter(w => w && w.length > 2 && !STOP.has(w));
     if (words.length) out.keywords.push(...words); else if (Object.keys(out.filters).length) out.all = true;
   }
@@ -971,26 +1205,29 @@ function runQueryInner(msgs, q, cdict, trouble){
     if (q.filters.source && !(m.source||'').toLowerCase().includes(q.filters.source.toLowerCase())) continue;
     if (q.filters.after != null && q.filters.after >= 0 && m.secs >= 0 && m.secs < q.filters.after) continue;
     if (q.filters.before != null && q.filters.before >= 0 && m.secs >= 0 && m.secs > q.filters.before) continue;
-    let catHit = [], hits = [];
-    if (q.cats.length){
+    let catHit = [], hits = [], qHit = false;
+    const wantQ = qSelectors(q);
+    if (q.cats.length || wantQ){
       for (const c of q.cats){ if (m.cats && m.cats[c]) { catHit.push(c); hits.push(...m.cats[c]); } }
-      if (!catHit.length) continue;
+      if (wantQ && m.qtype) qHit = (q.qtypes||[]).includes(m.qtype) || (q.intents||[]).includes((QTYPE_BY_ID[m.qtype]||{}).intent) || (q.clusters||[]).includes(m.qclusterKey);
+      if (!catHit.length && !qHit) continue;
     }
     if (kwRes.length){
       const kh = hitsFor(m.text, kwRes);
       if (!kh.length) continue;
       hits.push(...kh);
     }
-    if (!q.cats.length && !kwRes.length && !q.all) continue;
+    if (!q.cats.length && !wantQ && !kwRes.length && !q.all) continue;
     if (trouble){
       const th = hitsFor(m.text, TROUBLE);
       if (!th.length) continue;
       hits.push(...th);
     }
-    out.push({ m, cats:catHit, hits });
+    out.push({ m, cats:catHit, hits, q:qHit });
   }
   return out;
 }
+function qSelectors(q){ return !!((q.qtypes && q.qtypes.length) || (q.intents && q.intents.length) || (q.clusters && q.clusters.length)); }
 
 function groupByPerson(rows){
   const map = new Map();
@@ -1005,7 +1242,8 @@ function groupByPerson(rows){
 }
 
 const hasTrouble = (text) => hitsFor(text, TROUBLE).length > 0;
-root.ZCA = { DEFAULT_DICT, compileDict, parseZoomTxt, parseCSV, guessMapping, rowsToMessages, tagMessages, interpret, runQuery, groupByPerson, hitsFor, compilePattern, toSecs, looksLikeZoomSheet, sheetToZoomText, detectHosts, hasTrouble };
+root.ZCA = { DEFAULT_DICT, compileDict, parseZoomTxt, parseCSV, guessMapping, rowsToMessages, tagMessages, interpret, runQuery, groupByPerson, hitsFor, compilePattern, toSecs, looksLikeZoomSheet, sheetToZoomText, detectHosts, hasTrouble,
+  META, PRIMARY_ORDER, primaryCat, QTYPES, QINTENTS, QTYPE_BY_ID, QINTENT_BY_ID, classifyQuestion, qKey, faqKey, applyQType, qSelectors };
 })(typeof window !== 'undefined' ? window : globalThis);
 // @@core-end
 </script>
@@ -1074,6 +1312,8 @@ function copyText(t){
 function download(name, content, type){
   const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([content], { type })); a.download = name; document.body.appendChild(a); a.click(); a.remove();
 }
+// Excel refuses cells over 32,767 characters (one chatty person's joined messages can exceed it)
+function capCells(aoa){ return aoa.map(r => r.map(v => typeof v === 'string' && v.length > 32000 ? v.slice(0, 31940) + ' … [cut at Excel’s cell limit]' : v)); }
 function csvCell(v){ v = String(v == null ? '' : v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; }
 
 /* ---------- per-chat date ---------- */
@@ -1108,7 +1348,7 @@ function setSourceDate(src, val){
   if (val) { const p = val.split('-').map(Number); const r = mkDate(p[0],p[1],p[2]); src.date = r ? r.key : val; src.dateLabel = r ? r.label : val; }
   else { src.date = ''; src.dateLabel = ''; }
   stampSource(src);
-  renderSources(); refreshOverview(); if (state.query) run(state.query.raw);
+  renderSources(); refreshOverview(); rerun();
 }
 function fillDateFilter(){
   const sel = $('#dateSel'); if (!sel) return;
@@ -1137,7 +1377,7 @@ function addSource(src){
   retag();
   renderSources();
   refreshOverview();
-  if (state.query) run(state.query.raw); else setMascot('happy', 1500);
+  if (state.query) rerun(); else setMascot('happy', 1500);
 }
 function sameChat(a, b){
   if (a.messages.length !== b.messages.length || a.messages.length < 5) return false;
@@ -1145,7 +1385,7 @@ function sameChat(a, b){
   const idx = [0, 1, 2, a.messages.length - 2, a.messages.length - 1];
   return idx.every(i => key(a.messages[i]) === key(b.messages[i]));
 }
-function retag(){ for (const s of state.sources) Z.tagMessages(s.messages, cdict); }
+function retag(){ for (const s of state.sources) { Z.tagMessages(s.messages, cdict); applyAiLabels(s.messages); } }
 function markHosts(src){
   src.hosts = Z.detectHosts(src.messages);
   const set = new Set(src.hosts);
@@ -1217,8 +1457,8 @@ function renderSources(){
       ${s.kind === 'csv' ? '<button data-map title="Choose which columns to use">Columns</button>' : ''}
       <button data-x title="Remove">✕</button></div>
       <div class="srcdate"><label>Date</label><input type="date" value="${s.date || ''}" aria-label="Session date for ${escH(s.name)}"><span class="dl">${s.dateLabel ? escH(s.dateLabel) : 'not detected'}</span></div>`;
-    li.querySelector('input[type=checkbox]').onchange = (e) => { s.on = e.target.checked; li.classList.toggle('off', !s.on); refreshOverview(); if (state.query) run(state.query.raw); };
-    li.querySelector('[data-x]').onclick = () => { state.sources = state.sources.filter(x => x !== s); renderSources(); refreshOverview(); if (state.query) run(state.query.raw); };
+    li.querySelector('input[type=checkbox]').onchange = (e) => { s.on = e.target.checked; li.classList.toggle('off', !s.on); refreshOverview(); rerun(); };
+    li.querySelector('[data-x]').onclick = () => { state.sources = state.sources.filter(x => x !== s); renderSources(); refreshOverview(); rerun(); };
     li.querySelector('.srcdate input').onchange = (e) => setSourceDate(s, e.target.value);
     const mb = li.querySelector('[data-map]'); if (mb) mb.onclick = () => openMap(s, false);
     ul.appendChild(li);
@@ -1253,7 +1493,7 @@ function pool(){
 }
 
 /* ---------- overview ---------- */
-const META = { question:1, phone:1, email:1, link:1 };
+const META = Z.META;
 function refreshOverview(){
   const hn = detectedHosts();
   $('#hostNote').textContent = hn.length ? `Detected from the chat: ${hn.slice(0,6).join(', ')}${hn.length > 6 ? ` and ${hn.length - 6} more` : ''}` : '';
@@ -1262,7 +1502,7 @@ function refreshOverview(){
   const ul = $('#buckets'); ul.innerHTML = '';
   const people = new Set(msgs.map(m => m.name.toLowerCase()));
   $('#ovSub').textContent = msgs.length ? `${msgs.length} msgs, ${people.size} people` : '';
-  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; return; }
+  if (!msgs.length) { ul.innerHTML = '<li><p class="empty-note">Add a chat to see topic counts.</p></li>'; $('#bktPanel').hidden = true; $('#tlPanel').hidden = true; if (!AI.running) $('#qPanel').hidden = true; return; }
   const counts = cdict.map(c => {
     const ppl = new Set(); let n = 0;
     for (const m of msgs){ if (m.cats[c.id]) { n++; ppl.add(m.name.toLowerCase()); } }
@@ -1278,6 +1518,7 @@ function refreshOverview(){
   }
   syncQuick();
   renderBuckets(msgs);
+  renderQPanel(msgs);
   renderTimeline(msgs);
 }
 
@@ -1312,10 +1553,12 @@ function renderBuckets(msgs){
       <div class="bstat"><span class="bp">${x.p}</span> ${x.p===1?'person':'people'} · ${x.n} ${x.n===1?'msg':'msgs'}</div>
       <ul class="bex">${ex.map(m => `<li><span class="bxn">${escH(m.name)}${m.time?` · ${escH(m.time)}`:''}${m.dm?' · private':''}</span><span class="bxt">${escH(clip(m.text,180))}</span></li>`).join('')}</ul>
       <button class="btn quiet sm bonly" data-cat="${x.c.id}">Only this ${x.n} →</button>
+      ${x.c.id === 'query' ? '<button class="btn quiet sm bonly" data-break>Break down by type ↓</button>' : ''}
     </article>`;
   }).join('');
   grid.querySelectorAll('input[data-cat]').forEach(cb => cb.onchange = () => toggleCat(cb.dataset.cat));
-  grid.querySelectorAll('.bonly').forEach(b => b.onclick = () => { onlyCat(b.dataset.cat); $('#results').scrollIntoView({ behavior:'smooth', block:'start' }); });
+  grid.querySelectorAll('.bonly[data-cat]').forEach(b => b.onclick = () => { onlyCat(b.dataset.cat); $('#results').scrollIntoView({ behavior:'smooth', block:'start' }); });
+  grid.querySelectorAll('[data-break]').forEach(b => b.onclick = () => $('#qPanel').scrollIntoView({ behavior:'smooth', block:'start' }));
 }
 
 /* ---------- session issue matrix (all chats × issues, ignores date filter) ---------- */
@@ -1448,6 +1691,9 @@ function renderReading(q){
   const bits = [];
   const cb = catById();
   for (const c of q.cats){ const cat = cb[c]; if (cat) bits.push(`<span class="chip rm" data-cat="${c}" title="Remove this topic"><span class="dot" style="background:${cat.color}"></span>${escH(cat.label)}<span class="x">×</span></span>`); }
+  for (const id of (q.qtypes||[])){ const t = QT[id]; if (t) bits.push(`<span class="chip rm" data-qk="qtypes" data-qv="${id}" title="Remove this question type"><span class="dot" style="background:${qIntent(id).color}"></span>${escH(t.label)}<span class="x">×</span></span>`); }
+  for (const id of (q.intents||[])){ const it = QI_BY[id]; if (it) bits.push(`<span class="chip rm" data-qk="intents" data-qv="${id}" title="Remove"><span class="dot" style="background:${it.color}"></span>${escH(it.label)} questions<span class="x">×</span></span>`); }
+  for (const k of (q.clusters||[])) bits.push(`<span class="chip rm" data-qk="clusters" data-qv="${escH(k)}" title="People who asked this (merged by AI)">≈ ${escH(AI.cl[k] || k)}<span class="x">×</span></span>`);
   for (const k of q.keywords) bits.push(`<span class="chip kw" title="Messages containing this text">“${escH(k)}”</span>`);
   if (q.filters.sender) bits.push(`<span class="chip flt">from ${escH(q.filters.sender)}</span>`);
   if (q.filters.source) bits.push(`<span class="chip flt">in ${escH(q.filters.source)}</span>`);
@@ -1458,13 +1704,20 @@ function renderReading(q){
   if (q.all && !q.cats.length && !q.keywords.length) bits.push(`<span class="chip">every message</span>`);
   let lead = 'Looking for';
   if (q.cats.length && q.keywords.length) lead = 'Looking for these topics, and only messages containing';
-  else if (q.cats.length > 1) lead = 'Looking for any of';
+  else if (q.cats.length + (q.qtypes||[]).length + (q.intents||[]).length + (q.clusters||[]).length > 1) lead = 'Looking for any of';
   const note = q.troubleFallback ? `<span class="lead" style="margin-left:6px">no message describes a problem, so showing every mention</span>` : '';
   el.innerHTML = bits.length ? `<span class="lead">${lead}</span>${bits.join('')}${note}` : '<span class="lead">Type a topic, a name, or put exact text in quotes.</span>';
   el.querySelectorAll('[data-cat]').forEach(ch => ch.onclick = () => toggleCat(ch.dataset.cat));
+  el.querySelectorAll('[data-qk]').forEach(ch => ch.onclick = () => toggleQ(ch.dataset.qk, ch.dataset.qv));
 }
 function fmtSecs(s){ const h = Math.floor(s/3600), m = Math.floor((s%3600)/60); return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`; }
 
+// re-run the current query as-is (sources, dates or filters changed)
+function rerun(){
+  if (!state.query) return;
+  state.rows = Z.runQuery(pool(), state.query, cdict);
+  renderReading(state.query); renderResults(); syncQuick();
+}
 function run(text, forceCats){
   const q = Z.interpret(text, cdict);
   if (forceCats) { q.cats = forceCats; }
@@ -1481,7 +1734,7 @@ function run(text, forceCats){
 /* ---------- multi-select across buckets (union of topics) ---------- */
 function selectedCats(){ return new Set(state.query ? state.query.cats : []); }
 function catLabel(id){ return (catById()[id] || {}).label || id; }
-function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
+function buildRaw(q){ return [...q.cats.map(catLabel), ...(q.qtypes||[]).map(id => (Z.QTYPE_BY_ID[id]||{}).label || id), ...(q.intents||[]).map(id => ((Z.QINTENT_BY_ID[id]||{}).label || id) + ' questions'), ...(q.clusters||[]).map(k => '≈ ' + (AI.cl[k] || k)), ...(q.keywords||[]).map(k => `"${k}"`)].join(', '); }
 function execQuery(q){
   state.query = q; state.limit = PAGE;
   if (q.view) { state.view = q.view; syncViewSeg(); }
@@ -1498,7 +1751,7 @@ function toggleCat(id){
   set.has(id) ? set.delete(id) : set.add(id);
   const q = { ...base, cats:[...set] };
   q.raw = buildRaw(q);
-  if (!q.cats.length && !(q.keywords||[]).length && !q.all && !Object.keys(q.filters||{}).length) { clearCats(); return; }
+  if (!q.cats.length && !Z.qSelectors(q) && !(q.keywords||[]).length && !q.all && !Object.keys(q.filters||{}).length) { clearCats(); return; }
   execQuery(q);
 }
 function onlyCat(id){
@@ -1508,7 +1761,8 @@ function onlyCat(id){
 }
 function syncQuick(){
   const sel = selectedCats();
-  document.querySelectorAll('#quick .qchip').forEach(b => b.classList.toggle('on', sel.has(b.dataset.id)));
+  const qs = (state.query && state.query.intents) || [];
+  document.querySelectorAll('#quick .qchip').forEach(b => b.classList.toggle('on', b.dataset.int ? qs.includes(b.dataset.int) : sel.has(b.dataset.id)));
 }
 $('#bktClear').onclick = clearCats;
 
@@ -1543,6 +1797,11 @@ function renderResults(){
   }
   const sort = state.sort;
   const arrow = (k) => sort.key === k ? `<span class="arr">${sort.dir > 0 ? '▲' : '▼'}</span>` : '';
+  const qSel = Z.qSelectors(q) || q.cats.includes('query');
+  const showTopicsP = q.cats.length !== 1 || (q.cats.length && q.keywords.length) || qSel;
+  const showTopicsM = q.cats.length !== 1 || qSel;
+  const norm = (m) => m.qsrc === 'ai' && m.qcluster ? `<span class="qnorm">≈ ${escH(m.qcluster)}</span>` : '';
+  const pQtags = (p) => [...new Set(p.rows.map(r => r.m.qtype).filter(Boolean))].map(qtag).join('');
   if (state.view === 'person'){
     const list = people.slice().sort((a,b) => {
       if (sort.key === 'name') return a.name.localeCompare(b.name) * sort.dir;
@@ -1551,13 +1810,13 @@ function renderResults(){
     });
     const shown = list.slice(0, state.limit);
     body.innerHTML = `<div class="tablewrap"><table><thead><tr>
-      <th data-k="time">First at${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th data-k="count">Msgs${arrow('count')}</th><th>Messages</th>${q.cats.length !== 1 || q.cats.length && q.keywords.length ? '<th>Topics</th>' : ''}
+      <th data-k="time">First at${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th data-k="count">Msgs${arrow('count')}</th><th>Messages</th>${showTopicsP ? '<th>Topics</th>' : ''}
       </tr></thead><tbody>${shown.map((p, i) => `<tr${i < 15 ? ` class="rv" style="animation-delay:${i * 28}ms"` : ''}>
         <td class="t">${escH(p.firstT || '')}</td>
         <td class="n">${escH(p.name)}${multiSrc ? `<small>${escH(personDates(p))}</small>` : ''}</td>
         <td class="c">${p.rows.length}</td>
-        <td class="m"><ul class="plist">${p.rows.map(r => `<li><span class="pt">${escH(r.m.time)}${r.m.dm ? ' · private' : ''}</span><span class="pm">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</span></li>`).join('')}</ul></td>
-        ${q.cats.length !== 1 || q.cats.length && q.keywords.length ? `<td class="c">${[...p.cats].map(tag).join('')}</td>` : ''}
+        <td class="m"><ul class="plist">${p.rows.map(r => `<li><span class="pt">${escH(r.m.time)}${r.m.dm ? ' · private' : ''}</span><span class="pm">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}${norm(r.m)}</span></li>`).join('')}</ul></td>
+        ${showTopicsP ? `<td class="c">${[...p.cats].map(tag).join('')}${pQtags(p)}</td>` : ''}
       </tr>`).join('')}</tbody></table></div>${more(list.length)}`;
   } else {
     const list = rows.slice().sort((a,b) => {
@@ -1566,12 +1825,12 @@ function renderResults(){
     });
     const shown = list.slice(0, state.limit);
     body.innerHTML = `<div class="tablewrap"><table><thead><tr>
-      <th data-k="time">Time${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th>Message</th>${q.cats.length !== 1 ? '<th>Topics</th>' : ''}${multiSrc ? '<th>Session</th>' : ''}
+      <th data-k="time">Time${arrow('time')}</th><th data-k="name">Name${arrow('name')}</th><th>Message</th>${showTopicsM ? '<th>Topics</th>' : ''}${multiSrc ? '<th>Session</th>' : ''}
       </tr></thead><tbody>${shown.map((r, i) => `<tr${i < 15 ? ` class="rv" style="animation-delay:${i * 28}ms"` : ''}>
         <td class="t">${escH(r.m.time)}</td>
         <td class="n">${escH(r.m.name)}${r.m.dm ? `<small>to ${escH(r.m.to)}</small>` : ''}</td>
-        <td class="m">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}</td>
-        ${q.cats.length !== 1 ? `<td class="c">${r.cats.map(tag).join('')}</td>` : ''}
+        <td class="m">${r.m.replyTo ? `<span class="rep">↩ ${escH(r.m.replyTo)}</span>` : ''}${highlight(r.m.text, r.hits)}${norm(r.m)}</td>
+        ${showTopicsM ? `<td class="c">${r.cats.map(tag).join('')}${r.m.qtype ? qtag(r.m.qtype) : ''}</td>` : ''}
         ${multiSrc ? `<td class="s" title="${escH(r.m.source)}">${r.m.srcDateLabel ? `<b>${escH(r.m.srcDateLabel)}</b><br>` : ''}${escH(r.m.source)}</td>` : ''}
       </tr>`).join('')}</tbody></table></div>${more(list.length)}`;
   }
@@ -1584,7 +1843,7 @@ function more(total){
   if (total <= state.limit) return '';
   return `<div class="row" style="padding:10px 14px;border-top:1px solid var(--line-2)"><span class="hits">Showing ${state.limit} of ${total}. The CSV download always has everything.</span><button class="btn sm" data-more>Show ${Math.min(PAGE, total - state.limit)} more</button><button class="btn quiet sm" data-all>Show all</button></div>`;
 }
-const EXAMPLES = ['who asked for refund','who has LMS problem','who is unable to join the whatsapp group','who wants the recording','anyone unable to join the session','audio or screen issues','who asked about certificate','positive feedback','complaints','who shared phone number','"chatgpt plus"','payment after 10:30'];
+const EXAMPLES = ['buying signals','who asked about clients','hosting and domain questions','who asked for refund','who has LMS problem','who is unable to join the whatsapp group','who wants the recording','anyone unable to join the session','audio or screen issues','who asked about certificate','positive feedback','complaints','who shared phone number','"chatgpt plus"','payment after 10:30'];
 function fillExamples(){
   const ex = $('#examples'); if (!ex) return;
   ex.innerHTML = EXAMPLES.map(e => `<button>${escH(e)}</button>`).join('');
@@ -1599,8 +1858,558 @@ function fillQuick(){
     b.onclick = () => toggleCat(id);
     el.appendChild(b);
   });
+  const bs = document.createElement('button'); bs.className = 'qchip'; bs.dataset.int = 'buy';
+  bs.innerHTML = `<span class="dot" style="background:${Z.QINTENT_BY_ID.buy.color}"></span>Buying signals`;
+  bs.title = 'Questions about seats, program details, earning or fit';
+  bs.onclick = () => toggleQ('intents', 'buy'); el.appendChild(bs);
   syncQuick();
 }
+
+/* ---------- question breakdown: rules first, OpenRouter AI on top ----------
+   Rules sort every "Query / question" message instantly and offline.
+   "Sort with AI" sends only the question text (no names; numbers and emails masked)
+   to OpenRouter, caches each label in this browser, merges repeat questions and
+   writes takeaways. Nothing is sent unless you click it. */
+const QT = Z.QTYPE_BY_ID, QI_BY = Z.QINTENT_BY_ID;
+const QCACHE_LS = 'zca.qai.v1', KEY_LS = 'zca.orkey';
+const OR_BASE = 'https://openrouter.ai/api/v1';
+const MODEL_FALLBACK = 'google/gemini-2.5-flash';
+const BATCH = 60, PAR = 5;
+const AI = { items:{}, merges:{}, take:null, cl:{}, running:false, ctl:null, done:0, total:0, phase:'', err:'', models:null, modelsP:null, autoModel:'', open:{}, memKey:'', jsonMode:true };
+prefs.ai = prefs.ai || {};
+(function loadQCache(){ try { const c = JSON.parse(localStorage.getItem(QCACHE_LS) || '{}'); AI.items = c.items || {}; AI.merges = c.merges || {}; if (c.take && Array.isArray(c.take.items)) AI.take = c.take; } catch(e){} })();
+function saveQCache(){
+  const dump = () => localStorage.setItem(QCACHE_LS, JSON.stringify({ v:1, items:AI.items, merges:AI.merges, take:AI.take }));
+  try { dump(); } catch(e){
+    const ks = Object.keys(AI.items); ks.slice(0, Math.floor(ks.length / 2)).forEach(k => delete AI.items[k]);
+    try { dump(); } catch(e2){}
+  }
+}
+function aiKey(){ let k = ''; try { k = localStorage.getItem(KEY_LS) || sessionStorage.getItem(KEY_LS) || ''; } catch(e){} return k || AI.memKey || ''; }
+function setAiKey(k, remember){
+  AI.memKey = k || '';
+  try { localStorage.removeItem(KEY_LS); sessionStorage.removeItem(KEY_LS); if (k) (remember ? localStorage : sessionStorage).setItem(KEY_LS, k); } catch(e){}
+}
+function model(){ return String(prefs.ai.model || AI.autoModel || MODEL_FALLBACK).trim(); }
+const fmtN = (n) => Number(n).toLocaleString('en-IN');
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const clean = (s) => String(s == null ? '' : s).replace(/\s+/g,' ').trim();
+const qIntent = (id) => QI_BY[(QT[id] || {}).intent] || QI_BY.noise;
+function qtag(id){ const t = QT[id]; if (!t) return ''; const c = qIntent(id).color; return `<span class="tag" style="background:${tint(c,.12)};color:${c}" title="Question type">${escH(t.label)}</span>`; }
+
+/* apply cached AI labels on top of the rule labels */
+function applyAiLabels(msgs){
+  for (const m of msgs){
+    if (!m.qtype) continue;
+    const c = AI.items[Z.qKey(m.text)];
+    if (!c) continue;
+    if (c.t && QT[c.t]) m.qtype = c.t;
+    m.qsrc = 'ai';
+    if (c.q) {
+      m.qfaq = c.q; m.qfaqKey = Z.faqKey(c.q);
+      m.qcluster = AI.merges[m.qfaqKey] || c.q; m.qclusterKey = Z.faqKey(m.qcluster);
+      AI.cl[m.qclusterKey] = m.qcluster;
+    } else { delete m.qfaq; delete m.qfaqKey; delete m.qcluster; delete m.qclusterKey; }
+    if (c.tool) m.qtool = c.tool; else delete m.qtool;
+  }
+}
+function applyAll(){ for (const s of state.sources) applyAiLabels(s.messages); }
+
+/* ---------- stats for the panel, exports and the takeaways brief ---------- */
+function qStats(msgs){
+  const qs = msgs.filter(m => m.qtype);
+  const people = new Set(qs.map(m => m.name.toLowerCase()));
+  const byType = new Map();
+  for (const m of qs){
+    let t = byType.get(m.qtype);
+    if (!t) { t = { id:m.qtype, def:QT[m.qtype], n:0, ppl:new Set(), msgs:[], clusters:new Map(), tools:new Map() }; byType.set(m.qtype, t); }
+    t.n++; t.ppl.add(m.name.toLowerCase()); t.msgs.push(m);
+    if (m.qclusterKey) {
+      let c = t.clusters.get(m.qclusterKey);
+      if (!c) { c = { key:m.qclusterKey, label:m.qcluster, n:0, ppl:new Set(), names:new Set() }; t.clusters.set(m.qclusterKey, c); }
+      c.n++; c.ppl.add(m.name.toLowerCase()); c.names.add(m.name);
+    }
+    if (m.qtool) { const k = m.qtool.toLowerCase(); const e = t.tools.get(k) || { label:m.qtool, n:0 }; e.n++; t.tools.set(k, e); }
+  }
+  const types = [...byType.values()].map(t => ({ ...t, p:t.ppl.size,
+      clist:[...t.clusters.values()].map(c => ({ ...c, p:c.ppl.size })).sort((a,b) => b.p - a.p || b.n - a.n),
+      tlist:[...t.tools.values()].sort((a,b) => b.n - a.n) }))
+    .sort((a,b) => (a.def.intent === 'noise') - (b.def.intent === 'noise') || b.p - a.p || b.n - a.n);
+  const intents = Z.QINTENTS.map(def => {
+    const rows = qs.filter(m => QT[m.qtype].intent === def.id);
+    return { def, n:rows.length, p:new Set(rows.map(m => m.name.toLowerCase())).size };
+  });
+  return { qs, people:people.size, types, intents, aiN:qs.filter(m => m.qsrc === 'ai').length };
+}
+// rules mode: the most-repeated real asks in this type
+function qExamples(list, limit){
+  const g = new Map();
+  for (const m of list){ if (m.text.trim().length < 8) continue; const k = Z.qKey(m.text); let e = g.get(k); if (!e) g.set(k, e = { m, ppl:new Set() }); e.ppl.add(m.name.toLowerCase()); }
+  const ex = [...g.values()].sort((a,b) => b.ppl.size - a.ppl.size).slice(0, limit).map(e => e.m);
+  if (ex.length < limit) for (const m of list){ if (!ex.includes(m)) ex.push(m); if (ex.length >= limit) break; }
+  return ex;
+}
+
+/* ---------- selection (works like the topic buckets: everything ticked is OR-ed) ---------- */
+function selQ(){ const q = state.query || {}; return { qtypes:new Set(q.qtypes || []), intents:new Set(q.intents || []), clusters:new Set(q.clusters || []) }; }
+function toggleQ(kind, id){
+  const base = state.query || Z.interpret('', cdict);
+  const q = { ...base, qtypes:[...(base.qtypes || [])], intents:[...(base.intents || [])], clusters:[...(base.clusters || [])] };
+  const set = new Set(q[kind]); set.has(id) ? set.delete(id) : set.add(id);
+  q[kind] = [...set];
+  q.raw = buildRaw(q);
+  if (!q.cats.length && !Z.qSelectors(q) && !(q.keywords || []).length && !q.all && !Object.keys(q.filters || {}).length) { clearCats(); return; }
+  execQuery(q);
+}
+function onlyQ(sel){
+  const q = Z.interpret('', cdict);
+  Object.assign(q, sel); q.raw = buildRaw(q);
+  execQuery(q);
+  $('#results').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+/* ---------- panel ---------- */
+function shortModel(id){ return String(id).split('/').pop(); }
+function fmtUsd(x){ if (x == null || !isFinite(x)) return ''; return x < 0.01 ? 'under $0.01' : '≈ $' + (x < 1 ? x.toFixed(2) : x.toFixed(1)); }
+function estimate(pending){
+  const reqs = Math.ceil(pending.length / BATCH);
+  const m = AI.models && AI.models.find(x => x.id === model());
+  const chars = pending.reduce((a, p) => a + Math.min(400, p.text.length) + 6, 0);
+  const inTok = (chars + reqs * 2600) / 3.6 + pending.length * 16 + 2500;
+  const outTok = pending.length * 34 + 1200;
+  const usd = m && m.pricing ? inTok * (+m.pricing.prompt || 0) + outTok * (+m.pricing.completion || 0) : null;
+  return { reqs, usd };
+}
+let qRenderT = null;
+function scheduleQRender(){ if (qRenderT) return; qRenderT = setTimeout(() => { qRenderT = null; renderQPanel(pool()); }, 350); }
+function renderProgress(){
+  const box = $('#qProg'); box.hidden = !AI.running;
+  if (!AI.running) return;
+  const pct = AI.phase === 'sort' && AI.total ? Math.round(100 * AI.done / AI.total) : 100;
+  $('#qBar').style.width = pct + '%';
+  box.classList.toggle('busy', AI.phase !== 'sort');
+  $('#qProgT').textContent = AI.phase === 'sort' ? `Sorting ${fmtN(AI.done)} of ${fmtN(AI.total)} questions` : AI.phase === 'merge' ? 'Merging repeat questions' : 'Writing takeaways';
+}
+function renderQPanel(msgs){
+  const panel = $('#qPanel');
+  const st = qStats(msgs);
+  if (!st.qs.length && !AI.running) { panel.hidden = true; return; }
+  panel.hidden = false;
+  $('#qSub').textContent = `${fmtN(st.qs.length)} questions that fit no other topic, from ${fmtN(st.people)} ${st.people === 1 ? 'person' : 'people'}`;
+  const pct = st.qs.length ? Math.round(100 * st.aiN / st.qs.length) : 0;
+  const mode = $('#qMode');
+  mode.textContent = !st.aiN ? 'Keyword rules' : pct >= 99 ? `AI · ${shortModel(model())}` : `${pct}% AI-sorted`;
+  mode.classList.toggle('ai', st.aiN > 0);
+
+  const pending = AI.running ? [] : collectPending();
+  const btn = $('#qRun');
+  btn.disabled = AI.running || (!pending.length && !st.aiN);
+  btn.textContent = AI.running ? 'Sorting…' : !st.aiN ? 'Sort with AI' : pending.length ? `Sort ${fmtN(pending.length)} new with AI` : 'Refresh with AI';
+  btn.title = pending.length ? `Send ${fmtN(pending.length)} unique questions to ${model()}` : 'Re-merge the top questions and rewrite the takeaways';
+  renderProgress();
+
+  const sel = selQ();
+  const anySel = sel.qtypes.size + sel.intents.size + sel.clusters.size;
+  $('#qClr').hidden = !anySel;
+
+  // one line of guidance: error, next step, or what to click
+  const note = $('#qNote'); note.classList.toggle('err', !!AI.err && !AI.running);
+  if (AI.running) note.textContent = '';
+  else if (AI.err) note.textContent = AI.err;
+  else if (!st.aiN) {
+    const est = estimate(pending);
+    note.textContent = !aiKey()
+      ? 'Sorted by keyword rules, instantly and offline. Add an OpenRouter key in AI settings to sort every question exactly, merge repeats into top questions and get takeaways.'
+      : `Sorted by keyword rules. Sort with AI to get exact types, merged top questions and takeaways: ${fmtN(pending.length)} unique questions, ${est.reqs} ${est.reqs === 1 ? 'request' : 'requests'}${est.usd != null ? ', ' + fmtUsd(est.usd) : ''}.`;
+    if (aiKey() && !AI.models) loadModels().then(() => scheduleQRender()).catch(() => {});
+  }
+  else if (pending.length) note.textContent = `${fmtN(pending.length)} questions are new since the last AI run and still use keyword rules.`;
+  else note.textContent = 'Click a question to see who asked it. Tick types or intents to combine them.';
+
+  // intent strip + legend
+  const tot = Math.max(1, st.qs.length);
+  $('#qStrip').innerHTML = st.intents.filter(x => x.n).map(x => `<i style="width:${(100 * x.n / tot).toFixed(2)}%;background:${x.def.color}"></i>`).join('');
+  $('#qLeg').innerHTML = st.intents.filter(x => x.n).map(x => `<button class="${sel.intents.has(x.def.id) ? 'on' : ''}" data-int="${x.def.id}" title="${escH(x.def.hint)} ${fmtN(x.n)} messages."><i style="background:${x.def.color}"></i>${escH(x.def.label)} <b>${fmtN(x.p)}</b></button>`).join('');
+  $('#qLeg').querySelectorAll('[data-int]').forEach(b => b.onclick = () => toggleQ('intents', b.dataset.int));
+
+  // takeaways
+  const tk = $('#qTake');
+  if (AI.take && AI.take.items && AI.take.items.length && st.aiN) {
+    tk.hidden = false;
+    const at = new Date(AI.take.at);
+    tk.innerHTML = `<h4>Takeaways</h4><ul>${AI.take.items.map(x => `<li><span class="own ${x.owner.toLowerCase()}">${escH(x.owner)}</span><span>${escH(x.text)}</span></li>`).join('')}</ul><small>Written by AI from ${fmtN(AI.take.n)} questions${isNaN(at) ? '' : ' at ' + at.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}. Check numbers against the cards before sharing.</small>`;
+  } else tk.hidden = true;
+
+  // type cards
+  const grid = $('#qGrid');
+  grid.innerHTML = st.types.map(t => {
+    const it = qIntent(t.id), on = sel.qtypes.has(t.id), open = !!AI.open[t.id];
+    let body;
+    if (t.clist.length) {
+      const top = t.clist.slice(0, open ? 30 : 3);
+      body = `<ol class="faq">${top.map(c => `<li><button data-cl="${escH(c.key)}" class="${sel.clusters.has(c.key) ? 'on' : ''}" title="${c.p} ${c.p === 1 ? 'person' : 'people'}, ${c.n} ${c.n === 1 ? 'message' : 'messages'}. Click to see them."><span class="fq">${escH(c.label)}</span><span class="fx" aria-label="${c.p} people">${c.p}</span></button></li>`).join('')}</ol>`
+        + (t.clist.length > 3 ? `<button class="qmore" data-more="${t.id}">${open ? 'Show top 3' : `All ${t.clist.length} questions`}</button>` : '');
+    } else {
+      body = `<ul class="bex">${qExamples(t.msgs, 3).map(m => `<li><span class="bxn">${escH(m.name)}${m.time ? ` · ${escH(m.time)}` : ''}</span><span class="bxt">${escH(clip(m.text, 160))}</span></li>`).join('')}</ul>`;
+    }
+    const tools = t.tlist.slice(0, 4);
+    return `<article class="bcard qcard ${on ? 'sel' : ''}" style="--bc:${it.color}">
+      <header><label class="bpick"><input type="checkbox" data-qt="${t.id}" ${on ? 'checked' : ''} aria-label="Include ${escH(t.def.label)}"><span class="bdot"></span><b title="${escH(t.def.desc)}">${escH(t.def.label)}</b></label></header>
+      <div class="bstat"><span class="bp">${t.p}</span> ${t.p === 1 ? 'person' : 'people'} · ${t.n} ${t.n === 1 ? 'msg' : 'msgs'}<span class="qint">${escH(it.label)}</span></div>
+      ${body}
+      ${tools.length ? `<div class="qtools">Tools: ${tools.map(x => `${escH(x.label)} ${x.n}`).join(', ')}</div>` : ''}
+      <button class="btn quiet sm bonly" data-qonly="${t.id}">Only these ${t.n} →</button>
+    </article>`;
+  }).join('');
+  grid.querySelectorAll('input[data-qt]').forEach(cb => cb.onchange = () => toggleQ('qtypes', cb.dataset.qt));
+  grid.querySelectorAll('[data-qonly]').forEach(b => b.onclick = () => onlyQ({ qtypes:[b.dataset.qonly] }));
+  grid.querySelectorAll('[data-cl]').forEach(b => b.onclick = () => onlyQ({ clusters:[b.dataset.cl] }));
+  grid.querySelectorAll('[data-more]').forEach(b => b.onclick = () => { AI.open[b.dataset.more] = !AI.open[b.dataset.more]; renderQPanel(pool()); });
+}
+$('#qClr').onclick = clearCats;
+
+/* ---------- OpenRouter ---------- */
+function aiErr(kind, message){ const e = new Error(message); e.kind = kind; return e; }
+function loadModels(){
+  if (AI.models) return Promise.resolve(AI.models);
+  if (AI.modelsP) return AI.modelsP;
+  AI.modelsP = fetch(OR_BASE + '/models').then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(j => {
+      AI.models = (j.data || []).map(m => ({ id:m.id, name:m.name || m.id, created:m.created || 0, pricing:m.pricing || {}, params:Array.isArray(m.supported_parameters) ? m.supported_parameters : null, reasoning:m.reasoning || null }));
+      AI.autoModel = pickModel(AI.models);
+      return AI.models;
+    })
+    .catch(e => { AI.modelsP = null; throw e; });
+  return AI.modelsP;
+}
+// cheapest dependable family available today, newest first
+function pickModel(list){
+  const tries = [/^google\/gemini-[\d.]+-flash$/, /^openai\/gpt-[\d.]+o?-mini$/, /^anthropic\/claude-[\w.-]*haiku[\w.-]*$/];
+  for (const re of tries){ const c = list.filter(m => re.test(m.id)).sort((a,b) => b.created - a.created); if (c.length) return c[0].id; }
+  return MODEL_FALLBACK;
+}
+// sorting needs no thinking: switch it off, or to the lowest effort where it can't be switched off
+function modelInfo(){ return AI.models && AI.models.find(x => x.id === model()); }
+function reasoningParam(){
+  const m = modelInfo();
+  if (!m || AI.noReasoning) return null;
+  const r = m.reasoning, p = m.params;
+  if (!r && !(p && p.includes('reasoning'))) return null;
+  if (r && !r.mandatory) return { enabled:false };
+  const eff = ((r && (r.supported_efforts || r.supportedEfforts)) || []).filter(e => e !== 'none');
+  return { effort:eff.length ? eff[eff.length - 1] : 'low' };
+}
+async function orChat(messages, opts){
+  opts = opts || {};
+  const key = aiKey();
+  if (!key) throw aiErr('fatal', 'Add your OpenRouter key in AI settings.');
+  const body = { model:model(), messages, temperature:0, max_tokens:opts.maxTokens || 4096 };
+  const info = modelInfo();
+  if (AI.jsonMode && (!info || !info.params || info.params.includes('response_format'))) body.response_format = { type:'json_object' };
+  const rp = reasoningParam(); if (rp) body.reasoning = rp;
+  const outer = opts.signal;
+  for (let attempt = 0; ; attempt++){
+    if (outer && outer.aborted) throw aiErr('abort', 'Stopped');
+    const ctl = new AbortController();
+    const onAbort = () => ctl.abort();
+    if (outer) outer.addEventListener('abort', onAbort, { once:true });
+    const timer = setTimeout(() => ctl.abort(), 120000);
+    let res, data;
+    try {
+      res = await fetch(OR_BASE + '/chat/completions', { method:'POST', headers:{ 'Authorization':'Bearer ' + key, 'Content-Type':'application/json' }, body:JSON.stringify(body), signal:ctl.signal });
+      data = await res.json().catch(() => ({}));
+    } catch(e){
+      if (outer && outer.aborted) throw aiErr('abort', 'Stopped');
+      if (attempt < 2) { await sleep(1500 * (attempt + 1)); continue; }
+      throw aiErr('net', 'Could not reach OpenRouter. Check the connection and try again.');
+    } finally { clearTimeout(timer); if (outer) outer.removeEventListener('abort', onAbort); }
+    const em = data && data.error ? String(data.error.message || data.error) : '';
+    if (res.ok && !data.error) {
+      const ch = data.choices && data.choices[0];
+      let content = ch && ch.message && ch.message.content;
+      if (Array.isArray(content)) content = content.map(c => c.text || '').join('');
+      if (content) return { text:String(content), finish:ch.finish_reason };
+      if (attempt < 2) { await sleep(1000); continue; }
+      throw aiErr('empty', 'The model returned an empty answer.');
+    }
+    const st = (data && data.error && +data.error.code) || res.status;
+    if (st === 401) throw aiErr('fatal', 'OpenRouter rejected the key. Check it in AI settings.');
+    if (st === 402) throw aiErr('fatal', 'This OpenRouter key is out of credits. Add credits or raise the key’s limit on openrouter.ai.');
+    if (st === 403) throw aiErr('fatal', 'OpenRouter blocked the request' + (em ? ': ' + em : '.'));
+    if (st === 400 && body.response_format && /response_format|json/i.test(em)) { AI.jsonMode = false; delete body.response_format; continue; }
+    if (st === 400 && body.reasoning && /reasoning|thinking|effort/i.test(em)) { AI.noReasoning = true; delete body.reasoning; continue; }
+    if ((st === 400 || st === 404) && /model/i.test(em)) throw aiErr('fatal', `The model “${body.model}” isn’t available on OpenRouter. Pick another in AI settings.`);
+    if ((st === 429 || st === 408 || st >= 500) && attempt < 3) { await sleep(2000 * Math.pow(2, attempt)); continue; }
+    throw aiErr('http', `OpenRouter error ${st}${em ? ': ' + em : ''}`);
+  }
+}
+function parseLoose(t){
+  t = String(t || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '');
+  try { return JSON.parse(t); } catch(e){}
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  if (a >= 0 && b > a) { try { return JSON.parse(t.slice(a, b + 1)); } catch(e){} }
+  // truncated answer: keep every complete {...} item
+  const items = [];
+  for (const m of t.matchAll(/\{[^{}]*\}/g)) { try { items.push(JSON.parse(m[0])); } catch(e){} }
+  return items.length ? items : null;
+}
+function redact(t){
+  return String(t).replace(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi, '[email]').replace(/\+?\d[\d\s-]{8,}\d/g, '[number]').replace(/\s+/g, ' ').trim().slice(0, 400);
+}
+const SYS_CLASSIFY = () => `You label questions typed into the Zoom chat of a live AI-tools workshop webinar in India. Trainers demo AI tools (chatbots, website and app builders, voice agents, video and image tools) and then pitch a paid program. Messages are English, Hindi or Hinglish, often misspelled.
+
+For every numbered item return:
+"t": the one type id that best fits what the person wants:
+${Z.QTYPES.map(t => `- ${t.id}: ${t.desc}`).join('\n')}
+"q": the question rewritten as a short generic question in plain English, at most 12 words. Translate Hindi and Hinglish, fix spelling, drop names and filler. Write the same need the same way every time, e.g. "How do I connect a custom domain to my website?". Use "" when t is "unclear".
+"tool": the specific tool, website or app named or clearly meant, by its common name (e.g. "ElevenLabs"), or "" if none.
+
+Complaints or sarcasm phrased as questions are "frustration". Questions about their own selection, seat, booking or their name being called are "seat_status".
+Reply with JSON only, no prose: {"r":[{"i":1,"t":"how_to","q":"...","tool":""}]} with exactly one entry per item number.`;
+const SYS_MERGE = `You merge duplicate questions from one category of a live webinar chat. Each line is a normalized question with the number of people who asked it in brackets. Group lines that ask for the same thing, even if worded differently. Keep different needs apart; do not over-merge. Give each group one clear canonical question in plain English, at most 14 words, specific enough to act on.
+Reply with JSON only: {"c":[{"q":"canonical question","m":[1,4,9]}]}. Every line number appears in exactly one group. One-line groups are fine.`;
+const SYS_TAKE = `You brief a webinar team right after a live session. The JSON lists questions attendees typed that were not about refunds, payments, certificates or other known topics, grouped by type with people counts and the most-asked merged questions.
+Write 3 to 5 takeaways the team can act on before the next session. Each takeaway is one sentence of at most 28 words, starts with what to do, cites a count from the data, and has an owner: "Trainer" (content and demos), "Sales" (program, seats, earning, fit) or "Support" (live-session logistics). Use only numbers present in the data.
+Reply with JSON only: {"k":[{"owner":"Trainer","text":"..."}]}`;
+
+function allQueryMsgs(){
+  const out = [];
+  for (const s of state.sources){ if (!s.on) continue; for (const m of s.messages){ if (m.qtype && m.kind !== 'reaction' && m.text) out.push(m); } }
+  return out;
+}
+function wordCount(t){ return String(t).trim().split(/\s+/).filter(w => /[a-z0-9\u0900-\u097F]/i.test(w)).length; }
+// unique question texts that still need an AI label ("?", "how" and other 1-2 word fragments stay rule-sorted)
+function collectPending(){
+  const seen = new Set(), out = [];
+  for (const m of allQueryMsgs()){
+    const k = Z.qKey(m.text);
+    if (seen.has(k)) continue; seen.add(k);
+    if (AI.items[k]) continue;
+    const rule = Z.classifyQuestion(m.text);
+    if (rule === 'unclear' && wordCount(m.text) <= 2) continue;
+    out.push({ k, text:m.text, rule });
+  }
+  return out;
+}
+async function runPool(tasks, n){
+  let i = 0;
+  const worker = async () => { while (i < tasks.length) { const t = tasks[i++]; await t(); } };
+  await Promise.all(Array.from({ length:Math.min(n, tasks.length) }, worker));
+}
+async function classifyBatch(b, signal){
+  const user = b.map((p, i) => `${i + 1}. ${redact(p.text)}`).join('\n');
+  let arr = [];
+  for (let attempt = 0; attempt < 2 && !arr.length; attempt++){
+    const r = await orChat([{ role:'system', content:SYS_CLASSIFY() }, { role:'user', content:user }], { signal, maxTokens:300 + b.length * 70 });
+    const obj = parseLoose(r.text);
+    arr = Array.isArray(obj) ? obj : (obj && (obj.r || obj.results || obj.items || obj.data)) || [];
+  }
+  const byOrder = arr.length === b.length && arr.every(x => x && x.i == null);
+  const got = new Set();
+  arr.forEach((x, j) => {
+    if (!x || typeof x !== 'object') return;
+    const p = byOrder ? b[j] : b[(+x.i || 0) - 1];
+    if (!p) return;
+    let t = clean(x.t || x.type);
+    if (!QT[t]) t = p.rule;
+    AI.items[p.k] = { t, q:t === 'unclear' ? '' : clean(x.q || x.question).slice(0, 140), tool:clean(x.tool).slice(0, 40) };
+    got.add(p.k);
+  });
+  return got.size;
+}
+async function mergePhase(signal){
+  const byType = new Map();
+  for (const m of allQueryMsgs()){
+    if (m.qsrc !== 'ai' || !m.qfaq || m.qtype === 'unclear') continue;
+    let t = byType.get(m.qtype); if (!t) byType.set(m.qtype, t = new Map());
+    let e = t.get(m.qfaqKey); if (!e) t.set(m.qfaqKey, e = { k:m.qfaqKey, q:m.qfaq, ppl:new Set() });
+    e.ppl.add(m.name.toLowerCase());
+  }
+  const merges = { ...AI.merges };
+  const jobs = [];
+  for (const [tid, map] of byType){
+    const list = [...map.values()].sort((a,b) => b.ppl.size - a.ppl.size).slice(0, 160);
+    if (list.length < 3) continue;
+    jobs.push(async () => {
+      if (signal.aborted) return;
+      try {
+        const r = await orChat([{ role:'system', content:SYS_MERGE }, { role:'user', content:`Category: ${QT[tid].label}\n\n` + list.map((e, i) => `${i + 1}. ${e.q} (${e.ppl.size})`).join('\n') }], { signal, maxTokens:6000 });
+        const obj = parseLoose(r.text);
+        const groups = Array.isArray(obj) ? obj : (obj && (obj.c || obj.clusters || obj.groups)) || [];
+        for (const g of groups){
+          const label = clean(g && (g.q || g.question)).slice(0, 140); if (!label) continue;
+          for (const n of (g.m || g.members || [])) { const e = list[(+n) - 1]; if (e) merges[e.k] = label; }
+        }
+      } catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') throw e; /* keep last merge for this type */ }
+    });
+  }
+  await runPool(jobs, PAR);
+  AI.merges = merges;
+}
+async function takeawaysPhase(signal){
+  const st = qStats(pool());
+  if (!st.aiN) return;
+  const brief = { questions:st.qs.length, people:st.people,
+    intents:st.intents.filter(i => i.n).map(i => ({ intent:i.def.label, people:i.p })),
+    types:st.types.filter(t => t.id !== 'unclear').map(t => ({ type:t.def.label, people:t.p, messages:t.n, top:t.clist.slice(0, 5).map(c => ({ q:c.label, people:c.p })), tools:t.tlist.slice(0, 3).map(x => x.label) })) };
+  const r = await orChat([{ role:'system', content:SYS_TAKE }, { role:'user', content:JSON.stringify(brief) }], { signal, maxTokens:1500 });
+  const obj = parseLoose(r.text);
+  const k = Array.isArray(obj) ? obj : (obj && (obj.k || obj.takeaways)) || [];
+  const items = k.slice(0, 5).map(x => ({ owner:/sales/i.test(x && x.owner) ? 'Sales' : /support|host/i.test(x && x.owner) ? 'Support' : 'Trainer', text:clean(x && x.text).slice(0, 280) })).filter(x => x.text);
+  if (items.length) AI.take = { at:Date.now(), n:st.qs.length, items };
+}
+async function runAI(){
+  if (AI.running) return;
+  if (!aiKey()) { openAI(); toast('Add your OpenRouter key first'); return; }
+  await loadModels().catch(() => {});
+  const pending = collectPending();
+  AI.running = true; AI.err = ''; AI.ctl = new AbortController();
+  const signal = AI.ctl.signal;
+  const batches = []; for (let i = 0; i < pending.length; i += BATCH) batches.push(pending.slice(i, i + BATCH));
+  AI.total = pending.length; AI.done = 0; AI.phase = pending.length ? 'sort' : 'merge';
+  setMascot('think'); renderQPanel(pool());
+  let failed = 0, fatal = null;
+  try {
+    await runPool(batches.map(b => async () => {
+      if (fatal || signal.aborted) return;
+      try { failed += b.length - await classifyBatch(b, signal); }
+      catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') { fatal = fatal || e; AI.ctl.abort(); } else failed += b.length; }
+      AI.done += b.length; applyAll(); scheduleQRender();
+    }), PAR);
+    if (fatal) throw fatal;
+    saveQCache();
+    AI.phase = 'merge'; renderProgress();
+    await mergePhase(signal); applyAll(); saveQCache();
+    AI.phase = 'take'; renderProgress();
+    try { await takeawaysPhase(signal); saveQCache(); } catch(e){ if (e.kind === 'fatal' || e.kind === 'abort') throw e; }
+    AI.err = failed ? `${fmtN(failed)} questions could not be sorted and kept their keyword-rule type. Run again to retry them.` : '';
+    toast(pending.length ? `Sorted ${fmtN(pending.length - failed)} questions with AI` : 'Top questions refreshed');
+    setMascot('happy', 1500);
+  } catch(e){
+    saveQCache();
+    AI.err = e.kind === 'abort' ? 'Stopped. Questions sorted so far are kept; run again to continue.' : (e.message || 'Something went wrong with the AI run.');
+    setMascot('puzzled', 2200);
+  } finally {
+    AI.running = false; AI.ctl = null;
+    applyAll(); refreshOverview(); rerun();
+  }
+}
+$('#qRun').onclick = runAI;
+$('#qStop').onclick = () => { if (AI.ctl) AI.ctl.abort(); };
+
+/* ---------- AI settings ---------- */
+function setAiStat(kind, text){ const el = $('#aiStat'); el.className = 'aistat' + (kind ? ' ' + kind : ''); el.textContent = text; }
+function priceStr(m){
+  const p = +m.pricing.prompt || 0, c = +m.pricing.completion || 0;
+  if (!p && !c) return 'free';
+  return `$${(p * 1e6).toFixed(2)} in, $${(c * 1e6).toFixed(2)} out per million tokens`;
+}
+function noteModel(){
+  const id = $('#aiModel').value.trim(), m = AI.models && AI.models.find(x => x.id === id);
+  $('#aiModelNote').textContent = !AI.models ? '' : m ? `${m.name}: ${priceStr(m)}` : 'Not in OpenRouter’s model list. Check the id.';
+}
+function openAI(){
+  $('#aiKey').value = aiKey(); $('#aiKey').type = 'password'; $('#aiKeyShow').textContent = 'Show';
+  $('#aiRemember').checked = prefs.ai.remember !== false;
+  $('#aiModel').value = model();
+  setAiStat('', '');
+  $('#mAI').classList.add('open');
+  setTimeout(() => $('#aiKey').focus(), 30);
+  $('#aiModelNote').textContent = AI.models ? '' : 'Loading OpenRouter’s model list…';
+  loadModels().then(list => {
+    $('#aiModels').innerHTML = list.map(m => `<option value="${escH(m.id)}">${escH(m.name)}</option>`).join('');
+    if (!prefs.ai.model) $('#aiModel').value = AI.autoModel;
+    noteModel();
+  }).catch(() => { $('#aiModelNote').textContent = 'Couldn’t load the model list. Type a model id from openrouter.ai/models.'; });
+}
+$('#qSet').onclick = openAI;
+$('#aiModel').addEventListener('input', noteModel);
+$('#aiKeyShow').onclick = () => { const k = $('#aiKey'); const show = k.type === 'password'; k.type = show ? 'text' : 'password'; $('#aiKeyShow').textContent = show ? 'Hide' : 'Show'; };
+$('#aiSave').onclick = () => {
+  const k = $('#aiKey').value.trim();
+  if (k && !/^sk-or-/.test(k)) { setAiStat('bad', 'That doesn’t look like an OpenRouter key. They start with sk-or-.'); return; }
+  prefs.ai.remember = $('#aiRemember').checked;
+  prefs.ai.model = $('#aiModel').value.trim();
+  savePrefs(); setAiKey(k, prefs.ai.remember);
+  $('#mAI').classList.remove('open');
+  toast(k ? 'AI settings saved' : 'AI settings saved, no key');
+  refreshOverview();
+};
+$('#aiTest').onclick = async () => {
+  const k = $('#aiKey').value.trim();
+  if (!k) { setAiStat('bad', 'Paste a key first.'); return; }
+  setAiStat('', 'Checking the key…');
+  try {
+    const r = await fetch(OR_BASE + '/key', { headers:{ 'Authorization':'Bearer ' + k } });
+    const j = await r.json().catch(() => ({}));
+    if (r.status === 401) { setAiStat('bad', 'OpenRouter rejected this key.'); return; }
+    if (!r.ok || !j.data) { setAiStat('bad', `Couldn’t check the key (HTTP ${r.status}).`); return; }
+    const d = j.data;
+    const used = d.usage != null ? `$${(+d.usage).toFixed(2)} used` : 'Usage unknown';
+    const lim = d.limit != null ? ` of a $${(+d.limit).toFixed(2)} limit.` : '. This key has no credit limit; consider setting one on openrouter.ai.';
+    setAiStat('ok', `Key works. ${used}${lim}`);
+  } catch(e){ setAiStat('bad', 'Couldn’t reach OpenRouter. Check the connection.'); }
+};
+$('#aiForget').onclick = () => { setAiKey('', false); $('#aiKey').value = ''; setAiStat('ok', 'Key removed from this browser.'); refreshOverview(); };
+$('#aiClear').onclick = () => {
+  AI.items = {}; AI.merges = {}; AI.take = null; AI.cl = {}; AI.err = ''; saveQCache();
+  retag(); refreshOverview(); rerun();
+  setAiStat('ok', 'AI labels cleared. Questions are back on keyword rules.');
+};
+
+/* ---------- question sheets (panel download + full report) ---------- */
+function questionSheets(msgs){
+  const st = qStats(msgs);
+  const byTime = (a, b) => (a.srcDate || '').localeCompare(b.srcDate || '') || (a.secs < 0 ? a.idx : a.secs) - (b.secs < 0 ? b.idx : b.secs);
+  const top = [['Query type','Intent','Question','People','Messages','Names']];
+  for (const t of st.types){
+    const il = qIntent(t.id).label;
+    if (t.clist.length) {
+      for (const c of t.clist) top.push([t.def.label, il, c.label, c.p, c.n, [...c.names].join(', ')]);
+      const loose = t.msgs.filter(m => !m.qclusterKey);
+      if (loose.length) top.push([t.def.label, il, '(not merged: rule-sorted or no question text)', new Set(loose.map(m => m.name.toLowerCase())).size, loose.length, [...new Set(loose.map(m => m.name))].join(', ')]);
+    } else {
+      const g = new Map();
+      for (const m of t.msgs){ const k = Z.qKey(m.text); let e = g.get(k); if (!e) g.set(k, e = { q:clean(m.text), ppl:new Set(), n:0, names:new Set() }); e.n++; e.ppl.add(m.name.toLowerCase()); e.names.add(m.name); }
+      [...g.values()].sort((a,b) => b.ppl.size - a.ppl.size || b.n - a.n).forEach(e => top.push([t.def.label, il, e.q, e.ppl.size, e.n, [...e.names].join(', ')]));
+    }
+  }
+  const all = [['Name','Date','Time','Message','Query type','Intent','Normalized question','Tool','Sorted by','Source'],
+    ...st.qs.slice().sort(byTime).map(m => [m.name, m.srcDateLabel || '', m.time, m.text, QT[m.qtype].label, qIntent(m.qtype).label, m.qcluster || '', m.qtool || '', m.qsrc === 'ai' ? 'AI' : 'Rules', m.source])];
+  const buyers = new Map();
+  for (const m of st.qs.slice().sort(byTime)){
+    const t = QT[m.qtype]; if (t.intent !== 'buy') continue;
+    const k = m.name.toLowerCase().replace(/\s+/g,' ').trim();
+    let p = buyers.get(k); if (!p) buyers.set(k, p = { name:m.name, dates:new Set(), types:new Set(), msgs:[] });
+    if (m.srcDateLabel) p.dates.add(m.srcDateLabel); p.types.add(t.label); p.msgs.push(`[${m.srcDateLabel ? m.srcDateLabel + ' ' : ''}${m.time}] ${m.text}`);
+  }
+  const buy = [['Name','Session dates','Asked about','Messages','What they asked'],
+    ...[...buyers.values()].sort((a,b) => b.msgs.length - a.msgs.length || a.name.localeCompare(b.name)).map(p => [p.name, [...p.dates].join('; '), [...p.types].join('; '), p.msgs.length, p.msgs.join('\n')])];
+  const types = [['Query type','Intent','People','Messages','Sorted by AI','Top questions','Tools mentioned'],
+    ...st.types.map(t => [t.def.label, qIntent(t.id).label, t.p, t.n, t.msgs.filter(m => m.qsrc === 'ai').length, t.clist.slice(0, 5).map(c => `${c.label} (${c.p})`).join('\n'), t.tlist.slice(0, 5).map(x => `${x.label} (${x.n})`).join(', ')])];
+  const take = AI.take && AI.take.items && AI.take.items.length && st.aiN ? [['Owner','Takeaway'], ...AI.take.items.map(x => [x.owner, x.text])] : null;
+  return { st, top, all, buy, types, take };
+}
+function downloadQuestions(){
+  const qs = questionSheets(pool());
+  if (!qs.st.qs.length) { toast('No questions to download'); return; }
+  const base = reportBase().replace('report', 'questions');
+  loadXlsx().then(() => {
+    const wb = XLSX.utils.book_new();
+    const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(capCells(aoa)); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name); };
+    if (qs.take) add('Takeaways', qs.take, [12, 110]);
+    add('Question types', qs.types, [34, 16, 9, 10, 12, 70, 40]);
+    add('Top questions', qs.top, [34, 16, 64, 9, 10, 70]);
+    add('Buying signals', qs.buy, [28, 18, 44, 10, 90]);
+    add('All questions', qs.all, [26, 14, 10, 70, 34, 16, 50, 16, 10, 28]);
+    XLSX.writeFile(wb, base + '.xlsx');
+    toast('Questions file ready'); setMascot('happy', 1500);
+  }).catch(() => {
+    download(base + '.csv', '\uFEFF' + qs.all.map(r => r.map(csvCell).join(',')).join('\n'), 'text/csv;charset=utf-8');
+    toast('Excel library unavailable, downloaded all questions as CSV');
+  });
+}
+$('#qDl').onclick = downloadQuestions;
 
 /* ---------- export ---------- */
 function exportCsv(){
@@ -1608,11 +2417,11 @@ function exportCsv(){
   const cb = catById(); const lab = (ids) => ids.map(i => cb[i] ? cb[i].label : i).join('; ');
   let lines;
   if (state.view === 'person'){
-    lines = [['Name','Messages','First at','Session dates','Topics','Source','All matching messages'].map(csvCell).join(',')];
-    for (const p of Z.groupByPerson(rows)) lines.push([p.name, p.rows.length, p.firstT || '', personDates(p), lab([...p.cats]), [...p.sources].join('; '), p.rows.map(r => `[${r.m.time}] ${r.m.text}`).join('\n')].map(csvCell).join(','));
+    lines = [['Name','Messages','First at','Session dates','Topics','Query types','Source','All matching messages'].map(csvCell).join(',')];
+    for (const p of Z.groupByPerson(rows)) lines.push([p.name, p.rows.length, p.firstT || '', personDates(p), lab([...p.cats]), [...new Set(p.rows.map(r => r.m.qtype).filter(Boolean))].map(id => QT[id].label).join('; '), [...p.sources].join('; '), p.rows.map(r => `[${r.m.time}] ${r.m.text}`).join('\n')].map(csvCell).join(','));
   } else {
-    lines = [['Date','Time','Name','Sent to','Message','Topics','Source'].map(csvCell).join(',')];
-    for (const r of rows) lines.push([r.m.srcDateLabel || '', r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.source].map(csvCell).join(','));
+    lines = [['Date','Time','Name','Sent to','Message','Topics','Query type','Intent','Normalized question','Source'].map(csvCell).join(',')];
+    for (const r of rows) lines.push([r.m.srcDateLabel || '', r.m.time, r.m.name, r.m.to || 'Everyone', r.m.text, lab(r.cats), r.m.qtype ? QT[r.m.qtype].label : '', r.m.qtype ? qIntent(r.m.qtype).label : '', r.m.qcluster || '', r.m.source].map(csvCell).join(','));
   }
   const slug = (state.query.raw || 'results').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40) || 'results';
   download(`zoom-chat-${slug}-${state.view}.csv`, '\uFEFF' + lines.join('\n'), 'text/csv;charset=utf-8');
@@ -1647,12 +2456,22 @@ function buildReport(){
     ids.forEach(id => p.topics.add(cb[id] ? cb[id].label : id)); if (m.srcDateLabel) p.dates.add(m.srcDateLabel); p.msgs.push(`[${m.srcDateLabel ? m.srcDateLabel + ' ' : ''}${m.time}] ${m.text}`);
   }
   const people = [['Name','Session dates','Topics raised','Messages','All flagged messages'], ...[...perPerson.values()].sort((a,b) => a.name.localeCompare(b.name)).map(p => [p.name, [...p.dates].join('; '), [...p.topics].join('; '), p.msgs.length, p.msgs.join('\n')])];
+  const qsh = questionSheets(msgs);
+  if (qsh.st.qs.length){
+    summary.push([], ['Query / question, broken down', 'People', 'Messages', 'Intent']);
+    for (const t of qsh.st.types) summary.push([t.def.label, t.p, t.n, qIntent(t.id).label]);
+  }
   const base = reportBase();
   loadXlsx().then(() => {
     const wb = XLSX.utils.book_new();
-    const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(aoa); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name.replace(/[\[\]:*?\/\\]/g,'-').slice(0,31)); };
-    add('Summary', summary, [30, 10, 12, 26]);
+    const add = (name, aoa, widths) => { const ws = XLSX.utils.aoa_to_sheet(capCells(aoa)); ws['!cols'] = widths.map(w => ({ wch:w })); XLSX.utils.book_append_sheet(wb, ws, name.replace(/[\[\]:*?\/\\]/g,'-').slice(0,31)); };
+    add('Summary', summary, [34, 10, 12, 26]);
     add('By person', people, [28, 22, 40, 10, 90]);
+    if (qsh.st.qs.length){
+      if (qsh.take) add('Question takeaways', qsh.take, [12, 110]);
+      add('Top questions', qsh.top, [34, 16, 64, 9, 10, 70]);
+      add('Buying signals', qsh.buy, [28, 18, 44, 10, 90]);
+    }
     for (const t of topics) add(t.label, t.rows, [26, 14, 10, 90, 18, 22, 28]);
     XLSX.writeFile(wb, base + '.xlsx');
     toast(`Report ready: ${topics.length} topic sheets`); setMascot('happy', 1500);
@@ -1667,35 +2486,34 @@ function buildReport(){
 $('#btnReport').onclick = buildReport;
 
 /* ---------- one sheet: every dated chat with its issues beside each message ---------- */
-const PRIMARY_ORDER = ['refund','payment','certificate','lms','login','join','recording','whatsapp','av','stream_quality','trust','negative','support','tools','tool_questions','job_career','curriculum_fit','materials','pace','schedule','assignment','getting_started','positive','query'];
-function primaryCat(ids){ for (const id of PRIMARY_ORDER){ if (ids.includes(id)) return id; } return ids[0] || ''; }
+const primaryCat = Z.primaryCat;
 function buildIssuesByChat(){
   const cb = catById();
   const srcs = state.sources.filter(s => s.on);
   if (!srcs.length){ toast('Add a chat first'); return; }
   const ordered = srcs.slice().sort((a,b) => (a.date||'zzzz').localeCompare(b.date||'zzzz') || a.name.localeCompare(b.name));
   const byTime = (a,b) => (a.secs<0?a.idx:a.secs) - (b.secs<0?b.idx:b.secs);
-  const aoa = [['Date','Time','Name','Message','Issue(s)','Category']];
+  const aoa = [['Date','Time','Name','Message','Issue(s)','Category','Query type','Intent','Normalized question']];
   let any = false;
   for (const s of ordered){
     const dl = s.dateLabel || 'No date';
     const rows = s.messages.filter(m => m.text && m.kind !== 'reaction').sort(byTime);
-    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '', '']);
+    aoa.push([`▶ ${dl}  ·  ${s.name}  —  ${rows.length} messages`, '', '', '', '', '', '', '', '']);
     for (const m of rows){
       const ids = Object.keys(m.cats).filter(id => !META[id]);
       const issues = ids.map(id => (cb[id]||{}).label || id).join('; ');
       const primId = primaryCat(ids);
       const category = primId ? ((cb[primId]||{}).label || primId) : '';
-      aoa.push([dl, m.time, m.name, m.text, issues, category]);
+      aoa.push([dl, m.time, m.name, m.text, issues, category, m.qtype ? QT[m.qtype].label : '', m.qtype ? qIntent(m.qtype).label : '', m.qcluster || '']);
       any = true;
     }
-    aoa.push(['', '', '', '', '', '']);
+    aoa.push(['', '', '', '', '', '', '', '', '']);
   }
   if (!any){ toast('No messages in these chats'); return; }
   const base = reportBase().replace('report','issues-by-chat');
   loadXlsx().then(() => {
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws['!cols'] = [16,10,24,74,34,22].map(w => ({ wch:w }));
+    const ws = XLSX.utils.aoa_to_sheet(capCells(aoa));
+    ws['!cols'] = [16,10,24,74,34,22,30,16,46].map(w => ({ wch:w }));
     ws['!freeze'] = { xSplit:0, ySplit:1 };
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Whole chat');
@@ -1732,9 +2550,9 @@ $('#mapApply').onclick = () => {
   mapSrc.header = $('#mapHeader').checked;
   mapSrc.messages = Z.rowsToMessages(mapSrc.rows, mapSrc.map, mapSrc.header, mapSrc.name);
   markHosts(mapSrc);
-  Z.tagMessages(mapSrc.messages, cdict);
+  Z.tagMessages(mapSrc.messages, cdict); applyAiLabels(mapSrc.messages);
   $('#mMap').classList.remove('open');
-  renderSources(); refreshOverview(); if (state.query) run(state.query.raw);
+  renderSources(); refreshOverview(); rerun();
 };
 $('#mapHeader').onchange = () => { if (mapSrc) { mapSrc.header = $('#mapHeader').checked; mapSrc.headers = mapSrc.header ? mapSrc.rows[0] : mapSrc.rows[0].map((_, i) => 'Column ' + (i+1)); openMap(mapSrc, false); } };
 
@@ -1774,7 +2592,7 @@ $('#btnPaste').onclick = () => {
 };
 $('#btnClear').onclick = () => { state.sources = []; state.query = null; state.rows = []; $('#ask').value = ''; renderSources(); refreshOverview(); renderReading(null); renderResults(); };
 
-$('#dateSel').onchange = (e) => { state.dateFilter = e.target.value; refreshOverview(); if (state.query) run(state.query.raw); };
+$('#dateSel').onchange = (e) => { state.dateFilter = e.target.value; refreshOverview(); rerun(); };
 $('#btnGo').onclick = () => run($('#ask').value);
 $('#ask').addEventListener('keydown', (e) => { if (e.key === 'Enter') run($('#ask').value); });
 let liveT; $('#ask').addEventListener('input', () => { clearTimeout(liveT); liveT = setTimeout(() => renderReading(Z.interpret($('#ask').value, cdict)), 120); });
@@ -1783,8 +2601,8 @@ $('#viewSeg').querySelectorAll('button').forEach(b => b.onclick = () => { state.
 $('#rFilter').addEventListener('input', (e) => { state.textFilter = e.target.value; renderResults(); });
 $('#btnCsv').onclick = exportCsv; $('#btnNames').onclick = copyNames; $('#btnCopy').onclick = copyList;
 
-['#staff'].forEach(s => $(s).addEventListener('input', () => { prefs.staff = $('#staff').value; savePrefs(); refreshOverview(); if (state.query) run(state.query.raw); }));
-['#optRole','#optDM','#optReact'].forEach(s => $(s).addEventListener('change', () => { prefs.opts = { role:$('#optRole').checked, dm:$('#optDM').checked, react:$('#optReact').checked }; savePrefs(); refreshOverview(); if (state.query) run(state.query.raw); }));
+['#staff'].forEach(s => $(s).addEventListener('input', () => { prefs.staff = $('#staff').value; savePrefs(); refreshOverview(); rerun(); }));
+['#optRole','#optDM','#optReact'].forEach(s => $(s).addEventListener('change', () => { prefs.opts = { role:$('#optRole').checked, dm:$('#optDM').checked, react:$('#optReact').checked }; savePrefs(); refreshOverview(); rerun(); }));
 if (typeof prefs.staff === 'string') $('#staff').value = prefs.staff;
 if (prefs.opts) { $('#optRole').checked = !!prefs.opts.role; $('#optDM').checked = !!prefs.opts.dm; $('#optReact').checked = prefs.opts.react !== false; }
 
